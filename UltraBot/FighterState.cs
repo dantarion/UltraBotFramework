@@ -39,6 +39,9 @@ namespace UltraBot
         /// This is used to hold a tabe
         /// </summary>
         private Dictionary<float, float> Tick2Frame = new Dictionary<float, float>();
+
+        private int _BaseOffset;
+
         public CharState State;
         public AttackState AState;
         public float StateTimer;
@@ -53,7 +56,7 @@ namespace UltraBot
         public int Health;//TODO
         public int Meter;//TODO
         public int Revenge;//TODO
-
+        //BAC Data
         public uint LastScriptIndex = UInt32.MaxValue;
         public uint ScriptIndex = UInt32.MaxValue;
         public string LastScriptName = "";
@@ -76,6 +79,13 @@ namespace UltraBot
 
         private static FighterState P1;
         private static FighterState P2;
+        //BCM Data
+        public List<String> ChargeNames = new List<string>();
+        public List<String> InputNames = new List<string>();
+        public List<String> MoveNames = new List<string>();
+        public List<String> CancelListNames = new List<string>();
+        public List<String> ActiveCancelLists = new List<String>();
+        public List<uint> InputBuffer = new List<uint>();
         public static FighterState getFighter(int index)
         {
             if (P1 == null)
@@ -90,7 +100,53 @@ namespace UltraBot
             this.PlayerIndex = index;
         }
 
+        public void ReadBCMData()
+        {
+            int off = 0x8;
+            if (PlayerIndex == 1)
+                off = 0xC;
 
+            var InputBufferOffset = (int)Util.Memory.ReadInt((int)Util.Memory.ReadInt(0x400000 + 0x6A0EAC) + off);
+            var BCM = (int)Util.Memory.ReadInt(InputBufferOffset + 0x8);
+            //Not in a match
+            if (BCM == 0)
+                return;
+            var chargeStatus = (int)Util.Memory.ReadInt(InputBufferOffset + 0x1594);
+
+            //Read Names: TODO Only do this on new BCM
+            ReadStringOffsetTable(ChargeNames,BCM, (int)Util.Memory.ReadShort(BCM + 0x10), (int)Util.Memory.ReadInt(BCM + 0x1C));
+            ReadStringOffsetTable(InputNames,BCM, (int)Util.Memory.ReadShort(BCM + 0x12), (int)Util.Memory.ReadInt(BCM + 0x24));
+            ReadStringOffsetTable(MoveNames,BCM, (int)Util.Memory.ReadShort(BCM + 0x14), (int)Util.Memory.ReadInt(BCM + 0x2C));
+            ReadStringOffsetTable(CancelListNames,BCM, (int)Util.Memory.ReadShort(BCM + 0x16), (int)Util.Memory.ReadInt(BCM + 0x34));
+            ActiveCancelLists.Clear();
+            var i = 0;
+            while ((int)Util.Memory.ReadInt(InputBufferOffset + 0x147C + i * 0x10) != -1)
+                ActiveCancelLists.Add(CancelListNames[(int)Util.Memory.ReadInt(InputBufferOffset + 0x147C + i++ * 0x10)]);
+            InputBuffer.Clear();
+
+            var InputBufferIndex = (int)Util.Memory.ReadInt(InputBufferOffset + 0x1414);
+            for(i = 0; i < 0xff; i++)
+            {
+                var trueIndex = (InputBufferIndex - i);
+                if(trueIndex < 0)
+                    trueIndex += 255;
+                var tmp = Util.Memory.ReadInt(InputBufferOffset + 0x10 + trueIndex * 4);
+                InputBuffer.Add(tmp);
+
+            }
+
+
+        }
+        private void ReadStringOffsetTable(List<string> list, int baseOffset, int count, int stringRelativeOffset)
+        {
+            list.Clear();
+            var stringOffset = stringRelativeOffset + baseOffset;
+            for (int i = 0; i < count; i++ )
+            {
+                var off = Util.Memory.ReadInt(stringOffset + i * 4);
+                list.Add(ReadNullTerminatedString((uint)baseOffset + off));
+            }
+        }
         public void UpdatePlayerState()
         {
             int off = 0x8;
@@ -98,40 +154,48 @@ namespace UltraBot
                 off = 0xC;
 
             //var staticBase = (int)Util.Memory.ReadInt((int)Util.Memory.ReadInt(0x400000 + 0x688E6C) + off);
-            var staticBase = (int)Util.Memory.ReadInt((int)Util.Memory.ReadInt(0x400000 + 0x6A0E8C) + off);
-            var BAC = Util.Memory.ReadInt((int)Util.Memory.ReadInt(staticBase + 0xB0) + 0x8);
+            _BaseOffset = (int)Util.Memory.ReadInt((int)Util.Memory.ReadInt(0x400000 + 0x6A0E8C) + off);
+            ReadBACData();
+            ReadBCMData();
+        }
+
+        private void ReadBACData()
+        {
+            var BAC = Util.Memory.ReadInt((int)Util.Memory.ReadInt(_BaseOffset + 0xB0) + 0x8);
+
             //Not in a match
             if (BAC == 0)
                 return;
 
+            var BAC_data = (int)Util.Memory.ReadInt(_BaseOffset + 0xB0);
 
-
-            X = Util.Memory.ReadFloat(staticBase + 0x70);
-            Y = Util.Memory.ReadFloat(staticBase + 0x74);
-            XVelocity = Util.Memory.ReadFloat(staticBase + 0xe0);
-            YVelocity = Util.Memory.ReadFloat(staticBase + 0xe4);
-            RawState = Util.Memory.ReadInt(staticBase + 0xBC);
+            X = Util.Memory.ReadFloat(_BaseOffset + 0x70);
+            Y = Util.Memory.ReadFloat(_BaseOffset + 0x74);
+            XVelocity = Util.Memory.ReadFloat(_BaseOffset + 0xe0);
+            YVelocity = Util.Memory.ReadFloat(_BaseOffset + 0xe4);
+            RawState = Util.Memory.ReadInt(_BaseOffset + 0xBC);
             LastScriptIndex = ScriptIndex;
-            ScriptIndex = Util.Memory.ReadInt((int)Util.Memory.ReadInt(staticBase + 0xB0) + 0x18);
-            ScriptTick = (float)Util.Memory.ReadInt((int)Util.Memory.ReadInt(staticBase + 0xB0) + 0x1C) / 0x10000;
+            ScriptIndex = Util.Memory.ReadInt(BAC_data + 0x18);
+            ScriptTick = (float)Util.Memory.ReadInt(BAC_data + 0x1C) / 0x10000;
 
             var ScriptNameOffset = BAC + Util.Memory.ReadInt((int)((BAC + Util.Memory.ReadInt((int)BAC + 0x1C)) + 4 * ScriptIndex));
-            var tmp = Util.Memory.ReadString((int)ScriptNameOffset, 128);
-            tmp = tmp.Substring(0, tmp.IndexOf('\x00'));
+            var tmp = ReadNullTerminatedString(ScriptNameOffset);
             LastScriptName = ScriptName;
             ScriptName = tmp;
             if (ScriptName == "")
                 return;
-            ScriptTickHitboxStart = (float)Util.Memory.ReadInt((int)Util.Memory.ReadInt(staticBase + 0xB0) + 0x28) / 0x10000;
-            ScriptTickHitboxEnd = (float)Util.Memory.ReadInt((int)Util.Memory.ReadInt(staticBase + 0xB0) + 0x2C) / 0x10000;
-            ScriptTickIASA = (float)Util.Memory.ReadInt((int)Util.Memory.ReadInt(staticBase + 0xB0) + 0x30) / 0x10000;
-            ScriptTickTotal = (float)Util.Memory.ReadInt((int)Util.Memory.ReadInt(staticBase + 0xB0) + 0x24) / 0x10000;
-            ScriptSpeed = (float)Util.Memory.ReadInt((int)Util.Memory.ReadInt(staticBase + 0xB0) + 0x18 + 0xC0) / 0x10000;
+
+            ScriptTickHitboxStart = (float)Util.Memory.ReadInt(BAC_data + 0x28) / 0x10000;
+            ScriptTickHitboxEnd = (float)Util.Memory.ReadInt(BAC_data + 0x2C) / 0x10000;
+            ScriptTickIASA = (float)Util.Memory.ReadInt(BAC_data + 0x30) / 0x10000;
+            ScriptTickTotal = (float)Util.Memory.ReadInt(BAC_data + 0x24) / 0x10000;
+            ScriptSpeed = (float)Util.Memory.ReadInt(BAC_data + 0x18 + 0xC0) / 0x10000;
             if (ScriptTickIASA == 0)
                 ScriptTickIASA = ScriptTickTotal;
+
             ComputeTickstoFrames(BAC);
             ComputeAttackData(BAC);
-           
+
             if (ScriptFrameHitboxStart != 0)
             {
                 if (ScriptFrame <= ScriptFrameHitboxStart)
@@ -166,10 +230,13 @@ namespace UltraBot
                 StateTimer = -1;
                 AState = AttackState.None;
             }
+        }
 
-
-
-
+        private static string ReadNullTerminatedString(uint offset)
+        {
+            var tmp = Util.Memory.ReadString((int)offset, 128);
+            tmp = tmp.Substring(0, tmp.IndexOf('\x00'));
+            return tmp;
         }
         private void ComputeAttackData(uint BAC)
         {
@@ -208,7 +275,7 @@ namespace UltraBot
                         AState = AttackState.Overhead;
                     if (hitlevel == 2)
                         AState = AttackState.Low;
-                    if (hitlevel ==3)
+                    if (hitlevel == 3)
                         AState = AttackState.Throw;
                 }
             }
@@ -220,6 +287,8 @@ namespace UltraBot
             var b = (int)ScriptOffset + 0x18;
             var commandStarts = new List<ushort>();
             var speeds = new List<float>();
+            if (ScriptCommandListCount == 0)
+                return;
             for (int i = 0; i < ScriptCommandListCount; i++)
             {
                 var scriptType = Util.Memory.ReadShort((int)b + i * 12);
