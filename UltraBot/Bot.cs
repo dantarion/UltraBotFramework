@@ -18,13 +18,13 @@ namespace UltraBot
     {
         public static void AddSearchPath(string Dir)
         {
-            CSScript.GlobalSettings.AddSearchDir(s);
+            CSScript.GlobalSettings.AddSearchDir(Dir);
         }
         public static IBot LoadBotFromFile(string BotName)
         {
             
             var tmp = CSScript.Load(BotName + ".cs");
-            var tmp2 = tmp.CreateInstance("UltraBot."+BotName);
+            var tmp2 = tmp.CreateInstance(BotName);
             IBot bot = tmp2.AlignToInterface<IBot>();
             return bot;
 
@@ -196,6 +196,27 @@ private static WindowsInput.VirtualKeyCode map(VirtualKeyCode key)
                 pressButton(this.Back());
             if (key.Contains("8"))
                 pressButton(VirtualKeyCode.UP);
+			if (key.Contains("1"))	
+			{
+				pressButton(this.Back());
+				pressButton(VirtualKeyCode.DOWN);
+			}
+			if (key.Contains("1"))	
+			{
+				pressButton(this.Forward());
+				pressButton(VirtualKeyCode.DOWN);
+			}
+			if (key.Contains("7"))	
+			{
+				pressButton(this.Back());
+				pressButton(VirtualKeyCode.UP);
+			}
+			if (key.Contains("9"))	
+			{
+				pressButton(this.Forward());
+                pressButton(VirtualKeyCode.UP);
+			}
+			
             if (key.Contains("LP"))
                 pressButton(VirtualKeyCode.LP);
             if (key.Contains("MP"))
