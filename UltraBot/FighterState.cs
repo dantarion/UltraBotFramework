@@ -85,7 +85,8 @@ namespace UltraBot
         public List<String> MoveNames = new List<string>();
         public List<String> CancelListNames = new List<string>();
         public List<String> ActiveCancelLists = new List<String>();
-        public List<uint> InputBuffer = new List<uint>();
+        public List<Input> InputBuffer = new List<Input>();
+
         public static FighterState getFighter(int index)
         {
             if (P1 == null)
@@ -120,8 +121,13 @@ namespace UltraBot
             ReadStringOffsetTable(CancelListNames,BCM, (int)Util.Memory.ReadShort(BCM + 0x16), (int)Util.Memory.ReadInt(BCM + 0x34));
             ActiveCancelLists.Clear();
             var i = 0;
-            while ((int)Util.Memory.ReadInt(InputBufferOffset + 0x147C + i * 0x10) != -1)
-                ActiveCancelLists.Add(CancelListNames[(int)Util.Memory.ReadInt(InputBufferOffset + 0x147C + i++ * 0x10)]);
+            var test = (int)Util.Memory.ReadInt(InputBufferOffset + 0x147C + i++ * 0x10);
+            while (test != -1)
+            {
+                ActiveCancelLists.Add(CancelListNames[test]);
+                test = (int)Util.Memory.ReadInt(InputBufferOffset + 0x147C + i++ * 0x10);
+            }
+                
             InputBuffer.Clear();
 
             var InputBufferIndex = (int)Util.Memory.ReadInt(InputBufferOffset + 0x1414);
@@ -131,12 +137,30 @@ namespace UltraBot
                 if(trueIndex < 0)
                     trueIndex += 255;
                 var tmp = Util.Memory.ReadInt(InputBufferOffset + 0x10 + trueIndex * 4);
-                InputBuffer.Add(tmp);
+
+                InputBuffer.Add((Input)tmp);
 
             }
 
 
         }
+        [Flags]
+        public enum Input
+        {
+            BACK = 0x0,
+            NEUTRAL = 0x1,
+            UP = 0x2,
+            DOWN = 0x4,
+            FORWARD = 0x8,
+            NO_BUTTONS = 0x20,
+            LP = 0x40,
+            MP = 0x80,
+            HP = 0x100,
+            LK = 0x200,
+            MK = 0x400,
+            HK = 0x800,
+        }
+
         private void ReadStringOffsetTable(List<string> list, int baseOffset, int count, int stringRelativeOffset)
         {
             list.Clear();

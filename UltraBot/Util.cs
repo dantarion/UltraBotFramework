@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Threading;
 using MemoryEditor;
+using System.Threading;
 namespace UltraBot
 {
     public class Util
@@ -17,8 +18,14 @@ namespace UltraBot
             if (Memory == null)
             {
                 Memory = new Memory();
-                if (!Memory.OpenProcess("SSFIV"))
-                    throw new Exception("Couldn't connect to the game");
+                var success = Memory.OpenProcess("SSFIV");
+                Console.WriteLine("Connecting to game.");
+                while (success == false)
+                {
+                    Console.Write(".");
+                    Thread.Sleep(1000);
+                    success = Memory.OpenProcess("SSFIV");
+                }
             }
         }
         [DllImport("user32.dll")]

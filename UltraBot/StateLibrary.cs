@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace UltraBot
 {
-    public class IdleState : BotState
+    public class IdleState : BotAIState
     {
         public IdleState()
         {

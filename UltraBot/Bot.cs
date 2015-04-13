@@ -15,15 +15,25 @@ namespace UltraBot
         }
         public FighterState myState;
         public FighterState enemyState;
-        public List<BotState> stateStack = new List<BotState>();
-        public List<VirtualKeyCode> pressed = new List<VirtualKeyCode>();
-        public List<VirtualKeyCode> last_pressed = new List<VirtualKeyCode>();
-        public List<VirtualKeyCode> held = new List<VirtualKeyCode>();
-        public BotState currentState;
-        public BotState previousState;
+        public List<BotAIState> stateStack = new List<BotAIState>();
+        private List<VirtualKeyCode> pressed = new List<VirtualKeyCode>();
+        private List<VirtualKeyCode> last_pressed = new List<VirtualKeyCode>();
+        private List<VirtualKeyCode> held = new List<VirtualKeyCode>();
+        public BotAIState currentAIState;
+        public BotAIState previousState;
+        public virtual void StateCheck()
+        {
+
+        }
+
         public virtual void Run()
         {
-            currentState.Run();
+            //Setup some derived variables.
+            myState.XDistance = myState.X - enemyState.X;
+            myState.YDistance = myState.Y - enemyState.Y;
+
+            StateCheck();
+            currentAIState.Run(this);
             if (Util.GetActiveWindowTitle() == "SSFIVAE")
             {
                 foreach (var key in pressed)
@@ -69,6 +79,18 @@ private static WindowsInput.VirtualKeyCode map(VirtualKeyCode key)
         case VirtualKeyCode.PPP:
             rawKey = WindowsInput.VirtualKeyCode.OEM_PLUS;
             break;
+        case VirtualKeyCode.LK:
+            rawKey = WindowsInput.VirtualKeyCode.VK_O;
+            break;
+        case VirtualKeyCode.MK:
+            rawKey = WindowsInput.VirtualKeyCode.VK_P;
+            break;
+        case VirtualKeyCode.HK:
+            rawKey = WindowsInput.VirtualKeyCode.OEM_4;
+            break;
+        case VirtualKeyCode.KKK:
+            rawKey = WindowsInput.VirtualKeyCode.OEM_6;
+            break;
 
     }
     return rawKey;
@@ -78,10 +100,10 @@ private static WindowsInput.VirtualKeyCode map(VirtualKeyCode key)
         /// This changes state.
         /// </summary>
         /// <param name="nextState"></param>
-        public void changeState(BotState nextState)
+        public void changeState(BotAIState nextState)
         {
-            previousState = currentState;
-            currentState = nextState;
+            previousState = currentAIState;
+            currentAIState = nextState;
         }
         /// <summary>
         /// This can be used to return to a previous state.
@@ -96,9 +118,9 @@ private static WindowsInput.VirtualKeyCode map(VirtualKeyCode key)
         /// while adding the old state onto the stack. This lets you return to that state by calling popState() from the new state 
         /// </summary>
         /// <param name="nextState"></param>
-        public void pushState(BotState nextState)
+        public void pushState(BotAIState nextState)
         {
-            stateStack.Add(currentState);
+            stateStack.Add(currentAIState);
             changeState(nextState);
         }
                 /// <summary>
@@ -142,6 +164,29 @@ private static WindowsInput.VirtualKeyCode map(VirtualKeyCode key)
             if (myState.XDistance > 0)
                 return VirtualKeyCode.RIGHT;
             return VirtualKeyCode.LEFT;
+        }
+        public void pressButton(string key)
+        {
+            if (key.Contains("2"))
+                pressButton(VirtualKeyCode.DOWN);
+            if (key.Contains("6"))
+                pressButton(this.Forward());
+            if (key.Contains("4"))
+                pressButton(this.Back());
+            if (key.Contains("8"))
+                pressButton(VirtualKeyCode.UP);
+            if (key.Contains("LP"))
+                pressButton(VirtualKeyCode.LP);
+            if (key.Contains("MP"))
+                pressButton(VirtualKeyCode.MP);
+            if (key.Contains("HP"))
+                pressButton(VirtualKeyCode.HP);
+            if (key.Contains("LK"))
+                pressButton(VirtualKeyCode.LK);
+            if (key.Contains("MK"))
+                pressButton(VirtualKeyCode.MK);
+            if (key.Contains("HK"))
+                pressButton(VirtualKeyCode.HK);
         }
         public void pressButton(VirtualKeyCode key)
         {

@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace UltraBot
 {
-    public abstract class BotState
+    public abstract class BotAIState
     {
         public string Status;
-        public Bot bot;
-        public virtual void Run()
+        public virtual void Run(Bot bot)
         {
 
         }
