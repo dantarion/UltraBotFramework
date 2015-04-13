@@ -4,11 +4,32 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WindowsInput;
+using CSScriptLibrary;
 namespace UltraBot
 {
-    public class Bot
+    public interface IBot
     {
-        public Bot(int index)
+         void Init(int index);
+         void StateCheck();
+         void Run();
+    }
+
+    public class Bot : IBot
+    {
+        public static void AddSearchPath(string Dir)
+        {
+            CSScript.GlobalSettings.AddSearchDir(s);
+        }
+        public static IBot LoadBotFromFile(string BotName)
+        {
+            
+            var tmp = CSScript.Load(BotName + ".cs");
+            var tmp2 = tmp.CreateInstance("UltraBot."+BotName);
+            IBot bot = tmp2.AlignToInterface<IBot>();
+            return bot;
+
+        }
+        public void Init(int index)
         {
             myState = FighterState.getFighter(index);
             enemyState = FighterState.getFighter(index == 0 ? 1 : 0);

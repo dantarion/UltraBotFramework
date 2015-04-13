@@ -30,6 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CSScriptLibrary">
+      <HintPath>..\lib\CSScriptLibrary.dll</HintPath>
+    </Reference>
     <Reference Include="InputSimulator, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\InputSimulator.dll</HintPath>
@@ -51,7 +54,7 @@
     <Compile Include="Bot.cs" />
     <Compile Include="BotState.cs" />
     <Compile Include="FighterState.cs" />
-    <Compile Include="KenBot.cs" />
+    <Compile Include="Bots\KenBot\KenBot.cs" />
     <Compile Include="MatchState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StateLibrary.cs" />

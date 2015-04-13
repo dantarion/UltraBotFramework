@@ -21,7 +21,9 @@ namespace MonitorTest
                 //IntPtr handle = 
         static void Main(string[] args)
         {
-           // RegisterHotKey(Process.GetCurrentProcess().MainWindowHandle, 0, 0,ConsoleKey.F1.GetHashCode());
+            Bot.AddSearchPath("../../../UltraBot/Bots/KenBot");
+            var KenBot = Bot.LoadBotFromFile("KenBot");
+            KenBot.Init(0);
             Util.Init();
             DX9Overlay.SetParam("process", "SSFIV.exe");
             DX9Overlay.DestroyAllVisual();
@@ -38,7 +40,8 @@ namespace MonitorTest
             var ms = new MatchState();
             var f1 = FighterState.getFighter(0);
             var f2 = FighterState.getFighter(1);
-            var KenBot = new KenBot(0);
+            
+            KenBot.Init(0);
             
             while (true)
             {
