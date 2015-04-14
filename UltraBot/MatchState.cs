@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace UltraBot
 {
+    /// <summary>
+    /// This function contains data about the fight as a whole.
+    /// TODO. Get round count. That will let us code the bot to be more meter heavy when the round is coming to a close, or when its for the win.
+    /// </summary>
     public class MatchState
     {
         public uint FrameCounter;

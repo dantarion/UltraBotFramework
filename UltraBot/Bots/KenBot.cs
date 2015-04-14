@@ -5,7 +5,7 @@ public class KenBot : Bot
 {
     public KenBot()
     {
-        currentAIState = new PokeState("2HK",2);
+        changeState(new PokeState("2HK",2));
     }
     public override void StateCheck()
     {

@@ -1,0 +1,43 @@
+﻿<Window x:Class="UltraBotUI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" Height="600" Width="525" Loaded="Window_Loaded">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="300" />
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1">
+            <StackPanel Margin="5">
+                <CheckBox Name="OverlayEnabled">Overlay Enabled (F1)</CheckBox>
+                <CheckBox Name="BotEnabled">Bot Enabled (F2)</CheckBox>
+                <Label>Select a Bot</Label>
+                <ComboBox Name="BotSelector" SelectionChanged="BotSelector_SelectionChanged"/>
+                <StackPanel Margin="5" Orientation="Horizontal">
+                    <RadioButton Margin="30,0" GroupName="Player" Content="Player 1" IsChecked="True" Checked="RadioButton_Checked" />
+                    <RadioButton Margin="30,0" GroupName="Player" Content="Player 2" Checked="RadioButton_Checked" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+        <Border Grid.Column="1" Background="Black" BorderBrush="Gainsboro" BorderThickness="1">
+            <StackPanel Margin="5">
+                <Label Foreground="White">StateStack</Label>
+                <ListBox Name="StackDisplay" Height="200"></ListBox>
+            </StackPanel>
+        </Border>
+        <TabControl  Margin="5" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2">
+            <TabItem Header="Log">
+                <Label>TODO</Label>
+            </TabItem>
+            <TabItem Header="Combo">
+                <DataGrid Name="ComboDisplay" IsReadOnly="True">
+                    
+                </DataGrid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
