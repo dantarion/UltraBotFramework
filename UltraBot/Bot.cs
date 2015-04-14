@@ -125,12 +125,17 @@ private static WindowsInput.VirtualKeyCode map(VirtualKeyCode key)
         {
             previousState = currentAIState;
             currentAIState = nextState;
+            Console.WriteLine("changing from {0} to {1}", previousState, currentAIState);
         }
         /// <summary>
         /// This can be used to return to a previous state.
         /// </summary>
         public void popState()
         {
+            if(stateStack.Count() == 0)
+            {
+                stateStack.Add(new IdleState());
+            }
             changeState(stateStack[0]);
             stateStack.RemoveAt(0);
         }

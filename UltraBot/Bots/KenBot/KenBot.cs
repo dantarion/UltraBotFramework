@@ -5,11 +5,13 @@ public class KenBot : Bot
 {
     public KenBot()
     {
-        currentAIState = new PokeState("2HK",2);
+        currentAIState = new SequenceState("6MK.W30.LPLK");
     }
     public override void StateCheck()
     {
-        if (enemyState.State == FighterState.CharState.Startup || enemyState.State == FighterState.CharState.Active)
+        if (myState.ScriptName == "THROW_F_DAMAGE" || myState.ScriptName == "THROW_B_DAMAGE")
+            pushState(new ThrowTechState());
+        else if (enemyState.State == FighterState.CharState.Startup || enemyState.State == FighterState.CharState.Active)
             pushState(new DefendState());
 
     }
@@ -27,7 +29,7 @@ public class PokeState : BotAIState
     public override void Run(Bot bot)
     {
         var spacing = Math.Abs(bot.myState.XDistance) - _distance;
-        Console.WriteLine(spacing);
+
         if (Math.Abs(spacing) > .1)
         {
             if (spacing < 0)
@@ -58,7 +60,6 @@ public class DefendState : BotAIState
             }
             else
                 bot.pressButton(bot.Up());
-            Console.WriteLine("{0} {1}", bot.enemyState.ScriptName, bot.enemyState.StateTimer);
         }
         else
         {

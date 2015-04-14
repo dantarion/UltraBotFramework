@@ -12,7 +12,14 @@ namespace UltraBot
 		{
 		}
 	}
-
+    public class ThrowTechState : BotAIState
+    {
+        public override void Run(Bot bot)
+        {
+            bot.pressButton("LPLK");
+            bot.popState();
+        }
+    }
 	public class SequenceState : BotAIState
 	{
 		[Flags]
@@ -31,19 +38,24 @@ namespace UltraBot
 		}
 
 		public override void Run(Bot bot)
-		{		
+		{
+            
 			if(timer > 0)
 			{
 				timer--;
 				return;
 			}
+            Console.WriteLine(Inputs[index]);
 			if(Inputs[index][0] == 'W')
 			{
 				timer = Int32.Parse(Inputs[index++].Substring(1));
 				return;
 			}
 
-            bot.pressButton(Inputs[index++]);	
+            bot.pressButton(Inputs[index++]);
+            
+            if (index > Inputs.Count - 1)
+                bot.popState();
 		}
 		
     }
