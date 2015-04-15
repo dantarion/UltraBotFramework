@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BotData>
+	<Combos>
+		<Combo Type="NORMAL" Startup="0" XMin="0" XMax="0" YMin="0" YMax="0" EXMeter="0" Ultra="true" Input="6MK" />		
+	</Combos>
+</BotData>

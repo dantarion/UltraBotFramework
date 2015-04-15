@@ -20,6 +20,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <DocumentationFile>bin\Debug\UltraBot.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -53,13 +55,15 @@
   <ItemGroup>
     <Compile Include="Bot.cs" />
     <Compile Include="BotState.cs" />
+    <Compile Include="Bots\KenBot.cs" />
+    <Compile Include="Combo.cs" />
     <Compile Include="FighterState.cs" />
-    <Compile Include="Bots\KenBot\KenBot.cs" />
     <Compile Include="MatchState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StateLibrary.cs" />
     <Compile Include="Util.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

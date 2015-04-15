@@ -21,7 +21,7 @@ namespace MonitorTest
                 //IntPtr handle = 
         static void Main(string[] args)
         {
-            Bot.AddSearchPath("../../../UltraBot/Bots/KenBot");
+            Bot.AddSearchPath("../../../UltraBot/Bots/");
             var KenBot = Bot.LoadBotFromFile("KenBot");
             KenBot.Init(0);
             Util.Init();
