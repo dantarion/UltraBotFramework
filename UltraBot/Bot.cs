@@ -54,6 +54,7 @@ namespace UltraBot
             return bot;
 
         }
+        #region Combo System
         private static void LoadCombos(Bot bot, string XMLFilename)
         {
             var xmldoc = new XmlDocument();
@@ -74,7 +75,25 @@ namespace UltraBot
                 bot.comboList.Add(combo);
             }
         }
-
+        private void scoreCombos(int startup = Int32.MaxValue)
+        {
+            var validCombos = from combo in comboList 
+                              where
+                              combo.Startup < startup
+							  && combo.XMin < myState.XDistance
+							  && combo.XMax > myState.XDistance
+							  && combo.YMin < enemyState.Y
+							  && combo.YMax > enemyState.Y
+							  //&& combo.EXMeter > myState.EXMeter
+							  //&& combo.EXMeter > myState.EXMeter
+                              select combo;
+            foreach (var combo in comboList)
+                if (validCombos.Contains(combo))
+                    combo.Score = 1;
+                else
+                    combo.Score = 0;
+        }
+        #endregion
         public void Init(int index)
         {
             myState = FighterState.getFighter(index);
