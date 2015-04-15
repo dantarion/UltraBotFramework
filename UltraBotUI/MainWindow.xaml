@@ -6,7 +6,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="300" />
             <RowDefinition Height="*"/>
-            <RowDefinition Height="30"/>
+            <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -40,8 +40,8 @@
                 </DataGrid>
             </TabItem>
         </TabControl>
-        <Border Grid.Row="2" Grid.ColumnSpan="2" BorderBrush="Gainsboro" BorderThickness="2">
-            <Label FontFamily="Consolas" Content="Initializing...." />
+        <Border Margin="5" Grid.Row="2" Grid.ColumnSpan="2" BorderBrush="Gainsboro" BorderThickness="2">
+            <Label Name="StatusLabel" FontFamily="Consolas" Content="Initializing...." />
         </Border>
     </Grid>
 </Window>

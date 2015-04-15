@@ -131,8 +131,10 @@ namespace UltraBotUI
 
         private void BotSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            StatusLabel.Content = "Loading " + (string)BotSelector.SelectedValue +"...";
             bot = Bot.LoadBotFromFile((string)BotSelector.SelectedValue);
             RefreshBotData();
+
         }
         private void RefreshBotData()
         {
@@ -155,7 +157,9 @@ namespace UltraBotUI
             while (true)
             {
                 ms.Update();
-                //roundTimer.Text = String.Format("Frame:{0}", ms.FrameCounter);
+                f1.UpdatePlayerState();
+                f2.UpdatePlayerState(); 
+                roundTimer.Text = String.Format("Frame:{0}", ms.FrameCounter);
                 UpdateOverlay(player1, f1);
                 UpdateOverlay(player2, f2);
                 bot.Run();
@@ -168,19 +172,28 @@ namespace UltraBotUI
 
         private void OverlayEnabled_Checked(object sender, RoutedEventArgs e)
         {
-
+            if (OverlayEnabled.IsChecked.Value)
+            {
+                StatusLabel.Content = "Enabling Overlay...";
+                DX9Overlay.SetParam("process", "SSFIV.exe");
+                DX9Overlay.DestroyAllVisual();
+                roundTimer = new TextLabel("Consolas", 10, TypeFace.NONE, new System.Drawing.Point(390, 0), Color.White, "", true, true);
+                player1 = new TextLabel("Consolas", 10, TypeFace.NONE, new System.Drawing.Point(90, 0), Color.White, "", true, true);
+                player2 = new TextLabel("Consolas", 10, TypeFace.NONE, new System.Drawing.Point(480, 0), Color.White, "", true, true);
+            }
+            else
+            {
+                StatusLabel.Content = "Disabling Overlay...";
+                DX9Overlay.DestroyAllVisual();
+            }
         }
         private void SetupOverlay()
         {
-            DX9Overlay.SetParam("process", "SSFIV.exe");
-            DX9Overlay.DestroyAllVisual();
-            roundTimer = new TextLabel("Consolas", 10, TypeFace.NONE, new System.Drawing.Point(390, 0), Color.White, "", true, true);
-            player1 = new TextLabel("Consolas", 10, TypeFace.NONE, new System.Drawing.Point(90, 0), Color.White, "", true, true);
-            player2 = new TextLabel("Consolas", 10, TypeFace.NONE, new System.Drawing.Point(480, 0), Color.White, "", true, true);
+            
         }
         private static void UpdateOverlay(TextLabel label, FighterState f)
         {
-            f.UpdatePlayerState();
+            
             label.Text = String.Format("X={0,-7} Y={1,-7} XVel={12,-7} YVel={13,-7}\n{2,-15} F:{3,-3}\nACT:{4,-3} ENDACT:{5,-3} IASA:{6,-3} TOT:{7,-3}\n{8,-10} {9,-10} {10,-10} {11:X}\n{14}",
                 f.X, f.Y, f.ScriptName, f.ScriptFrame, f.ScriptFrameHitboxStart, f.ScriptFrameHitboxEnd, f.ScriptFrameIASA, f.ScriptFrameTotal, f.State, f.AState, f.StateTimer, f.RawState, f.XVelocity, f.YVelocity, String.Join(", ", f.ActiveCancelLists));
         }
