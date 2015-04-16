@@ -17,6 +17,7 @@ using System.IO;
 using UltraBot;
 using System.ComponentModel;
 using DX9OverlayAPIWrapper;
+using System.Threading;
 namespace UltraBotUI
 {
 
@@ -48,12 +49,13 @@ namespace UltraBotUI
         [Serializable]
         public class CustomHotKey : HotKey
         {
-            public CustomHotKey(string name, Key key, ModifierKeys modifiers, bool enabled)
+            public CustomHotKey(string name, Key key, ModifierKeys modifiers, bool enabled, MainWindow w)
                 : base(key, modifiers, enabled)
             {
                 Name = name;
+                window = w;
             }
-
+            private MainWindow window;
             private string name;
             public string Name
             {
@@ -70,7 +72,10 @@ namespace UltraBotUI
 
             protected override void OnHotKeyPress()
             {
-                MessageBox.Show(string.Format("'{0}' has been pressed ({1})", Name, this));
+                if (Name == "ToggleOverlay")
+                    window.OverlayEnabled.IsChecked = !window.OverlayEnabled.IsChecked.Value;
+                else
+                    MessageBox.Show(string.Format("'{0}' has been pressed ({1})", Name, this));
 
                 base.OnHotKeyPress();
             }
@@ -93,10 +98,11 @@ namespace UltraBotUI
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             HotKeyHost hotKeyHost = new HotKeyHost((HwndSource)HwndSource.FromVisual(App.Current.MainWindow));
-            hotKeyHost.AddHotKey(new CustomHotKey("ToggleOverlay", Key.F1, ModifierKeys.None, true));
-            hotKeyHost.AddHotKey(new CustomHotKey("ToggleBot", Key.F2, ModifierKeys.None, true));
-            hotKeyHost.AddHotKey(new CustomHotKey("ChangeBotMode", Key.F3, ModifierKeys.None, true));
+            hotKeyHost.AddHotKey(new CustomHotKey("ToggleOverlay", Key.F1, ModifierKeys.None, true,this));
+            hotKeyHost.AddHotKey(new CustomHotKey("ToggleBot", Key.F2, ModifierKeys.None, true, this));
+            hotKeyHost.AddHotKey(new CustomHotKey("ChangeBotMode", Key.F3, ModifierKeys.None, true, this));
             backgroundWorker.WorkerReportsProgress = true;
+            backgroundWorker.RunWorkerCompleted += backgroundWorker_RunWorkerCompleted;
             backgroundWorker.WorkerSupportsCancellation = true;
             backgroundWorker.DoWork += backgroundWorker_DoWork;
             backgroundWorker.ProgressChanged += backgroundWorker_ProgressChanged;
@@ -154,22 +160,50 @@ namespace UltraBotUI
         }
         private void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            while (true)
+            WorkerArgs args = (WorkerArgs)e.Argument;
+            while (!backgroundWorker.CancellationPending)
             {
                 ms.Update();
                 f1.UpdatePlayerState();
-                f2.UpdatePlayerState(); 
-                roundTimer.Text = String.Format("Frame:{0}", ms.FrameCounter);
-                UpdateOverlay(player1, f1);
-                UpdateOverlay(player2, f2);
-                bot.Run();
+                f2.UpdatePlayerState();
+                if (args.runOverlay)
+                {
+                    roundTimer.Text = String.Format("Frame:{0}", ms.FrameCounter);
+                    backgroundWorker.ReportProgress(0, roundTimer.Text);
+                    UpdateOverlay(player1, f1);
+                    UpdateOverlay(player2, f2);
+                }
+                if(args.runBot)
+                    bot.Run();
             }
+            e.Cancel = true;
+        }
+        private void backgroundWorker_RunWorkerCompleted
+            ( object sender, RunWorkerCompletedEventArgs e )
+        {
+            restartWorker();
         }
         private void backgroundWorker_ProgressChanged(object sender,  ProgressChangedEventArgs e)
         {
-
+            StatusLabel.Content = e.UserState;
         }
-
+        struct WorkerArgs
+        {
+            public bool runOverlay;
+            public bool runBot;
+        }
+        private void restartWorker()
+        {
+            Util.Init();
+            var args = new WorkerArgs();
+            args.runOverlay = OverlayEnabled.IsChecked.Value;
+            args.runBot = BotEnabled.IsChecked.Value;
+            if (backgroundWorker.IsBusy)
+                backgroundWorker.CancelAsync();
+            else
+                backgroundWorker.RunWorkerAsync(args);
+            
+        }
         private void OverlayEnabled_Checked(object sender, RoutedEventArgs e)
         {
             if (OverlayEnabled.IsChecked.Value)
@@ -180,11 +214,13 @@ namespace UltraBotUI
                 roundTimer = new TextLabel("Consolas", 10, TypeFace.NONE, new System.Drawing.Point(390, 0), Color.White, "", true, true);
                 player1 = new TextLabel("Consolas", 10, TypeFace.NONE, new System.Drawing.Point(90, 0), Color.White, "", true, true);
                 player2 = new TextLabel("Consolas", 10, TypeFace.NONE, new System.Drawing.Point(480, 0), Color.White, "", true, true);
+                restartWorker();
             }
             else
             {
                 StatusLabel.Content = "Disabling Overlay...";
                 DX9Overlay.DestroyAllVisual();
+                restartWorker();
             }
         }
         private void SetupOverlay()

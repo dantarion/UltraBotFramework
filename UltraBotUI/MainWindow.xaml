@@ -14,7 +14,7 @@
         </Grid.ColumnDefinitions>
         <Border Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1">
             <StackPanel Margin="5">
-                <CheckBox Name="OverlayEnabled" Checked="OverlayEnabled_Checked">Overlay Enabled (F1)</CheckBox>
+                <CheckBox Name="OverlayEnabled" Checked="OverlayEnabled_Checked" Unchecked="OverlayEnabled_Checked">Overlay Enabled (F1)</CheckBox>
                 <CheckBox Name="BotEnabled">Bot Enabled (F2)</CheckBox>
                 <Label>Select a Bot</Label>
                 <ComboBox Name="BotSelector" SelectionChanged="BotSelector_SelectionChanged"/>
