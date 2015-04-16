@@ -140,6 +140,7 @@ namespace UltraBotUI
             StatusLabel.Content = "Loading " + (string)BotSelector.SelectedValue +"...";
             bot = Bot.LoadBotFromFile((string)BotSelector.SelectedValue);
             RefreshBotData();
+            bot.Init(0);
 
         }
         private void RefreshBotData()
@@ -206,6 +207,10 @@ namespace UltraBotUI
                 backgroundWorker.RunWorkerAsync(args);
             
         }
+        private void BotEnabled_Checked(object sender, RoutedEventArgs e)
+        {
+            restartWorker();
+        }
         private void OverlayEnabled_Checked(object sender, RoutedEventArgs e)
         {
             if (OverlayEnabled.IsChecked.Value)
@@ -225,15 +230,16 @@ namespace UltraBotUI
                 restartWorker();
             }
         }
-        private void SetupOverlay()
-        {
-            
-        }
         private static void UpdateOverlay(TextLabel label, FighterState f)
         {
             
             label.Text = String.Format("X={0,-7} Y={1,-7} XVel={12,-7} YVel={13,-7}\n{2,-15} F:{3,-3}\nACT:{4,-3} ENDACT:{5,-3} IASA:{6,-3} TOT:{7,-3}\n{8,-10} {9,-10} {10,-10} {11:X}\n{14}",
                 f.X, f.Y, f.ScriptName, f.ScriptFrame, f.ScriptFrameHitboxStart, f.ScriptFrameHitboxEnd, f.ScriptFrameIASA, f.ScriptFrameTotal, f.State, f.AState, f.StateTimer, f.RawState, f.XVelocity, f.YVelocity, String.Join(", ", f.ActiveCancelLists));
+        }
+
+        private void BotEnabled_Checked_1(object sender, RoutedEventArgs e)
+        {
+
         }
 
     }
