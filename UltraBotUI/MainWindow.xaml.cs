@@ -166,10 +166,12 @@ namespace UltraBotUI
                 ms.Update();
                 f1.UpdatePlayerState();
                 f2.UpdatePlayerState();
+                var text = String.Format("Frame:{0}", ms.FrameCounter);
+                backgroundWorker.ReportProgress(0, text);
                 if (args.runOverlay)
                 {
-                    roundTimer.Text = String.Format("Frame:{0}", ms.FrameCounter);
-                    backgroundWorker.ReportProgress(0, roundTimer.Text);
+                    roundTimer.Text = text;
+                    
                     UpdateOverlay(player1, f1);
                     UpdateOverlay(player2, f2);
                 }
