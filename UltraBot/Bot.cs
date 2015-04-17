@@ -124,14 +124,23 @@ namespace UltraBot
             if (Util.GetActiveWindowTitle() == "SSFIVAE")
             {
                 foreach (var key in pressed)
-                {                                   
-                    WindowsInput.InputSimulator.SimulateKeyDown(map(key));
+                {                          
+                    WindowsInput.InputSimulator.SimulateKeyPress(map(key));
+                    Console.WriteLine("\tDOWN {0}",map(key));
+                    if (!last_pressed.Contains(key))
+                    {
+                        last_pressed.Add(key);
+                    }
                 }
-                foreach(var key in last_pressed)
-                    if(!pressed.Contains(key))
+                /*
+                foreach(var key in last_pressed.ToList())
+                    if (!pressed.Contains(key))
+                    {
                         WindowsInput.InputSimulator.SimulateKeyUp(map(key));
-                last_pressed.Clear();
-                last_pressed.AddRange(pressed);
+                        Console.WriteLine("\tUP {0}",map(key));
+                        last_pressed.Remove(key);
+                    }
+                */
                 pressed.Clear();
             }
         }
@@ -292,7 +301,7 @@ namespace UltraBot
 				pressButton(this.Back());
 				pressButton(VirtualKeyCode.DOWN);
 			}
-			if (key.Contains("1"))	
+			if (key.Contains("3"))	
 			{
 				pressButton(this.Forward());
 				pressButton(VirtualKeyCode.DOWN);

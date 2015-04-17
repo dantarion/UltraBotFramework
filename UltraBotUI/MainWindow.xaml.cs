@@ -35,7 +35,7 @@ namespace UltraBotUI
         private BackgroundWorker backgroundWorker = new BackgroundWorker();
         private IBot bot;
 
-        MatchState ms = new MatchState();
+        MatchState ms = MatchState.getInstance();
         FighterState f1 = FighterState.getFighter(0);
         FighterState f2 = FighterState.getFighter(1);
         TextLabel roundTimer;
@@ -46,6 +46,7 @@ namespace UltraBotUI
         {
             InitializeComponent();
         }
+        #region Hotkeys
         [Serializable]
         public class CustomHotKey : HotKey
         {
@@ -74,6 +75,8 @@ namespace UltraBotUI
             {
                 if (Name == "ToggleOverlay")
                     window.OverlayEnabled.IsChecked = !window.OverlayEnabled.IsChecked.Value;
+                else if (Name == "ToggleBot")
+                    window.BotEnabled.IsChecked = !window.BotEnabled.IsChecked.Value;
                 else
                     MessageBox.Show(string.Format("'{0}' has been pressed ({1})", Name, this));
 
@@ -94,7 +97,7 @@ namespace UltraBotUI
                 info.AddValue("Name", Name);
             }
         }
-
+        #endregion
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             HotKeyHost hotKeyHost = new HotKeyHost((HwndSource)HwndSource.FromVisual(App.Current.MainWindow));
@@ -108,7 +111,7 @@ namespace UltraBotUI
             backgroundWorker.ProgressChanged += backgroundWorker_ProgressChanged;
             LoadBots();
         }
-        private void OnChanged(object source, FileSystemEventArgs e)
+        private void FolderOnChanged(object source, FileSystemEventArgs e)
         {
             Dispatcher.BeginInvoke((Action)(
         () => BotSelector_SelectionChanged(source, null)));
@@ -123,7 +126,7 @@ namespace UltraBotUI
                 watcher.Path = searchDir;
                 watcher.NotifyFilter =NotifyFilters.LastWrite;
                 watcher.Filter = "*.*";
-                watcher.Changed += new FileSystemEventHandler(OnChanged);
+                watcher.Changed += new FileSystemEventHandler(FolderOnChanged);
                 watcher.EnableRaisingEvents = true;
                 Bot.AddSearchPath(searchDir);
                 foreach (var botfile in Directory.EnumerateFiles(searchDir,"*.cs"))
@@ -189,6 +192,7 @@ namespace UltraBotUI
         private void backgroundWorker_ProgressChanged(object sender,  ProgressChangedEventArgs e)
         {
             StatusLabel.Content = e.UserState;
+            RefreshBotData();
         }
         struct WorkerArgs
         {
@@ -209,7 +213,13 @@ namespace UltraBotUI
         }
         private void BotEnabled_Checked(object sender, RoutedEventArgs e)
         {
+
+            Dispatcher.BeginInvoke((Action)(
+        () => BotSelector_SelectionChanged(sender, null)));
+            
+        
             restartWorker();
+
         }
         private void OverlayEnabled_Checked(object sender, RoutedEventArgs e)
         {
@@ -237,10 +247,6 @@ namespace UltraBotUI
                 f.X, f.Y, f.ScriptName, f.ScriptFrame, f.ScriptFrameHitboxStart, f.ScriptFrameHitboxEnd, f.ScriptFrameIASA, f.ScriptFrameTotal, f.State, f.AState, f.StateTimer, f.RawState, f.XVelocity, f.YVelocity, String.Join(", ", f.ActiveCancelLists));
         }
 
-        private void BotEnabled_Checked_1(object sender, RoutedEventArgs e)
-        {
-
-        }
 
     }
 }

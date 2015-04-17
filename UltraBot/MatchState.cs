@@ -12,6 +12,15 @@ namespace UltraBot
     /// </summary>
     public class MatchState
     {
+        private MatchState()
+        { }
+        private static MatchState _ms;
+        public static MatchState getInstance()
+        {
+            if (_ms == null)
+                _ms = new MatchState();
+            return _ms;
+        }
         public uint FrameCounter;
         public uint RoundTimer;
         public void Update()
