@@ -123,24 +123,29 @@ namespace UltraBot
             stateStack[0].Run(this);
             if (Util.GetActiveWindowTitle() == "SSFIVAE")
             {
-                foreach (var key in pressed)
-                {                          
-                    WindowsInput.InputSimulator.SimulateKeyPress(map(key));
-                    Console.WriteLine("\tDOWN {0}",map(key));
-                    if (!last_pressed.Contains(key))
-                    {
-                        last_pressed.Add(key);
-                    }
-                }
-                /*
-                foreach(var key in last_pressed.ToList())
+                //For each key that was pressed the previous frame
+                foreach (var key in last_pressed.ToList())
+                {
+                    //If we are pressing it this frame (aka holding it) we need to pick it up
                     if (!pressed.Contains(key))
                     {
+                        Console.WriteLine(" \t{0} UP {1}", MatchState.getInstance().FrameCounter, key);
                         WindowsInput.InputSimulator.SimulateKeyUp(map(key));
-                        Console.WriteLine("\tUP {0}",map(key));
                         last_pressed.Remove(key);
                     }
-                */
+                }
+                //For each key that was pressed this frame, we need to send keydown
+                foreach (var key in pressed)
+                {
+                    Console.WriteLine(" \t{0} DOWN {1}", MatchState.getInstance().FrameCounter, key);
+                    var mappedKey = map(key);
+                    WindowsInput.InputSimulator.SimulateKeyDown(mappedKey);
+                    //If this key isn't in the list of keys to pick up next frame, add it
+                    if(!last_pressed.Contains(key))
+                        last_pressed.Add(key);
+                }
+
+                
                 pressed.Clear();
             }
         }
@@ -226,7 +231,7 @@ namespace UltraBot
                     rawKey = WindowsInput.VirtualKeyCode.VK_0;
                     break;
                 case VirtualKeyCode.HP:
-                    rawKey = WindowsInput.VirtualKeyCode.SUBTRACT;
+                    rawKey = WindowsInput.VirtualKeyCode.OEM_MINUS;
                     break;
                 case VirtualKeyCode.PPP:
                     rawKey = WindowsInput.VirtualKeyCode.OEM_PLUS;

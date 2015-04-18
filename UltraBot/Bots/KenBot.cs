@@ -5,7 +5,7 @@ public class KenBot : Bot
 {
     public KenBot()
     {
-        changeState(new SequenceState("2HK"));
+        changeState(new SequenceState("LP.MP.HP.LP.MP.HP.LP.MP.HP.LP.MP.HP.LP.MP.HP.LP.MP.HP.LP.MP.HP.LP.MP.HP"));
     }
     public override void StateCheck()
     {
