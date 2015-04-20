@@ -14,3 +14,11 @@ The framework can tell the positions of the characters, the state of both charac
 Right now the framework is messy, undocumented, and hard to use, I would say its not even in alpha state yet. However, I am using it to develop KenBot, and am planning to take KenBot to Evolution Championship Series 2015 to see how many real opponents can be taken down by my creation.
 
 If other bots are ready by the time that date rolls around, I will be happy to bring some extra scripts to the event!
+
+
+Here are the characters people intend to do, and in what order
+
+### dantarion
+Ken
+E.Ryu
+
