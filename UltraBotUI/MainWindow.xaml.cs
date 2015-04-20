@@ -148,7 +148,7 @@ namespace UltraBotUI
         }
         private void RefreshBotData()
         {
-            StackDisplay.ItemsSource = bot.peekStateStack();
+            StackDisplay.ItemsSource = bot.getStateStack();
             ComboDisplay.ItemsSource = bot.getComboList();
         }
         private void RadioButton_Checked(object sender, RoutedEventArgs e)

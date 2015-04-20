@@ -14,8 +14,7 @@ namespace UltraBot
     public interface IBot
     {
          void Init(int index);
-         void StateCheck();
-         List<BotAIState> peekStateStack();
+         List<BotAIState> getStateStack();
          List<Combo> getComboList();
          void Run();
     }
@@ -31,7 +30,12 @@ namespace UltraBot
             CSScript.GlobalSettings.AddSearchDir(Dir);
         }
         private List<Type> TriggerStates = new List<Type>();
-        public void RegisterState(Type t)
+        /// <summary>
+        /// Registers a state that can trigger itself at any time. The state must inherit from BotAIState and implement Trigger() static method. 
+        /// See DefendState for an example.
+        /// </summary>
+        /// <param name="t"></param>
+        protected void RegisterState(Type t)
         {
             if (t.IsSubclassOf(typeof(BotAIState)) && !TriggerStates.Contains(t))
                 TriggerStates.Add(t);
@@ -46,12 +50,14 @@ namespace UltraBot
         public static IBot LoadBotFromFile(string BotName)
         {
 
-            if (asmHelper != null)
+			
+            if (asmHelper != null)//If we are hotreloading, we need to dispose of the assembly from when we loaded the previous time
                 asmHelper.Dispose();
             asmHelper = new AsmHelper(CSScript.Load(BotName + ".cs"));
             var tmp2 = asmHelper.CreateObject(BotName);
             IBot bot = tmp2.AlignToInterface<IBot>();
-            foreach(var dir in CSScript.GlobalSettings.SearchDirs.Split(';'))
+			
+            foreach(var dir in CSScript.GlobalSettings.SearchDirs.Split(';'))//We look for an xml file containing a list of button combos. See KenBot.xml for an example
             {
                 var fname = System.IO.Path.Combine(dir,BotName+".xml");
                 if (System.IO.File.Exists(fname))
@@ -102,6 +108,10 @@ namespace UltraBot
                     combo.Score = 0;
         }
         #endregion
+
+		/// <summary>
+        /// This sets up the bot to know which side it is playing on.
+        /// </summary>
         public void Init(int index)
         {
             myState = FighterState.getFighter(index);
@@ -111,9 +121,10 @@ namespace UltraBot
         public FighterState myState;
         public FighterState enemyState;
 
-         
-        
-        public List<BotAIState> peekStateStack()
+		/// <summary>
+        /// This allows for the UI to be able to get a snapshot of the bots current state.
+        /// </summary>
+        public List<BotAIState> getStateStack()
         {
             return stateStack.AsEnumerable().ToList();
         }
@@ -211,7 +222,7 @@ namespace UltraBot
             previousState = stateStack[0];
             stateStack.Insert(0, nextState);
         }
-                /// <summary>
+        /// <summary>
         /// These keycodes exist so that we can map them to keyboard or vJoy or whatever.
         /// </summary>
         #endregion
@@ -219,7 +230,9 @@ namespace UltraBot
         private List<VirtualKeyCode> pressed = new List<VirtualKeyCode>();
         private List<VirtualKeyCode> last_pressed = new List<VirtualKeyCode>();
         private List<VirtualKeyCode> held = new List<VirtualKeyCode>();
-
+		/// <summary>
+        /// TODO: Load this mapping from an XML file, change this function to a dictionary. Support P2 mapping.
+        /// </summary>
         private static WindowsInput.VirtualKeyCode map(VirtualKeyCode key)
         {
             WindowsInput.VirtualKeyCode rawKey;
@@ -266,6 +279,9 @@ namespace UltraBot
             }
             return rawKey;
         }
+		/// <summary>
+        /// Mapping between game buttons that is eventually mapped to windows key codes
+        /// </summary>
         public enum VirtualKeyCode
         {
             UP,
