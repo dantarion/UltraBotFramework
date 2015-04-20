@@ -30,6 +30,13 @@ namespace UltraBot
         {
             CSScript.GlobalSettings.AddSearchDir(Dir);
         }
+        private List<Type> TriggerStates = new List<Type>();
+        public void RegisterState(Type t)
+        {
+            if (t.IsSubclassOf(typeof(BotAIState)) && !TriggerStates.Contains(t))
+                TriggerStates.Add(t);
+        }
+        static private AsmHelper asmHelper = null;
         /// <summary>
         /// This function loads, compiles, and instantiates a bot on the fly.
         /// </summary>
@@ -38,10 +45,11 @@ namespace UltraBot
         /// <returns></returns>
         public static IBot LoadBotFromFile(string BotName)
         {
-            
-            var tmp = CSScript.Load(BotName + ".cs");
-            
-            var tmp2 = tmp.CreateInstance(BotName);
+
+            if (asmHelper != null)
+                asmHelper.Dispose();
+            asmHelper = new AsmHelper(CSScript.Load(BotName + ".cs"));
+            var tmp2 = asmHelper.CreateObject(BotName);
             IBot bot = tmp2.AlignToInterface<IBot>();
             foreach(var dir in CSScript.GlobalSettings.SearchDirs.Split(';'))
             {
@@ -119,7 +127,13 @@ namespace UltraBot
             myState.XDistance = myState.X - enemyState.X;
             myState.YDistance = myState.Y - enemyState.Y;
 
-            StateCheck();
+            foreach(var t in TriggerStates)
+            {
+                var method = t.GetMethod("Trigger");
+                var result = method.Invoke(null, null);
+                if(result != null && stateStack[0].GetType() != t)
+                    changeState(result as BotAIState);
+            }
             stateStack[0].Run(this);
             if (Util.GetActiveWindowTitle() == "SSFIVAE")
             {

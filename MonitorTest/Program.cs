@@ -37,7 +37,7 @@ namespace MonitorTest
             // Do something you want to time
 
             
-            var ms = new MatchState();
+            var ms = MatchState.getInstance();
             var f1 = FighterState.getFighter(0);
             var f2 = FighterState.getFighter(1);
             

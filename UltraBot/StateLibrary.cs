@@ -94,6 +94,12 @@ namespace UltraBot
     }
     public class DefendState : BotAIState
     {
+        public static BotAIState Trigger(Bot bot)
+        {
+            if (bot.enemyState.State == FighterState.CharState.Startup || bot.enemyState.State == FighterState.CharState.Active)
+                return new DefendState();
+            return null;
+        }
         public override void Run(Bot bot)
         {
             if (bot.enemyState.State == FighterState.CharState.Startup || bot.enemyState.State == FighterState.CharState.Active)
