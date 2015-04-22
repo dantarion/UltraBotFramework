@@ -15,9 +15,7 @@ Right now the framework is messy, undocumented, and hard to use, I would say its
 
 If other bots are ready by the time that date rolls around, I will be happy to bring some extra scripts to the event!
 
-
-Here are the characters people intend to do, and in what order
-
+*Here are the characters people intend to do, and in what order*
 ### dantarion
 Ken
 E.Ryu
