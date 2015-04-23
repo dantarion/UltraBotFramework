@@ -33,11 +33,10 @@ namespace UltraBot
                 Thread.Sleep(1);
                 tmp = Util.Memory.ReadInt((int)Util.Memory.ReadInt(0x400000 + 0x6A7DF0) + 0x28);
             }
-            if (tmp != FrameCounter + 1)
+            if (tmp != FrameCounter + 1)//We dropped a frame, maybe AI processing is taking too long, or game itself is skipping frames.
                 Console.WriteLine("Dropped {0} frames", tmp - FrameCounter);
             FrameCounter = tmp;
             RoundTimer = Util.Memory.ReadInt((int)Util.Memory.ReadInt((int)Util.Memory.ReadInt(0x400000 + 0x6932DC) + 0x3CC) + 0xD0);
-            //FrameCounter = KenBot.Memory.ReadInt((int)KenBot.Memory.ReadInt((int)KenBot.Memory.ReadInt(0x400000 + 0x923C68) + 0x4E0) + 0x118);
 
         }
     }

@@ -46,6 +46,7 @@ namespace UltraBot
         public AttackState AState;
         public float StateTimer;
         public int PlayerIndex;
+		
         public float X;
         public float Y;
         public float XVelocity;//TODO
@@ -54,8 +55,8 @@ namespace UltraBot
         public float YDistance;
         public uint RawState;
         public int Health;//TODO
-        public int Meter;//TODO
-        public int Revenge;//TODO
+        public int Meter;
+        public int Revenge;
         //BAC Data
         public uint LastScriptIndex = UInt32.MaxValue;
         public uint ScriptIndex = UInt32.MaxValue;
@@ -101,7 +102,34 @@ namespace UltraBot
             this.PlayerIndex = index;
         }
 
-        public void ReadBCMData()
+        [Flags]
+        public enum Input
+        {
+            BACK = 0x0,
+            NEUTRAL = 0x1,
+            UP = 0x2,
+            DOWN = 0x4,
+            FORWARD = 0x8,
+            NO_BUTTONS = 0x20,
+            LP = 0x40,
+            MP = 0x80,
+            HP = 0x100,
+            LK = 0x200,
+            MK = 0x400,
+            HK = 0x800,
+        }
+        public void UpdatePlayerState()
+        {
+            int off = 0x8;
+            if (PlayerIndex == 1)
+                off = 0xC;
+
+            _BaseOffset = (int)Util.Memory.ReadInt((int)Util.Memory.ReadInt(0x400000 + 0x6A7DCC) + off);
+            ReadBACData();
+            ReadBCMData();
+            ReadOtherData();
+        }
+		public void ReadBCMData()
         {
             int off = 0x8;
             if (PlayerIndex == 1)
@@ -142,55 +170,6 @@ namespace UltraBot
 
             }
 
-
-        }
-        [Flags]
-        public enum Input
-        {
-            BACK = 0x0,
-            NEUTRAL = 0x1,
-            UP = 0x2,
-            DOWN = 0x4,
-            FORWARD = 0x8,
-            NO_BUTTONS = 0x20,
-            LP = 0x40,
-            MP = 0x80,
-            HP = 0x100,
-            LK = 0x200,
-            MK = 0x400,
-            HK = 0x800,
-        }
-
-        private void ReadStringOffsetTable(List<string> list, int baseOffset, int count, int stringRelativeOffset)
-        {
-            list.Clear();
-            var stringOffset = stringRelativeOffset + baseOffset;
-            for (int i = 0; i < count; i++ )
-            {
-                var off = Util.Memory.ReadInt(stringOffset + i * 4);
-                list.Add(ReadNullTerminatedString((uint)baseOffset + off));
-            }
-        }
-        public void UpdatePlayerState()
-        {
-            int off = 0x8;
-            if (PlayerIndex == 1)
-                off = 0xC;
-
-            //var staticBase = (int)Util.Memory.ReadInt((int)Util.Memory.ReadInt(0x400000 + 0x688E6C) + off);
-            _BaseOffset = (int)Util.Memory.ReadInt((int)Util.Memory.ReadInt(0x400000 + 0x6A7DCC) + off);
-            ReadBACData();
-            ReadBCMData();
-            ReadOtherData();
-        }
-        private void ReadOtherData()
-        {
-            int off = 0x8;
-            if (PlayerIndex == 1)
-                off = 0xC;
-            var statusPtr = (int)Util.Memory.ReadInt((int)Util.Memory.ReadInt(0x400000 + 0x06A7DCC) + off);
-            Meter = (int)Util.Memory.ReadShort(statusPtr + 0x6C3A);
-            Revenge = (int)Util.Memory.ReadShort(statusPtr + 0x6C4E);
 
         }
         private void ReadBACData()
@@ -265,12 +244,15 @@ namespace UltraBot
                 AState = AttackState.None;
             }
         }
-
-        private static string ReadNullTerminatedString(uint offset)
+		private void ReadOtherData()
         {
-            var tmp = Util.Memory.ReadString((int)offset, 128);
-            tmp = tmp.Substring(0, tmp.IndexOf('\x00'));
-            return tmp;
+            int off = 0x8;
+            if (PlayerIndex == 1)
+                off = 0xC;
+            var statusPtr = (int)Util.Memory.ReadInt((int)Util.Memory.ReadInt(0x400000 + 0x06A7DCC) + off);
+            Meter = (int)Util.Memory.ReadShort(statusPtr + 0x6C3A);
+            Revenge = (int)Util.Memory.ReadShort(statusPtr + 0x6C4E);
+
         }
         private void ComputeAttackData(uint BAC)
         {
@@ -361,7 +343,22 @@ namespace UltraBot
             ScriptFrameIASA = (float)Math.Ceiling(Tick2Frame[ScriptTickIASA % ScriptTickTotal]);
             ScriptFrameTotal = (float)Math.Ceiling(Tick2Frame[ScriptTickTotal]);
         }
-
+		private static string ReadNullTerminatedString(uint offset)
+        {
+            var tmp = Util.Memory.ReadString((int)offset, 128);
+            tmp = tmp.Substring(0, tmp.IndexOf('\x00'));
+            return tmp;
+        }
+		private void ReadStringOffsetTable(List<string> list, int baseOffset, int count, int stringRelativeOffset)
+        {
+            list.Clear();
+            var stringOffset = stringRelativeOffset + baseOffset;
+            for (int i = 0; i < count; i++ )
+            {
+                var off = Util.Memory.ReadInt(stringOffset + i * 4);
+                list.Add(ReadNullTerminatedString((uint)baseOffset + off));
+            }
+        }
         public override string ToString()
         {
             return String.Format("X:{0:0.00,4} Y:{1:0.00,4} S:{2,-15} F:{3,4} +:{4,4} -:{5,4} IASA:-:{6,4}", X, Y, ScriptName, ScriptFrame, ScriptFrameHitboxStart, ScriptFrameHitboxEnd, ScriptFrameIASA);

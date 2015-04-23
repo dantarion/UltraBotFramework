@@ -12,7 +12,6 @@ namespace UltraBot
         public static BotAIState Trigger(Bot bot)
         {
             throw new NotImplementedException("This AI State doesn't support being triggered. Implement Trigger()");
-            //return null;
         }
         public virtual void Run(Bot bot)
         {

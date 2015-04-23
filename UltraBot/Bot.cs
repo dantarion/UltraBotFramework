@@ -109,6 +109,12 @@ namespace UltraBot
                 else
                     combo.Score = 0;
         }
+		private List<Combo> comboList = new List<Combo>();
+        public List<Combo> getComboList()
+        {
+
+            return comboList;
+        }
         #endregion
 
 		/// <summary>
@@ -387,11 +393,6 @@ namespace UltraBot
         }
         #endregion
 
-        private List<Combo> comboList = new List<Combo>();
-        public List<Combo> getComboList()
-        {
-
-            return comboList;
-        }
+ 
     }
 }

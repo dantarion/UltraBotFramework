@@ -250,6 +250,7 @@ namespace UltraBotUI
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
+			//Remove overlay from the game
             DX9Overlay.DestroyAllVisual();
         }
 
