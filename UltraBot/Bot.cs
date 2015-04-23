@@ -50,19 +50,21 @@ namespace UltraBot
         public static IBot LoadBotFromFile(string BotName)
         {
 
-			
-            if (asmHelper != null)//If we are hotreloading, we need to dispose of the assembly from when we loaded the previous time
-                asmHelper.Dispose();
-            asmHelper = new AsmHelper(CSScript.Load(BotName + ".cs"));
-            var tmp2 = asmHelper.CreateObject(BotName);
-            IBot bot = tmp2.AlignToInterface<IBot>();
-			
-            foreach(var dir in CSScript.GlobalSettings.SearchDirs.Split(';'))//We look for an xml file containing a list of button combos. See KenBot.xml for an example
+            IBot bot = null;
+            //TODO FIX HOTRELOAD
+ 
             {
-                var fname = System.IO.Path.Combine(dir,BotName+".xml");
-                if (System.IO.File.Exists(fname))
+                asmHelper = new AsmHelper(CSScript.Load(BotName+".cs"));
+                var tmp2 = asmHelper.CreateObject(BotName);
+                bot = tmp2.AlignToInterface<IBot>();
+
+                foreach (var dir in CSScript.GlobalSettings.SearchDirs.Split(';'))//We look for an xml file containing a list of button combos. See KenBot.xml for an example
                 {
-                    LoadCombos((Bot)bot, fname);
+                    var fname = System.IO.Path.Combine(dir, BotName + ".xml");
+                    if (System.IO.File.Exists(fname))
+                    {
+                        LoadCombos((Bot)bot, fname);
+                    }
                 }
             }
             return bot;
@@ -141,7 +143,7 @@ namespace UltraBot
             foreach(var t in TriggerStates)
             {
                 var method = t.GetMethod("Trigger");
-                var result = method.Invoke(null, null);
+                var result = method.Invoke(null,new object[]{this});
                 if(result != null && stateStack[0].GetType() != t)
                     changeState(result as BotAIState);
             }

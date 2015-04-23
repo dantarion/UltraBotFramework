@@ -107,7 +107,7 @@ namespace UltraBot
             if (PlayerIndex == 1)
                 off = 0xC;
 
-            var InputBufferOffset = (int)Util.Memory.ReadInt((int)Util.Memory.ReadInt(0x400000 + 0x6A0EAC) + off);
+            var InputBufferOffset = (int)Util.Memory.ReadInt((int)Util.Memory.ReadInt(0x400000 + 0x6A7DEC) + off);
             var BCM = (int)Util.Memory.ReadInt(InputBufferOffset + 0x8);
             //Not in a match
             if (BCM == 0)
@@ -178,11 +178,21 @@ namespace UltraBot
                 off = 0xC;
 
             //var staticBase = (int)Util.Memory.ReadInt((int)Util.Memory.ReadInt(0x400000 + 0x688E6C) + off);
-            _BaseOffset = (int)Util.Memory.ReadInt((int)Util.Memory.ReadInt(0x400000 + 0x6A0E8C) + off);
+            _BaseOffset = (int)Util.Memory.ReadInt((int)Util.Memory.ReadInt(0x400000 + 0x6A7DCC) + off);
             ReadBACData();
             ReadBCMData();
+            ReadOtherData();
         }
+        private void ReadOtherData()
+        {
+            int off = 0x8;
+            if (PlayerIndex == 1)
+                off = 0xC;
+            var statusPtr = (int)Util.Memory.ReadInt((int)Util.Memory.ReadInt(0x400000 + 0x06A7DCC) + off);
+            Meter = (int)Util.Memory.ReadShort(statusPtr + 0x6C3A);
+            Revenge = (int)Util.Memory.ReadShort(statusPtr + 0x6C4E);
 
+        }
         private void ReadBACData()
         {
             var BAC = Util.Memory.ReadInt((int)Util.Memory.ReadInt(_BaseOffset + 0xB0) + 0x8);
