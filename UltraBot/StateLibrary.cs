@@ -14,6 +14,12 @@ namespace UltraBot
 	}
     public class ThrowTechState : BotAIState
     {
+        public static BotAIState Trigger(Bot bot)
+        {
+            if (bot.myState.ScriptName.Contains("THROW") && bot.myState.ScriptName.Contains("DAMAGE"))
+                return new ThrowTechState();
+            return null;
+        }
         public override void Run(Bot bot)
         {
             bot.pressButton("LPLK");
@@ -58,39 +64,9 @@ namespace UltraBot
             bot.pressButton(Inputs[index++]);
             timer = MatchState.getInstance().FrameCounter+1;
             if (index > Inputs.Count - 1)
-                bot.changeState(new IdleState());
+                bot.popState();
 		}
 		
-    }
-    public class PokeState : BotAIState
-    {
-        private string _input;
-        private float _distance;
-        public PokeState(string input, float distance)
-        {
-            _input = input;
-            _distance = distance;
-        }
-
-        public override void Run(Bot bot)
-        {
-            var spacing = Math.Abs(bot.myState.XDistance) - _distance;
-            Console.WriteLine(spacing);
-            if (Math.Abs(spacing) > .1)
-            {
-                if (spacing < 0)
-                    bot.pressButton(bot.Back());
-                else
-                    bot.pressButton(bot.Forward());
-                return;
-            }
-            else
-                bot.pressButton(_input);
-
-
-
-
-        }
     }
     public class DefendState : BotAIState
     {

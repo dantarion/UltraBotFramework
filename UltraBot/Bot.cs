@@ -21,6 +21,7 @@ namespace UltraBot
 
     public class Bot : IBot
     {
+        
         /// <summary>
         /// This function sets up the dynamic bot loader with search paths!
         /// </summary>
@@ -96,12 +97,11 @@ namespace UltraBot
             var validCombos = from combo in comboList 
                               where
                               combo.Startup < startup
-							  && combo.XMin < myState.XDistance
-							  && combo.XMax > myState.XDistance
-							  && combo.YMin < enemyState.Y
-							  && combo.YMax > enemyState.Y
-							  //&& combo.EXMeter > myState.EXMeter
-							  //&& combo.EXMeter > myState.EXMeter
+							  && combo.XMin <= Math.Abs(myState.XDistance)
+							  && combo.XMax >=  Math.Abs(myState.XDistance)
+							  && combo.YMin <= enemyState.Y
+							  && combo.YMax >= enemyState.Y
+							  && combo.EXMeter <= myState.Meter
                               select combo;
             foreach (var combo in comboList)
                 if (validCombos.Contains(combo))
@@ -145,7 +145,7 @@ namespace UltraBot
             //Setup some derived variables.
             myState.XDistance = myState.X - enemyState.X;
             myState.YDistance = myState.Y - enemyState.Y;
-
+            scoreCombos();
             foreach(var t in TriggerStates)
             {
                 var method = t.GetMethod("Trigger");
@@ -219,6 +219,8 @@ namespace UltraBot
         {
             previousState = stateStack[0];
             stateStack.RemoveAt(0);
+            if (stateStack.Count == 0)
+                stateStack.Add(new IdleState());
         }
         /// <summary>
         /// This switches to a new state, leaving the previous one on the stack, 

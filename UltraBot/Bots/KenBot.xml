@@ -2,7 +2,7 @@
 <BotData>
 	<Combos>
 		<!-- STEP KICK -->
-		<Combo Type="NORMAL" Startup="0" XMin="0" XMax="0" YMin="0" YMax="0" EXMeter="0" Ultra="true" Input="6MK" />
+		<Combo Type="NORMAL" Startup="0" XMin="0" XMax="2" YMin="0" YMax="0" EXMeter="0" Ultra="true" Input="6MK" />
 		<!-- cl.HK xx HK/EX Tatsu -->
 		<Combo Type="NORMAL" Startup="0" XMin="0" XMax="0" YMin="0" YMax="0" EXMeter="0" Ultra="true" Input="HK.W13.2.1.4MKHK" />
 		<!-- cl.MP cl.HP xx Fierce SRK -->

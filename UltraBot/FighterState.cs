@@ -49,8 +49,10 @@ namespace UltraBot
 		
         public float X;
         public float Y;
-        public float XVelocity;//TODO
-        public float YVelocity;//TODO
+        public float XVelocity;
+        public float YVelocity;
+        public float XAcceleration;
+        public float YAcceleration;
         public float XDistance;
         public float YDistance;
         public uint RawState;
@@ -186,6 +188,13 @@ namespace UltraBot
             Y = Util.Memory.ReadFloat(_BaseOffset + 0x74);
             XVelocity = Util.Memory.ReadFloat(_BaseOffset + 0xe0);
             YVelocity = Util.Memory.ReadFloat(_BaseOffset + 0xe4);
+            XAcceleration = XVelocity = Util.Memory.ReadFloat(_BaseOffset + 0x100);
+            YAcceleration = XVelocity = Util.Memory.ReadFloat(_BaseOffset + 0x104);
+
+            Meter = (int)Util.Memory.ReadShort(_BaseOffset + 0x6C3A);
+            Revenge = (int)Util.Memory.ReadShort(_BaseOffset + 0x6C4E);
+
+
             RawState = Util.Memory.ReadInt(_BaseOffset + 0xBC);
             LastScriptIndex = ScriptIndex;
             ScriptIndex = Util.Memory.ReadInt(BAC_data + 0x18);
@@ -246,13 +255,30 @@ namespace UltraBot
         }
 		private void ReadOtherData()
         {
-            int off = 0x8;
-            if (PlayerIndex == 1)
-                off = 0xC;
-            var statusPtr = (int)Util.Memory.ReadInt((int)Util.Memory.ReadInt(0x400000 + 0x06A7DCC) + off);
-            Meter = (int)Util.Memory.ReadShort(statusPtr + 0x6C3A);
-            Revenge = (int)Util.Memory.ReadShort(statusPtr + 0x6C4E);
 
+
+  
+
+ 
+            for(int i = 0; i <= 4; i++)
+            {
+
+                var hitboxPtr = (int)Util.Memory.ReadInt(_BaseOffset + 0x130 + i * 4);
+                var count = (int)Util.Memory.ReadInt(hitboxPtr + 0x2C);
+                var start = (int)Util.Memory.ReadInt(hitboxPtr + 0x20);
+                for (int j = 0;j < count; j++)
+                {
+                   //ReadBox here.
+                }
+            }
+
+        }
+        public struct Box
+        {
+            public float x;
+            public float y;
+            public float width;
+            public float height;
         }
         private void ComputeAttackData(uint BAC)
         {

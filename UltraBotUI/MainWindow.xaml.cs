@@ -149,7 +149,8 @@ namespace UltraBotUI
         private void RefreshBotData()
         {
             StackDisplay.ItemsSource = bot.getStateStack();
-            ComboDisplay.ItemsSource = bot.getComboList();
+            ComboDisplay.ItemsSource = bot.getComboList();      
+            
         }
         private void RadioButton_Checked(object sender, RoutedEventArgs e)
         {
@@ -172,7 +173,7 @@ namespace UltraBotUI
                 f2.UpdatePlayerState();
                 if (args.runBot)
                     bot.Run();
-                var text = String.Format("Frame:{0}", ms.FrameCounter);
+                var text = String.Format("XDistance:{0}", f1.XDistance);
                 backgroundWorker.ReportProgress(0, text);
                 if (args.runOverlay)
                 {
