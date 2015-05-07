@@ -12,6 +12,16 @@ namespace UltraBot
 		{
 		}
 	}
+    public class ReturnToNeutralState : BotAIState
+    {
+        public override void Run(Bot bot)
+        {
+            if(bot.myState.ActiveCancelLists.Contains("GROUND"))
+            {
+                bot.popState();
+            }
+        }
+    }
     public class ThrowTechState : BotAIState
     {
         public static BotAIState Trigger(Bot bot)
@@ -47,24 +57,41 @@ namespace UltraBot
 
 		public override void Run(Bot bot)
 		{
-
+            bool finished = false;
             
+            //Is it time to do the next input?
 			if(timer > MatchState.getInstance().FrameCounter)
 			{
+                //No, we are waiting, W in effect
 				return;
 			}
-            Console.WriteLine("{0} ->{1}", MatchState.getInstance().FrameCounter,Inputs[index]);
+            //WX wait X frames
 			if(Inputs[index][0] == 'W')
 			{
 				timer = UInt32.Parse(Inputs[index++].Substring(1));
                 timer += MatchState.getInstance().FrameCounter;
 				return;
 			}
+            //Stop on block
+            if (Inputs[index][0] == '*' && (bot.enemyState.ScriptName.Contains("GUARD") || !(128 <= bot.enemyState.ScriptIndex && bot.enemyState.ScriptIndex <= 202)))
+                finished = true;
+            else
+            {
 
-            bot.pressButton(Inputs[index++]);
-            timer = MatchState.getInstance().FrameCounter+1;
-            if (index > Inputs.Count - 1)
-                bot.popState();
+
+                bot.pressButton(Inputs[index++]);
+                timer = MatchState.getInstance().FrameCounter + 1;
+                if (index > Inputs.Count - 1)
+                    finished = true;
+            }
+            
+            if(finished)
+            {
+                timer = 0;
+                index = 0;
+                bot.pushState(new ReturnToNeutralState());
+            }
+
 		}
 		
     }

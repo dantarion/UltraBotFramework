@@ -152,9 +152,10 @@ namespace UltraBot
             ActiveCancelLists.Clear();
             var i = 0;
             var test = (int)Util.Memory.ReadInt(InputBufferOffset + 0x147C + i++ * 0x10);
-            while (test != -1)
+            while (i < 12)
             {
-                ActiveCancelLists.Add(CancelListNames[test]);
+                if(test != -1)
+                    ActiveCancelLists.Add(CancelListNames[test]);
                 test = (int)Util.Memory.ReadInt(InputBufferOffset + 0x147C + i++ * 0x10);
             }
                 
