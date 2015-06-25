@@ -7,6 +7,6 @@ public class KenBot : Bot
     {
         RegisterState(typeof(ThrowTechState));
 		RegisterState(typeof(DefendState));
-        changeState(new DefendState());
+        changeState(new IdleState());
     }
 }

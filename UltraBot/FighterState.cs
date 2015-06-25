@@ -65,6 +65,7 @@ namespace UltraBot
         public string LastScriptName = "";
         public string ScriptName = "";
         public float ScriptSpeed;
+        public float AttackRange = 0;
         //These are for animation frame numbers
         private float ScriptTick;
         private float ScriptTickHitboxStart;
@@ -187,10 +188,11 @@ namespace UltraBot
 
             X = Util.Memory.ReadFloat(_BaseOffset + 0x70);
             Y = Util.Memory.ReadFloat(_BaseOffset + 0x74);
+
             XVelocity = Util.Memory.ReadFloat(_BaseOffset + 0xe0);
             YVelocity = Util.Memory.ReadFloat(_BaseOffset + 0xe4);
-            XAcceleration = XVelocity = Util.Memory.ReadFloat(_BaseOffset + 0x100);
-            YAcceleration = XVelocity = Util.Memory.ReadFloat(_BaseOffset + 0x104);
+            XAcceleration = Util.Memory.ReadFloat(_BaseOffset + 0x100);
+            YAcceleration = Util.Memory.ReadFloat(_BaseOffset + 0x104);
 
             Meter = (int)Util.Memory.ReadShort(_BaseOffset + 0x6C3A);
             Revenge = (int)Util.Memory.ReadShort(_BaseOffset + 0x6C4E);
@@ -288,6 +290,7 @@ namespace UltraBot
             var b = (int)ScriptOffset + 0x18;
             var commandStarts = new List<ushort>();
             var speeds = new List<float>();
+            AttackRange = 0;
             for (int i = 0; i < ScriptCommandListCount; i++)
             {
                 var scriptType = Util.Memory.ReadShort((int)b + i * 12);
@@ -298,11 +301,16 @@ namespace UltraBot
                 var DataOffset = Util.Memory.ReadShort((int)b + i * 12 + 8);
                 for (int j = 0; j < commandCount; j++)
                 {
+                    
                     var type = Util.Memory.ReadByte((int)b + DataOffset + i * 12 + j * 44+(24+2));
-                    var hitlevel = Util.Memory.ReadByte((int)b + DataOffset + i * 12 + j * 44 + (24 + 3));
-                    var flags = Util.Memory.ReadByte((int)b + DataOffset + i * 12 + j * 44 + (24 + 4));
                     if (type == 0)
                         continue;
+                    var hitlevel = Util.Memory.ReadByte((int)b + DataOffset + i * 12 + j * 44 + (24 + 3));
+                    var flags = Util.Memory.ReadByte((int)b + DataOffset + i * 12 + j * 44 + (24 + 4));
+                    
+                    var xoff = Util.Memory.ReadFloat((int)b + DataOffset + i * 12 + j * 44 + (0 + 0));
+                    var size = Util.Memory.ReadFloat((int)b + DataOffset + i * 12 + j * 44 + (4 * 3));
+                    AttackRange = Math.Max(AttackRange,xoff + size);
                     ScriptFrameHitboxStart = Math.Min(ScriptFrameHitboxStart, Tick2Frame[Util.Memory.ReadShort((int)b + FrameOffset + i * 12 + j * 4)]);
                     ScriptFrameHitboxEnd = Math.Max(ScriptFrameHitboxEnd, Tick2Frame[Util.Memory.ReadShort((int)b + FrameOffset + i * 12 + j * 4 + 2)]);
                     if (type == 2|| (flags & 4) != 0)

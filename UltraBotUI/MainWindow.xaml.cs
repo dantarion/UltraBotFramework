@@ -173,7 +173,7 @@ namespace UltraBotUI
                 f2.UpdatePlayerState();
                 if (args.runBot)
                     bot.Run();
-                var text = String.Format("XDistance:{0}", f1.XDistance);
+                var text = String.Format("XDistance:{0},AttackRange:{1}, OldDist {2}", f1.XDistance*2, f2.AttackRange, f2.X-f1.X);
                 backgroundWorker.ReportProgress(0, text);
                 if (args.runOverlay)
                 {

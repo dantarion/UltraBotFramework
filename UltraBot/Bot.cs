@@ -316,7 +316,7 @@ namespace UltraBot
         }
         public VirtualKeyCode Forward()
         {
-            if (myState.XDistance > 0)
+            if (myState.X - enemyState.X > 0)
                 return VirtualKeyCode.LEFT;
             return VirtualKeyCode.RIGHT;
         }
@@ -330,7 +330,7 @@ namespace UltraBot
         }
         public VirtualKeyCode Back()
         {
-            if (myState.XDistance > 0)
+            if (myState.X - enemyState.X > 0)
                 return VirtualKeyCode.RIGHT;
             return VirtualKeyCode.LEFT;
         }
