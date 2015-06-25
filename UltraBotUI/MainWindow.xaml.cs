@@ -230,8 +230,8 @@ namespace UltraBotUI
                 StatusLabel.Content = "Enabling Overlay...";
                 DX9Overlay.SetParam("process", "SSFIV.exe");
                 DX9Overlay.DestroyAllVisual();
-                roundTimer = new TextLabel("Consolas", 10, TypeFace.NONE, new System.Drawing.Point(390, 0), Color.White, "", true, true);
-                player1 = new TextLabel("Consolas", 10, TypeFace.NONE, new System.Drawing.Point(90, 0), Color.White, "", true, true);
+                roundTimer = new TextLabel("Consolas", 10, TypeFace.NONE, new System.Drawing.Point(4, 700), Color.White, "", true, true);
+                player1 = new TextLabel("Consolas", 10, TypeFace.NONE, new System.Drawing.Point(5, 0), Color.White, "", true, true);
                 player2 = new TextLabel("Consolas", 10, TypeFace.NONE, new System.Drawing.Point(480, 0), Color.White, "", true, true);
                 restartWorker();
             }

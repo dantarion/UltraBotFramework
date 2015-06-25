@@ -150,8 +150,11 @@ namespace UltraBot
             {
                 var method = t.GetMethod("Trigger");
                 var result = method.Invoke(null,new object[]{this});
-                if(result != null && stateStack[0].GetType() != t)
+                if (result != null && stateStack[0].GetType() != t)
+                {
                     changeState(result as BotAIState);
+                    break;
+                }
             }
             stateStack[0].Run(this);
             if (Util.GetActiveWindowTitle() == "SSFIVAE")
