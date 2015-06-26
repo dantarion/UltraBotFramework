@@ -308,11 +308,16 @@ namespace UltraBot
                     var hitlevel = Util.Memory.ReadByte((int)b + DataOffset + i * 12 + j * 44 + (24 + 3));
                     var flags = Util.Memory.ReadByte((int)b + DataOffset + i * 12 + j * 44 + (24 + 4));
                     
-                    var xoff = Util.Memory.ReadFloat((int)b + DataOffset + i * 12 + j * 44 + (0 + 0));
-                    var size = Util.Memory.ReadFloat((int)b + DataOffset + i * 12 + j * 44 + (4 * 3));
+                    var xoff = Util.Memory.ReadFloat((int)b + DataOffset + i * 12 + j * 44 + (0));
+                    var yoff = Util.Memory.ReadFloat((int)b + DataOffset + i * 12 + j * 44 + (4));
+
+                    var sizex = Util.Memory.ReadFloat((int)b + DataOffset + i * 12 + j * 44 + (4 * 3));
+                    var sizey = Util.Memory.ReadFloat((int)b + DataOffset + i * 12 + j * 44 + (4 * 4));
                     var attach = Util.Memory.ReadByte((int)b + DataOffset + i * 12 + j * 44 + (24 + 6));
                     var attachoff = Util.Memory.ReadFloat(_BaseOffset+0x3C0+0x10*attach);
-                    AttackRange = Math.Max(AttackRange, xoff + size + attachoff);
+                    var attachrotation = Util.Memory.ReadFloat(_BaseOffset + 0x3C0 + 0x10 * attach+8);
+                    var max_extents = Math.Max((xoff + sizex * 2) * Math.Cos(attachrotation), (yoff + sizey * 2) * Math.Sin(attachrotation));
+                    AttackRange = Math.Max(AttackRange, (float)max_extents + attachoff);
                     ScriptFrameHitboxStart = Math.Min(ScriptFrameHitboxStart, Tick2Frame[Util.Memory.ReadShort((int)b + FrameOffset + i * 12 + j * 4)]);
                     ScriptFrameHitboxEnd = Math.Max(ScriptFrameHitboxEnd, Tick2Frame[Util.Memory.ReadShort((int)b + FrameOffset + i * 12 + j * 4 + 2)]);
                     if (type == 2|| (flags & 4) != 0)
