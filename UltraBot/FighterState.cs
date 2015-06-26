@@ -188,7 +188,7 @@ namespace UltraBot
 
             X = Util.Memory.ReadFloat(_BaseOffset + 0x70);
             Y = Util.Memory.ReadFloat(_BaseOffset + 0x74);
-
+            
             XVelocity = Util.Memory.ReadFloat(_BaseOffset + 0xe0);
             YVelocity = Util.Memory.ReadFloat(_BaseOffset + 0xe4);
             XAcceleration = Util.Memory.ReadFloat(_BaseOffset + 0x100);
@@ -310,7 +310,9 @@ namespace UltraBot
                     
                     var xoff = Util.Memory.ReadFloat((int)b + DataOffset + i * 12 + j * 44 + (0 + 0));
                     var size = Util.Memory.ReadFloat((int)b + DataOffset + i * 12 + j * 44 + (4 * 3));
-                    AttackRange = Math.Max(AttackRange,xoff + size);
+                    var attach = Util.Memory.ReadByte((int)b + DataOffset + i * 12 + j * 44 + (24 + 6));
+                    var attachoff = Util.Memory.ReadFloat(_BaseOffset+0x3C0+0x10*attach);
+                    AttackRange = Math.Max(AttackRange, xoff + size + attachoff);
                     ScriptFrameHitboxStart = Math.Min(ScriptFrameHitboxStart, Tick2Frame[Util.Memory.ReadShort((int)b + FrameOffset + i * 12 + j * 4)]);
                     ScriptFrameHitboxEnd = Math.Max(ScriptFrameHitboxEnd, Tick2Frame[Util.Memory.ReadShort((int)b + FrameOffset + i * 12 + j * 4 + 2)]);
                     if (type == 2|| (flags & 4) != 0)
