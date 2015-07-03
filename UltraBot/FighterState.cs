@@ -271,6 +271,15 @@ namespace UltraBot
                 var start = (int)Util.Memory.ReadInt(hitboxPtr + 0x20);
                 for (int j = 0;j < count; j++)
                 {
+                    if(i == 1)
+                    {
+                                                
+                        Console.WriteLine("Hitbox?");
+                        var right = Math.Abs(Util.Memory.ReadFloat(start + 0x10)-X);
+                        var left = Math.Abs(Util.Memory.ReadFloat(start + 0x0) - X);
+                        var max = Math.Max(right, left);
+                        AttackRange = max;
+                    }
                    //ReadBox here.
                 }
             }
