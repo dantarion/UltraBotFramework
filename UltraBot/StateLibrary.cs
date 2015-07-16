@@ -99,8 +99,10 @@ namespace UltraBot
     {
         public static BotAIState Trigger(Bot bot)
         {
+             //bot.enemyState.AttackRange*2+System.Math.Abs(bot.enemyState.XVelocity*bot.enemyState.StateTimer)+.5*System.Math.Abs(bot.enemyState.XAcceleration*3)
             if ((bot.enemyState.State == FighterState.CharState.Startup && bot.enemyState.StateTimer < 3) || bot.enemyState.State == FighterState.CharState.Active)
-                if(Math.Abs(bot.myState.XDistance)-.3 < bot.enemyState.AttackRange*2+System.Math.Abs(bot.enemyState.XVelocity*bot.enemyState.StateTimer)+.5*System.Math.Abs(bot.enemyState.XAcceleration*3))
+                if(Math.Abs(bot.myState.XDistance)-.85 < bot.enemyState.AttackRange)
+
                     return new DefendState();
             return null;
         }

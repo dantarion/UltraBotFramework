@@ -259,11 +259,24 @@ namespace UltraBot
 		private void ReadOtherData()
         {
 
+            int off = 0x8;
+            if (PlayerIndex == 1)
+                off = 0xC;
 
-  
-
- 
-            for(int i = 0; i <= 4; i++)
+            var ProjectileOffset = (int)Util.Memory.ReadInt((int)Util.Memory.ReadInt(0x400000 + 0x006A7DE8) + off);
+            var tmp1 = (int)Util.Memory.ReadInt((int)ProjectileOffset+0x4);
+            var ProjectileCount = (int)Util.Memory.ReadInt((int)ProjectileOffset + 0x8C);
+            if (ProjectileCount == 0)
+                return;
+            var ProjectileLeft = Util.Memory.ReadFloat((int)tmp1 + 0x70);
+            var ProjectileRight = Util.Memory.ReadFloat((int)tmp1 + 0x70+0x10);
+            var ProjectileSpeed = Util.Memory.ReadFloat((int)tmp1 + 0x70+0x70);
+            var right = Math.Abs(ProjectileRight - X);
+            var left = Math.Abs(ProjectileLeft - X);
+            var max = Math.Max(right, left);
+            AttackRange = Math.Max(max,AttackRange);
+            State = CharState.Active;
+            for(int i = 0; i <= 5; i++)
             {
 
                 var hitboxPtr = (int)Util.Memory.ReadInt(_BaseOffset + 0x130 + i * 4);
@@ -271,14 +284,14 @@ namespace UltraBot
                 var start = (int)Util.Memory.ReadInt(hitboxPtr + 0x20);
                 for (int j = 0;j < count; j++)
                 {
-                    if(i == 1)
+                    if(i == 0)
                     {
                                                 
-                        Console.WriteLine("Hitbox?");
-                        var right = Math.Abs(Util.Memory.ReadFloat(start + 0x10)-X);
-                        var left = Math.Abs(Util.Memory.ReadFloat(start + 0x0) - X);
-                        var max = Math.Max(right, left);
-                        AttackRange = max;
+                       
+                        
+                        
+                        Console.WriteLine("Hitbox?"+max+" "+i);
+                      
                     }
                    //ReadBox here.
                 }
@@ -308,12 +321,14 @@ namespace UltraBot
                 var commandCount = Util.Memory.ReadShort((int)b + i * 12 + 2);
                 var FrameOffset = Util.Memory.ReadShort((int)b + i * 12 + 4);
                 var DataOffset = Util.Memory.ReadShort((int)b + i * 12 + 8);
+
+                var FallBackRange = 0.0f;
+                var useFallBack = true;
                 for (int j = 0; j < commandCount; j++)
                 {
                     
                     var type = Util.Memory.ReadByte((int)b + DataOffset + i * 12 + j * 44+(24+2));
-                    if (type == 0)
-                        continue;
+                    
                     var hitlevel = Util.Memory.ReadByte((int)b + DataOffset + i * 12 + j * 44 + (24 + 3));
                     var flags = Util.Memory.ReadByte((int)b + DataOffset + i * 12 + j * 44 + (24 + 4));
                     
@@ -322,17 +337,32 @@ namespace UltraBot
 
                     var sizex = Util.Memory.ReadFloat((int)b + DataOffset + i * 12 + j * 44 + (4 * 3));
                     var sizey = Util.Memory.ReadFloat((int)b + DataOffset + i * 12 + j * 44 + (4 * 4));
+                    var range = xoff + sizex*2;
+                    if (type == 0)
+                    {
+                        FallBackRange = range; 
+                        continue;
+                    }
                     var attach = Util.Memory.ReadByte((int)b + DataOffset + i * 12 + j * 44 + (24 + 6));
-                    var attachoff = Util.Memory.ReadFloat(_BaseOffset+0x3C0+0x10*attach);
-                    var attachrotation = Util.Memory.ReadFloat(_BaseOffset + 0x3C0 + 0x10 * attach+8);
-                    var max_extents = Math.Max((xoff + sizex * 2) * Math.Cos(attachrotation), (yoff + sizey * 2) * Math.Sin(attachrotation));
-                    AttackRange = Math.Max(AttackRange, (float)max_extents + attachoff);
+
+                    if ((attach) != 0)
+                    {
+                        Console.WriteLine("WARNING ATTACH " + ScriptName);
+                    }
+                    else
+                        useFallBack = false;
+                    
+
+                    AttackRange = Math.Max(AttackRange, range);
                     ScriptFrameHitboxStart = Math.Min(ScriptFrameHitboxStart, Tick2Frame[Util.Memory.ReadShort((int)b + FrameOffset + i * 12 + j * 4)]);
                     ScriptFrameHitboxEnd = Math.Max(ScriptFrameHitboxEnd, Tick2Frame[Util.Memory.ReadShort((int)b + FrameOffset + i * 12 + j * 4 + 2)]);
                     if (type == 2|| (flags & 4) != 0)
                     {
-                        AState = AttackState.Throw;
-                        return;
+                        if (!ScriptName.Contains("BALCERONA"))
+                        {
+                            AState = AttackState.Throw;
+                            continue;
+                        }
                     }
 
                     
@@ -345,6 +375,8 @@ namespace UltraBot
                     if (hitlevel == 3)
                         AState = AttackState.Throw;
                 }
+                if (useFallBack == true)
+                    AttackRange = FallBackRange;
             }
         }
         private void ComputeTickstoFrames(uint BAC)

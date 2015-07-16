@@ -21,7 +21,10 @@ namespace UltraBot
 
     public class Bot : IBot
     {
-        
+        protected Bot()
+        {
+
+        }
         /// <summary>
         /// This function sets up the dynamic bot loader with search paths!
         /// </summary>
