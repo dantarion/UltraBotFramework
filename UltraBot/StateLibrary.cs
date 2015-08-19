@@ -8,36 +8,46 @@ namespace UltraBot
 {
 	public class IdleState : BotAIState
 	{
-		public IdleState()
-		{
-		}
 	}
     public class ReturnToNeutralState : BotAIState
     {
-        public override void Run(Bot bot)
+        protected override IEnumerator<string> Run(Bot bot)
         {
-            if(bot.myState.ActiveCancelLists.Contains("GROUND"))
+            //We wait until we can 
+            while(true)
             {
-                bot.popState();
+                if(bot.myState.ActiveCancelLists.Contains("GROUND"))
+                {
+                    yield break;
+                }
+                yield return "Waiting for Neutral";
             }
         }
     }
     public class ThrowTechState : BotAIState
     {
+        public ThrowTechState()
+		{
+		}
         public static BotAIState Trigger(Bot bot)
         {
             if (bot.myState.ScriptName.Contains("THROW") && bot.myState.ScriptName.Contains("DAMAGE"))
                 return new ThrowTechState();
             return null;
         }
-        public override void Run(Bot bot)
+        protected override IEnumerator<string> Run(Bot bot)
         {
-            bot.pressButton("LPLK");
-            bot.popState();
+            //We press tech until we are no longer in the throw tech state
+            while (bot.myState.ScriptName.Contains("THROW") && bot.myState.ScriptName.Contains("DAMAGE"))
+            {
+                bot.pressButton("LPLK");
+                yield return "Mashing Tech";
+            }
         }
     }
 	public class SequenceState : BotAIState
 	{
+
 		[Flags]
 		public enum SequenceFlags
 		{
@@ -51,78 +61,86 @@ namespace UltraBot
 		{
 			foreach(string s in sequence.Split('.'))
 				Inputs.Add(s);
-
-
 		}
 
-		public override void Run(Bot bot)
+        protected override IEnumerator<string> Run(Bot bot)
 		{
             bool finished = false;
-            
-            //Is it time to do the next input?
-			if(timer > MatchState.getInstance().FrameCounter)
-			{
-                //No, we are waiting, W in effect
-				return;
-			}
-            //WX wait X frames
-			if(Inputs[index][0] == 'W')
-			{
-				timer = UInt32.Parse(Inputs[index++].Substring(1));
-                timer += MatchState.getInstance().FrameCounter;
-				return;
-			}
-            //Stop on block
-            if (Inputs[index][0] == '*' && (bot.enemyState.ScriptName.Contains("GUARD") || !(128 <= bot.enemyState.ScriptIndex && bot.enemyState.ScriptIndex <= 202)))
-                finished = true;
-            else
+            while(true)
             {
-
-
-                bot.pressButton(Inputs[index++]);
-                timer = MatchState.getInstance().FrameCounter + 1;
-                if (index > Inputs.Count - 1)
+                //Is it time to do the next input?
+			    if(timer > MatchState.getInstance().FrameCounter)
+			    {
+                    //No, we are waiting, W in effect
+				    yield return "Waiting...";
+			    }
+                //WX wait X frames
+			    if(Inputs[index][0] == 'W')
+			    {
+				    timer = UInt32.Parse(Inputs[index++].Substring(1));
+                    timer += MatchState.getInstance().FrameCounter;
+                    yield return "Waiting " + MatchState.getInstance().FrameCounter.ToString();
+			    }
+                //Stop on block
+                if (Inputs[index][0] == '*' && (bot.enemyState.ScriptName.Contains("GUARD") || !(128 <= bot.enemyState.ScriptIndex && bot.enemyState.ScriptIndex <= 202)))
                     finished = true;
-            }
+                else
+                {
+
+
+                    bot.pressButton(Inputs[index++]);
+                    timer = MatchState.getInstance().FrameCounter + 1;
+                    if (index > Inputs.Count - 1)
+                        finished = true;
+                }
             
-            if(finished)
-            {
-                timer = 0;
-                index = 0;
-                bot.pushState(new ReturnToNeutralState());
+                if(finished)
+                {
+                    timer = 0;
+                    index = 0;
+                    bot.changeState(new ReturnToNeutralState());
+                }
             }
 
 		}
 		
     }
+    
     public class DefendState : BotAIState
     {
+        public DefendState(Bot bot)
+		{
+		}
         public static BotAIState Trigger(Bot bot)
         {
              //bot.enemyState.AttackRange*2+System.Math.Abs(bot.enemyState.XVelocity*bot.enemyState.StateTimer)+.5*System.Math.Abs(bot.enemyState.XAcceleration*3)
             if ((bot.enemyState.State == FighterState.CharState.Startup && bot.enemyState.StateTimer < 3) || bot.enemyState.State == FighterState.CharState.Active)
                 if(Math.Abs(bot.myState.XDistance)-.85 < bot.enemyState.AttackRange)
 
-                    return new DefendState();
+                    return new DefendState(bot);
             return null;
         }
-        public override void Run(Bot bot)
+        protected override IEnumerator<string> Run(Bot bot)
         {
-            if (bot.enemyState.State == FighterState.CharState.Startup || bot.enemyState.State == FighterState.CharState.Active)
+            while (true)
             {
-                if (bot.enemyState.AState != FighterState.AttackState.Throw)
+                if (bot.enemyState.State == FighterState.CharState.Startup || bot.enemyState.State == FighterState.CharState.Active)
                 {
-                    bot.pressButton(bot.Back());
-                    if (bot.enemyState.AState != FighterState.AttackState.Overhead)
-                        bot.pressButton(bot.Down());
+                    if (bot.enemyState.AState != FighterState.AttackState.Throw)
+                    {
+                        bot.pressButton(bot.Back());
+                        if (bot.enemyState.AState != FighterState.AttackState.Overhead)
+                            bot.pressButton(bot.Down());
+                    }
+                    else
+                        bot.pressButton(bot.Up());
+                    Console.WriteLine("{0} {1}", bot.enemyState.ScriptName, bot.enemyState.StateTimer);
                 }
                 else
-                    bot.pressButton(bot.Up());
-                Console.WriteLine("{0} {1}", bot.enemyState.ScriptName, bot.enemyState.StateTimer);
-            }
-            else
-            {
-                bot.popState();
+                {
+                    yield break;
+                }
+                yield return "Blocking";
             }
 
         }

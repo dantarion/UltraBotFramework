@@ -148,7 +148,7 @@ namespace UltraBotUI
         }
         private void RefreshBotData()
         {
-            StackDisplay.ItemsSource = bot.getStateStack();
+            //StackDisplay.ItemsSource = bot.getStateStack();
             ComboDisplay.ItemsSource = bot.getComboList();      
             
         }

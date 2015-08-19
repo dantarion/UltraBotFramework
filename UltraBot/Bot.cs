@@ -14,7 +14,6 @@ namespace UltraBot
     public interface IBot
     {
          void Init(int index);
-         List<BotAIState> getStateStack();
          List<Combo> getComboList();
          void Run();
     }
@@ -131,18 +130,11 @@ namespace UltraBot
 
         public FighterState myState;
         public FighterState enemyState;
-
-		/// <summary>
-        /// This allows for the UI to be able to get a snapshot of the bots current state.
-        /// </summary>
-        public List<BotAIState> getStateStack()
-        {
-            return stateStack.AsEnumerable().ToList();
-        }
         /// <summary>
         /// This function does the magic, and makes the bot actually work. It only handles input when the window is focused.
         /// TODO: MatchState also has some of this current window logic, feels redundant
         /// </summary>
+        /// 
         public virtual void Run()
         {
             //Setup some derived variables.
@@ -153,13 +145,14 @@ namespace UltraBot
             {
                 var method = t.GetMethod("Trigger");
                 var result = method.Invoke(null,new object[]{this});
-                if (result != null && stateStack[0].GetType() != t)
+                if (result != null && currentState.GetType() != t)
                 {
                     changeState(result as BotAIState);
                     break;
                 }
             }
-            stateStack[0].Run(this);
+            currentState.Process(this);
+            
             if (Util.GetActiveWindowTitle() == "SSFIVAE")
             {
                 //For each key that was pressed the previous frame
@@ -192,7 +185,7 @@ namespace UltraBot
 
         #region State Management
         private BotAIState previousState;
-        private List<BotAIState> stateStack = new List<BotAIState>();
+        private BotAIState currentState;
         /// <summary>
         /// This function runs before any state.
         /// By overriding this function, you can have checks that force the bot into an arbitrary state based on triggers.
@@ -210,42 +203,17 @@ namespace UltraBot
         /// <param name="nextState"></param>
         public void changeState(BotAIState nextState)
         {
-            if (stateStack.Count > 0)
-            {
-                previousState = stateStack[0];
-                stateStack.RemoveAt(0);
-            }
-            stateStack.Insert(0, nextState);
+            previousState = currentState;
+            currentState = nextState;
         }
-        /// <summary>
-        /// This ends the current state, removes it from the stack, and changes back to the previous state, 
-        /// the one that last called pushStack().
-        /// </summary>
-        public void popState()
-        {
-            previousState = stateStack[0];
-            stateStack.RemoveAt(0);
-            if (stateStack.Count == 0)
-                stateStack.Add(new IdleState());
-        }
-        /// <summary>
-        /// This switches to a new state, leaving the previous one on the stack, 
-        /// allowing the new state to call popState() and return execution to the current stack 
-        /// </summary>
-        /// <param name="nextState"></param>
-        public void pushState(BotAIState nextState)
-        {
-            previousState = stateStack[0];
-            stateStack.Insert(0, nextState);
-        }
-        /// <summary>
-        /// These keycodes exist so that we can map them to keyboard or vJoy or whatever.
-        /// </summary>
         #endregion
         #region Input Management
         private List<VirtualKeyCode> pressed = new List<VirtualKeyCode>();
         private List<VirtualKeyCode> last_pressed = new List<VirtualKeyCode>();
         private List<VirtualKeyCode> held = new List<VirtualKeyCode>();
+        /// <summary>
+        /// These keycodes exist so that we can map them to keyboard or vJoy or whatever.
+        /// </summary>
 		/// <summary>
         /// TODO: Load this mapping from an XML file, change this function to a dictionary. Support P2 mapping.
         /// </summary>
