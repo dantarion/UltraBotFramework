@@ -14,12 +14,23 @@ namespace UltraBot
             throw new NotImplementedException("This AI State doesn't support being triggered. Implement Trigger()");
         }
         private IEnumerator<string> _iterator = null;
+        private bool _finished = false;
         public virtual string Process(Bot bot)
         {   
             if(_iterator == null)
                 _iterator = Run(bot);
-            _iterator.MoveNext();
-            return _iterator.Current;
+
+            if(_iterator.MoveNext())
+                return _iterator.Current;
+            else
+            {
+                _finished = true;
+                return this.GetType().Name + " has finished";
+            }
+        }
+        public bool isFinished()
+        {
+            return _finished;
         }
         protected virtual IEnumerator<string> Run(Bot bot)
         {

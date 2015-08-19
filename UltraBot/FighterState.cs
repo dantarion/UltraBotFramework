@@ -121,6 +121,20 @@ namespace UltraBot
             MK = 0x400,
             HK = 0x800,
         }
+        public bool InputBufferCheck(int search, params Input[] sequence)
+        {
+            int j = 0;
+            for(int i = 0; i < search; i++)
+            {
+                var test = InputBuffer[i];
+                if ((test & sequence[0]) > 0)
+                    j++;
+                if (j > sequence.Length)
+                    return true;
+
+            }
+            return false;
+        }
         public void UpdatePlayerState()
         {
             int off = 0x8;

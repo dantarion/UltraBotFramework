@@ -16,6 +16,7 @@ namespace UltraBot
          void Init(int index);
          List<Combo> getComboList();
          void Run();
+         BotAIState DefaultState();
     }
 
     public class Bot : IBot
@@ -130,6 +131,10 @@ namespace UltraBot
 
         public FighterState myState;
         public FighterState enemyState;
+        public virtual BotAIState DefaultState()
+        {
+            return new IdleState();
+        }
         /// <summary>
         /// This function does the magic, and makes the bot actually work. It only handles input when the window is focused.
         /// TODO: MatchState also has some of this current window logic, feels redundant
@@ -152,6 +157,8 @@ namespace UltraBot
                 }
             }
             currentState.Process(this);
+            if (currentState.isFinished())
+                changeState(DefaultState());
             
             if (Util.GetActiveWindowTitle() == "SSFIVAE")
             {
