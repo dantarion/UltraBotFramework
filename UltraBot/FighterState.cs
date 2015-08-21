@@ -34,9 +34,25 @@ namespace UltraBot
             Overhead,
             None
         }
-
+        
+        [Flags]
+        public enum Input
+        {
+            BACK = 0x0,
+            NEUTRAL = 0x1,
+            UP = 0x2,
+            DOWN = 0x4,
+            FORWARD = 0x8,
+            NO_BUTTONS = 0x20,
+            LP = 0x40,
+            MP = 0x80,
+            HP = 0x100,
+            LK = 0x200,
+            MK = 0x400,
+            HK = 0x800,
+        }
         /// <summary>
-        /// This is used to hold a tabe
+        /// This is used to hold a table to translate between animation ticks and frame timings
         /// </summary>
         private Dictionary<float, float> Tick2Frame = new Dictionary<float, float>();
 
@@ -46,7 +62,7 @@ namespace UltraBot
         public AttackState AState;
         public float StateTimer;
         public int PlayerIndex;
-		
+
         public float X;
         public float Y;
         public float XVelocity;
@@ -56,6 +72,7 @@ namespace UltraBot
         public float XDistance;
         public float YDistance;
         public uint RawState;
+        
         public int Health;//TODO
         public int Meter;
         public int Revenge;
@@ -81,8 +98,7 @@ namespace UltraBot
         public float ScriptFrameIASA;
         public float ScriptFrameTotal;
 
-        private static FighterState P1;
-        private static FighterState P2;
+        
         //BCM Data
         public List<String> ChargeNames = new List<string>();
         public List<String> InputNames = new List<string>();
@@ -91,6 +107,8 @@ namespace UltraBot
         public List<String> ActiveCancelLists = new List<String>();
         public List<Input> InputBuffer = new List<Input>();
 
+        private static FighterState P1;
+        private static FighterState P2;
         public static FighterState getFighter(int index)
         {
             if (P1 == null)
@@ -99,29 +117,32 @@ namespace UltraBot
                 P2 = new FighterState(1);
             return index == 0 ? P1 : P2;
         }
-
         private FighterState(int index)
         {
             this.PlayerIndex = index;
         }
-
-        [Flags]
-        public enum Input
+        //This checks for a sequence of inputs,
+        //Like looking for 6.2.3P to look for buffered shoryu
+        public int InputBufferMashCheck(int search, Input input, bool all)
         {
-            BACK = 0x0,
-            NEUTRAL = 0x1,
-            UP = 0x2,
-            DOWN = 0x4,
-            FORWARD = 0x8,
-            NO_BUTTONS = 0x20,
-            LP = 0x40,
-            MP = 0x80,
-            HP = 0x100,
-            LK = 0x200,
-            MK = 0x400,
-            HK = 0x800,
+            int mash = 0;
+            for (int i = 0; i < search; i++)
+            {
+                var test = InputBuffer[i];
+                if (all)
+                {
+                    if ((test & input) == input) //All of these must be pressed
+                        mash++;
+                }
+                else
+                {
+                    if ((test & input) > 0) //Some of these
+                        mash++;
+                }
+            }
+            return mash;
         }
-        public bool InputBufferCheck(int search, params Input[] sequence)
+        public int InputBufferSequenceCheck(int search, params Input[] sequence)
         {
             int j = 0;
             for(int i = 0; i < search; i++)
@@ -130,10 +151,10 @@ namespace UltraBot
                 if ((test & sequence[0]) > 0)
                     j++;
                 if (j > sequence.Length)
-                    return true;
+                    return i;
 
             }
-            return false;
+            return -1;
         }
         public void UpdatePlayerState()
         {

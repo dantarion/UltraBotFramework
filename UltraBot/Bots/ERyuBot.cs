@@ -1,13 +1,9 @@
 ﻿using System;
 using UltraBot;
 
-public class KenBot : Bot
+public class ERyuBot : Bot
 {
-    public override string ToString()
-    {
-        return "KenBot 1.0";
-    }
-    public KenBot()
+    public ERyuBot()
     {
         RegisterState(typeof(ThrowTechState));
         RegisterState(typeof(DefendState));

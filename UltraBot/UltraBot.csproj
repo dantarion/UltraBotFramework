@@ -55,7 +55,7 @@
   <ItemGroup>
     <Compile Include="Bot.cs" />
     <Compile Include="BotState.cs" />
-    <Compile Include="Bots\KenBot.cs" />
+    <Content Include="Bots\KenBot.cs" />
     <Compile Include="Combo.cs" />
     <Compile Include="FighterState.cs" />
     <Compile Include="MatchState.cs" />

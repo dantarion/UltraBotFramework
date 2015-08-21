@@ -20,7 +20,7 @@ namespace UltraBot
          string getStatus();
     }
 
-    public class Bot : IBot
+    public class Bot : MarshalByRefObject, IBot 
     {
         protected Bot()
         {
@@ -52,16 +52,19 @@ namespace UltraBot
         /// <param name="BotName">The name of the bot. Should be in the a folder that has been added to the search path
         /// via AddSearchPath, and named BotName.cs</param>
         /// <returns></returns>
-        public static IBot LoadBotFromFile(string BotName)
+        public static Bot LoadBotFromFile(string BotName)
         {
 
-            IBot bot = null;
+            Bot bot = null;
             //TODO FIX HOTRELOAD
  
             {
-                asmHelper = new AsmHelper(CSScript.Load(BotName+".cs"));
+                if (asmHelper != null)
+                    asmHelper.Dispose();
+
+                asmHelper = new AsmHelper(CSScript.Load(BotName + ".cs", Guid.NewGuid().ToString(), false));
                 var tmp2 = asmHelper.CreateObject(BotName);
-                bot = tmp2.AlignToInterface<IBot>();
+                bot = tmp2 as Bot;
 
                 foreach (var dir in CSScript.GlobalSettings.SearchDirs.Split(';'))//We look for an xml file containing a list of button combos. See KenBot.xml for an example
                 {

@@ -20,12 +20,16 @@ using DX9OverlayAPIWrapper;
 using System.Threading;
 namespace UltraBotUI
 {
-
+    public class LogEntry
+    {   
+        public string Message { get; set; }
+        public string BotScriptInfo { get; set; }
+        public string EnemyScriptInfo { get; set; }
+    }
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     ///
-
     public partial class MainWindow : Window
     {
 
@@ -33,7 +37,7 @@ namespace UltraBotUI
 
         private List<string> BotEntries = new List<string>();
         private BackgroundWorker backgroundWorker = new BackgroundWorker();
-        private IBot bot;
+        private Bot bot;
 
         MatchState ms = MatchState.getInstance();
         FighterState f1 = FighterState.getFighter(0);
@@ -110,6 +114,9 @@ namespace UltraBotUI
             backgroundWorker.DoWork += backgroundWorker_DoWork;
             backgroundWorker.ProgressChanged += backgroundWorker_ProgressChanged;
             LoadBots();
+            var le = new LogEntry();
+            le.Message = "Loaded!";
+            log.Insert(0, le);
         }
         private void FolderOnChanged(object source, FileSystemEventArgs e)
         {
@@ -141,16 +148,26 @@ namespace UltraBotUI
         private void BotSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             StatusLabel.Content = "Loading " + (string)BotSelector.SelectedValue +"...";
-            bot = Bot.LoadBotFromFile((string)BotSelector.SelectedValue);
+            try
+            {
+                bot = Bot.LoadBotFromFile((string)BotSelector.SelectedValue);
+            }
+            catch(Exception err)
+            {
+                StatusLabel.Content = err.ToString();
+            }
+            BotSelector.Items.Refresh();
             RefreshBotData();
+
             bot.Init(0);
 
         }
-        private List<string> log = new List<string>();
+        private List<LogEntry> log = new List<LogEntry>();
         private void RefreshBotData()
         {
-            StackDisplay.ItemsSource = log;
-            ComboDisplay.ItemsSource = bot.getComboList();      
+            Log.ItemsSource = log;
+            ComboDisplay.ItemsSource = bot.getComboList();
+            ComboDisplay.Items.Refresh();
             
         }
         private void RadioButton_Checked(object sender, RoutedEventArgs e)
@@ -174,13 +191,10 @@ namespace UltraBotUI
                 f2.UpdatePlayerState();
                 if (args.runBot)
                     bot.Run();
-                var text = bot.getStatus();
-
-                backgroundWorker.ReportProgress(0, text);
+                backgroundWorker.ReportProgress(0, bot.getStatus());
                 if (args.runOverlay)
                 {
-                    roundTimer.Text = text;
-                    
+                    roundTimer.Text = bot.getStatus();
                     UpdateOverlay(player1, f1);
                     UpdateOverlay(player2, f2);
                 }
@@ -195,12 +209,13 @@ namespace UltraBotUI
         }
         private void backgroundWorker_ProgressChanged(object sender,  ProgressChangedEventArgs e)
         {
-            string var = (string)e.UserState;
             StatusLabel.Content = e.UserState;
-            if (StackDisplay.Items.Count == 0 || !StackDisplay.Items[0].Equals(var))
+            if (log.Count == 0 || !log[0].Message.Equals(bot.getStatus()) )
             {
-                log.Insert(0, var);
-                StackDisplay.Items.Refresh();
+                var le = new LogEntry();
+                le.Message = bot.getStatus();
+                log.Insert(0, le);
+                Log.Items.Refresh();
             }
             while (log.Count > 200)
                 log.RemoveAt(log.Count - 1);
@@ -261,7 +276,7 @@ namespace UltraBotUI
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
-			//Remove overlay from the game
+            //Remove overlay from the game
             DX9Overlay.DestroyAllVisual();
         }
 

@@ -4,7 +4,7 @@
         Title="MainWindow" Height="600" Width="525" Loaded="Window_Loaded" Closing="Window_Closing">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="300" />
+            <RowDefinition Height="150" />
             <RowDefinition Height="*"/>
             <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
@@ -26,8 +26,8 @@
         </Border>
         <Border Grid.Column="1" Background="Black" BorderBrush="Gainsboro" BorderThickness="1">
             <StackPanel Margin="5">
-                <Label Foreground="White">StateStack</Label>
-                <ListBox Name="StackDisplay" Height="200">
+                <Label Foreground="White">Mode Selector</Label>
+                <ListBox Name="ModeSelector" Height="100">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
@@ -40,7 +40,15 @@
         </Border>
         <TabControl  Margin="5" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2">
             <TabItem Header="Log">
-                <Label>TODO</Label>
+                <ListView Name="Log">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Width="200" Content="{Binding Path=Message}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
             </TabItem>
             <TabItem Header="Combo">
                 <DataGrid Name="ComboDisplay" IsReadOnly="True">
