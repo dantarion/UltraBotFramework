@@ -10,7 +10,7 @@ public class KenBot : Bot
     }
     public override BotAIState DefaultState()
     {
-        return new IdleState();
+        return new TestState();
     }
     public class TestState : BotAIState
     {

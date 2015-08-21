@@ -118,7 +118,7 @@ namespace UltraBot
             if ((bot.enemyState.State == FighterState.CharState.Startup && bot.enemyState.StateTimer < 3) || bot.enemyState.State == FighterState.CharState.Active)
             {
                 Console.WriteLine("VELOCITY={0} ACCEL={1} XPOS={2}", bot.enemyState.XVelocity, bot.enemyState.XAcceleration, bot.enemyState.X);
-                if (Math.Abs(bot.myState.XDistance) - .85 < bot.enemyState.AttackRange)
+                if (Math.Abs(bot.myState.XDistance) - .15 < bot.enemyState.AttackRange)
 
                     return new DefendState(bot);
             }

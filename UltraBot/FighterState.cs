@@ -201,7 +201,7 @@ namespace UltraBot
             var BAC_data = (int)Util.Memory.ReadInt(_BaseOffset + 0xB0);
             var XChange = X;
 
-            X = Util.Memory.ReadFloat(_BaseOffset + 0x3D0);
+            X = Util.Memory.ReadFloat(_BaseOffset + 0x16D0);
             Y = Util.Memory.ReadFloat(_BaseOffset + 0x74);
             XChange = XChange-X;
             XVelocity = Util.Memory.ReadFloat(_BaseOffset + 0xe0);
@@ -288,7 +288,6 @@ namespace UltraBot
             var ProjectileCount = (int)Util.Memory.ReadInt((int)ProjectileOffset + 0x8C);
             if (ProjectileCount != 0)
             {
-                return;
                 var ProjectileLeft = Util.Memory.ReadFloat((int)tmp1 + 0x70);
                 var ProjectileRight = Util.Memory.ReadFloat((int)tmp1 + 0x70 + 0x10);
                 var ProjectileSpeed = Util.Memory.ReadFloat((int)tmp1 + 0x70 + 0x70);
