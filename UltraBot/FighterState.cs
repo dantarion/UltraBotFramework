@@ -199,11 +199,17 @@ namespace UltraBot
                 return;
 
             var BAC_data = (int)Util.Memory.ReadInt(_BaseOffset + 0xB0);
+            var XChange = X;
 
-            X = Util.Memory.ReadFloat(_BaseOffset + 0x70);
+            X = Util.Memory.ReadFloat(_BaseOffset + 0x3D0);
             Y = Util.Memory.ReadFloat(_BaseOffset + 0x74);
-            
+            XChange = XChange-X;
             XVelocity = Util.Memory.ReadFloat(_BaseOffset + 0xe0);
+            if (XVelocity == 0 && XChange != 0)
+            {
+                XVelocity = XChange;
+                //Console.WriteLine("Using {0} for XVel due to XChange", XChange);
+            }
             YVelocity = Util.Memory.ReadFloat(_BaseOffset + 0xe4);
             XAcceleration = Util.Memory.ReadFloat(_BaseOffset + 0x100);
             YAcceleration = Util.Memory.ReadFloat(_BaseOffset + 0x104);
@@ -280,16 +286,19 @@ namespace UltraBot
             var ProjectileOffset = (int)Util.Memory.ReadInt((int)Util.Memory.ReadInt(0x400000 + 0x006A7DE8) + off);
             var tmp1 = (int)Util.Memory.ReadInt((int)ProjectileOffset+0x4);
             var ProjectileCount = (int)Util.Memory.ReadInt((int)ProjectileOffset + 0x8C);
-            if (ProjectileCount == 0)
+            if (ProjectileCount != 0)
+            {
                 return;
-            var ProjectileLeft = Util.Memory.ReadFloat((int)tmp1 + 0x70);
-            var ProjectileRight = Util.Memory.ReadFloat((int)tmp1 + 0x70+0x10);
-            var ProjectileSpeed = Util.Memory.ReadFloat((int)tmp1 + 0x70+0x70);
-            var right = Math.Abs(ProjectileRight - X);
-            var left = Math.Abs(ProjectileLeft - X);
-            var max = Math.Max(right, left);
-            AttackRange = Math.Max(max,AttackRange);
-            State = CharState.Active;
+                var ProjectileLeft = Util.Memory.ReadFloat((int)tmp1 + 0x70);
+                var ProjectileRight = Util.Memory.ReadFloat((int)tmp1 + 0x70 + 0x10);
+                var ProjectileSpeed = Util.Memory.ReadFloat((int)tmp1 + 0x70 + 0x70);
+                var right = Math.Abs(ProjectileRight - X);
+                var left = Math.Abs(ProjectileLeft - X);
+                var max = Math.Max(right, left);
+
+                AttackRange = Math.Max(max, AttackRange);
+                State = CharState.Active;
+            }
             for(int i = 0; i <= 5; i++)
             {
 
@@ -300,11 +309,11 @@ namespace UltraBot
                 {
                     if(i == 0)
                     {
-                                                
-                       
-                        
-                        
-                        Console.WriteLine("Hitbox?"+max+" "+i);
+
+
+
+
+                        Console.WriteLine("Hitbox? {0:x}", hitboxPtr);
                       
                     }
                    //ReadBox here.

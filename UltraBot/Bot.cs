@@ -17,13 +17,14 @@ namespace UltraBot
          List<Combo> getComboList();
          void Run();
          BotAIState DefaultState();
+         string getStatus();
     }
 
     public class Bot : IBot
     {
         protected Bot()
         {
-
+            currentState = DefaultState();
         }
         /// <summary>
         /// This function sets up the dynamic bot loader with search paths!
@@ -131,6 +132,11 @@ namespace UltraBot
 
         public FighterState myState;
         public FighterState enemyState;
+        private string _status = "";
+        public string getStatus()
+        {
+            return _status;
+        }
         public virtual BotAIState DefaultState()
         {
             return new IdleState();
@@ -156,7 +162,7 @@ namespace UltraBot
                     break;
                 }
             }
-            currentState.Process(this);
+            _status = currentState.Process(this);
             if (currentState.isFinished())
                 changeState(DefaultState());
             

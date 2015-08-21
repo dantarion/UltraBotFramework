@@ -27,7 +27,15 @@
         <Border Grid.Column="1" Background="Black" BorderBrush="Gainsboro" BorderThickness="1">
             <StackPanel Margin="5">
                 <Label Foreground="White">StateStack</Label>
-                <ListBox Name="StackDisplay" Height="200"></ListBox>
+                <ListBox Name="StackDisplay" Height="200">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
             </StackPanel>
         </Border>
         <TabControl  Margin="5" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2">

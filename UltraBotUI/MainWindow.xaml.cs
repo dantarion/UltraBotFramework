@@ -146,9 +146,10 @@ namespace UltraBotUI
             bot.Init(0);
 
         }
+        private List<string> log = new List<string>();
         private void RefreshBotData()
         {
-            //StackDisplay.ItemsSource = bot.getStateStack();
+            StackDisplay.ItemsSource = log;
             ComboDisplay.ItemsSource = bot.getComboList();      
             
         }
@@ -173,7 +174,8 @@ namespace UltraBotUI
                 f2.UpdatePlayerState();
                 if (args.runBot)
                     bot.Run();
-                var text = String.Format("XDistance:{0},AttackRange:{1}, OldDist {2}", f1.XDistance, f2.AttackRange, f2.X-f1.X);
+                var text = bot.getStatus();
+
                 backgroundWorker.ReportProgress(0, text);
                 if (args.runOverlay)
                 {
@@ -193,7 +195,15 @@ namespace UltraBotUI
         }
         private void backgroundWorker_ProgressChanged(object sender,  ProgressChangedEventArgs e)
         {
+            string var = (string)e.UserState;
             StatusLabel.Content = e.UserState;
+            if (StackDisplay.Items.Count == 0 || !StackDisplay.Items[0].Equals(var))
+            {
+                log.Insert(0, var);
+                StackDisplay.Items.Refresh();
+            }
+            while (log.Count > 200)
+                log.RemoveAt(log.Count - 1);
             RefreshBotData();
         }
         struct WorkerArgs

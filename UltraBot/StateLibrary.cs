@@ -113,11 +113,15 @@ namespace UltraBot
 		}
         public static BotAIState Trigger(Bot bot)
         {
+            
              //bot.enemyState.AttackRange*2+System.Math.Abs(bot.enemyState.XVelocity*bot.enemyState.StateTimer)+.5*System.Math.Abs(bot.enemyState.XAcceleration*3)
             if ((bot.enemyState.State == FighterState.CharState.Startup && bot.enemyState.StateTimer < 3) || bot.enemyState.State == FighterState.CharState.Active)
-                if(Math.Abs(bot.myState.XDistance)-.85 < bot.enemyState.AttackRange)
+            {
+                Console.WriteLine("VELOCITY={0} ACCEL={1} XPOS={2}", bot.enemyState.XVelocity, bot.enemyState.XAcceleration, bot.enemyState.X);
+                if (Math.Abs(bot.myState.XDistance) - .85 < bot.enemyState.AttackRange)
 
                     return new DefendState(bot);
+            }
             return null;
         }
         protected override IEnumerator<string> Run(Bot bot)
