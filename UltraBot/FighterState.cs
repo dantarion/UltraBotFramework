@@ -315,8 +315,8 @@ namespace UltraBot
                 var right = Math.Abs(ProjectileRight - X);
                 var left = Math.Abs(ProjectileLeft - X);
                 var max = Math.Max(right, left);
-
-                AttackRange = Math.Max(max, AttackRange);
+               
+                AttackRange = Math.Max(max+ProjectileSpeed*10, AttackRange);
                 State = CharState.Active;
             }
             for(int i = 0; i <= 5; i++)
@@ -329,11 +329,6 @@ namespace UltraBot
                 {
                     if(i == 0)
                     {
-
-
-
-
-                        Console.WriteLine("Hitbox? {0:x}", hitboxPtr);
                       
                     }
                    //ReadBox here.

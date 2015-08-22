@@ -18,16 +18,20 @@ public class KenBot : Bot
     }
     public class TestState : BotAIState
     {
-        protected override System.Collections.Generic.IEnumerator<string> Run(Bot bot)
+        public override System.Collections.Generic.IEnumerator<string> Run(Bot bot)
         {
             while(Math.Abs(bot.myState.XDistance) > 1)
             {
                 bot.pressButton("6");
                 yield return "Getting in range";
             }
-            bot.pressButton("2LP");
-            yield return "CR JAB";
-            
+            if(!bot.enemyState.ActiveCancelLists.Contains("REVERSAL"))
+            {
+                var substate = new SequenceState("1LP.W18.*2HP.2MPHP.W10.6.2.3HP");
+                while(!substate.isFinished())
+                    yield return substate.Process(bot);
+            }
+            yield break;
         }
     }
 }

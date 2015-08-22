@@ -32,7 +32,7 @@ namespace UltraBot
         {
             return _finished;
         }
-        protected virtual IEnumerator<string> Run(Bot bot)
+        public virtual IEnumerator<string> Run(Bot bot)
         {
             while(true)
                 yield return this.GetType().Name;

@@ -11,7 +11,7 @@ namespace UltraBot
 	}
     public class ReturnToNeutralState : BotAIState
     {
-        protected override IEnumerator<string> Run(Bot bot)
+        public override IEnumerator<string> Run(Bot bot)
         {
             //We wait until we can 
             while(true)
@@ -35,7 +35,7 @@ namespace UltraBot
                 return new ThrowTechState();
             return null;
         }
-        protected override IEnumerator<string> Run(Bot bot)
+        public override IEnumerator<string> Run(Bot bot)
         {
             //We press tech until we are no longer in the throw tech state
             while (bot.myState.ScriptName.Contains("THROW") && bot.myState.ScriptName.Contains("DAMAGE"))
@@ -54,52 +54,55 @@ namespace UltraBot
 			STOP_ON_WHIFF,
 			STOP_ON_BLOCK
 		}
-		private int index = 0;
+		
 		private List<string> Inputs = new List<string>();
-		private uint timer = 0;
+		
 		public SequenceState(string sequence)
 		{
 			foreach(string s in sequence.Split('.'))
 				Inputs.Add(s);
 		}
 
-        protected override IEnumerator<string> Run(Bot bot)
+        public override IEnumerator<string> Run(Bot bot)
 		{
-            bool finished = false;
-            while(true)
+            int index = 0;
+            bool stopOnBlock = false;
+            bool stopOnWhiff = false;
+            //Are we at neutral?
+            while (!bot.myState.ActiveCancelLists.Contains("GROUND"))
             {
-                //Is it time to do the next input?
-			    if(timer > MatchState.getInstance().FrameCounter)
-			    {
-                    //No, we are waiting, W in effect
-				    yield return "Waiting...";
-			    }
+                yield return "Waiting...to be on ground";
+            }
+            while(true)
+            {                
                 //WX wait X frames
-			    if(Inputs[index][0] == 'W')
+			    while(Inputs[index][0] == 'W')
 			    {
-				    timer = UInt32.Parse(Inputs[index++].Substring(1));
-                    timer += MatchState.getInstance().FrameCounter;
-                    yield return "Waiting " + MatchState.getInstance().FrameCounter.ToString();
-			    }
+                    uint timer = UInt32.Parse(Inputs[index++].Substring(1));
+                    uint i = 0;
+                    while (i++ < timer)
+                    {
+                        yield return String.Format("Waiting {0} Frames",timer);
+                    }
+                }
                 //Stop on block
-                if (Inputs[index][0] == '*' && (bot.enemyState.ScriptName.Contains("GUARD") || !(128 <= bot.enemyState.ScriptIndex && bot.enemyState.ScriptIndex <= 202)))
-                    finished = true;
-                else
-                {
+                if (Inputs[index].Contains('*'))
+                    stopOnBlock = true;
+                //Stop on whiff
+                if (Inputs[index].Contains('-'))
+                    stopOnWhiff = true;
 
-
-                    bot.pressButton(Inputs[index++]);
-                    timer = MatchState.getInstance().FrameCounter + 1;
-                    if (index > Inputs.Count - 1)
-                        finished = true;
-                }
-            
-                if(finished)
-                {
-                    timer = 0;
-                    index = 0;
-                    bot.changeState(new ReturnToNeutralState());
-                }
+                
+                if (stopOnBlock && (bot.enemyState.ScriptName.Contains("GUARD")))
+                    yield break;
+                if(stopOnWhiff && !(64 <= bot.enemyState.ScriptIndex && bot.enemyState.ScriptIndex <= 202))
+                    yield break;
+    
+                bot.pressButton(Inputs[index]);
+                if (index > Inputs.Count - 1)
+                    yield break;
+                yield return "Pressing" + Inputs[index++].ToString();
+                
             }
 
 		}
@@ -124,7 +127,7 @@ namespace UltraBot
             }
             return null;
         }
-        protected override IEnumerator<string> Run(Bot bot)
+        public override IEnumerator<string> Run(Bot bot)
         {
             while (true)
             {

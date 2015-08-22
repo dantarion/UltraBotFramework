@@ -151,15 +151,15 @@ namespace UltraBotUI
             try
             {
                 bot = Bot.LoadBotFromFile((string)BotSelector.SelectedValue);
+                BotSelector.Items.Refresh();
+                RefreshBotData();
+                bot.Init(0);
             }
             catch(Exception err)
             {
                 StatusLabel.Content = err.ToString();
             }
-            BotSelector.Items.Refresh();
-            RefreshBotData();
-
-            bot.Init(0);
+            
 
         }
         private List<LogEntry> log = new List<LogEntry>();
