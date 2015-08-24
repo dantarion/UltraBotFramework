@@ -45,18 +45,12 @@ namespace UltraBot
             }
         }
     }
+    /// <summary>
+    /// This 
+    /// </summary>
 	public class SequenceState : BotAIState
 	{
-
-		[Flags]
-		public enum SequenceFlags
-		{
-			STOP_ON_WHIFF,
-			STOP_ON_BLOCK
-		}
-		
 		private List<string> Inputs = new List<string>();
-		
 		public SequenceState(string sequence)
 		{
 			foreach(string s in sequence.Split('.'))
@@ -73,10 +67,10 @@ namespace UltraBot
             {
                 yield return "Waiting...to be on ground";
             }
-            while(true)
-            {                
+            while(index < Inputs.Count)
+            {
                 //WX wait X frames
-			    while(Inputs[index][0] == 'W')
+			    while(Inputs[index].IndexOf('W') == 0)
 			    {
                     uint timer = UInt32.Parse(Inputs[index++].Substring(1));
                     uint i = 0;
@@ -91,16 +85,13 @@ namespace UltraBot
                 //Stop on whiff
                 if (Inputs[index].Contains('-'))
                     stopOnWhiff = true;
-
-                
                 if (stopOnBlock && (bot.enemyState.ScriptName.Contains("GUARD")))
                     yield break;
                 if(stopOnWhiff && !(64 <= bot.enemyState.ScriptIndex && bot.enemyState.ScriptIndex <= 202))
                     yield break;
     
                 bot.pressButton(Inputs[index]);
-                if (index > Inputs.Count - 1)
-                    yield break;
+                
                 yield return "Pressing" + Inputs[index++].ToString();
                 
             }
@@ -118,9 +109,9 @@ namespace UltraBot
         {
             
              //bot.enemyState.AttackRange*2+System.Math.Abs(bot.enemyState.XVelocity*bot.enemyState.StateTimer)+.5*System.Math.Abs(bot.enemyState.XAcceleration*3)
-            if ((bot.enemyState.State == FighterState.CharState.Startup && bot.enemyState.StateTimer < 3) || bot.enemyState.State == FighterState.CharState.Active)
+            if ((bot.enemyState.State == FighterState.CharState.Startup && bot.enemyState.StateTimer < 4) || bot.enemyState.State == FighterState.CharState.Active)
             {
-                Console.WriteLine("VELOCITY={0} ACCEL={1} XPOS={2}", bot.enemyState.XVelocity, bot.enemyState.XAcceleration, bot.enemyState.X);
+                //Console.WriteLine("VELOCITY={0} ACCEL={1} XPOS={2}", bot.enemyState.XVelocity, bot.enemyState.XAcceleration, bot.enemyState.X);
                 if (Math.Abs(bot.myState.XDistance) - .15 < bot.enemyState.AttackRange)
 
                     return new DefendState(bot);
@@ -141,13 +132,12 @@ namespace UltraBot
                     }
                     else
                         bot.pressButton(bot.Up());
-                    Console.WriteLine("{0} {1}", bot.enemyState.ScriptName, bot.enemyState.StateTimer);
                 }
                 else
                 {
                     yield break;
                 }
-                yield return "Blocking";
+                yield return string.Format("Blocking {0} - {1} ({2})",bot.enemyState.ScriptName, bot.enemyState.StateTimer,bot.enemyState.State);
             }
 
         }

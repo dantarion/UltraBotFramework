@@ -177,7 +177,7 @@ namespace UltraBot
                     //If we are pressing it this frame (aka holding it) we need to pick it up
                     if (!pressed.Contains(key))
                     {
-                        Console.WriteLine(" \t{0} UP {1}", MatchState.getInstance().FrameCounter, key);
+                        //Console.WriteLine(" \t{0} UP {1}", MatchState.getInstance().FrameCounter, key);
                         WindowsInput.InputSimulator.SimulateKeyUp(map(key));
                         last_pressed.Remove(key);
                     }
@@ -185,7 +185,7 @@ namespace UltraBot
                 //For each key that was pressed this frame, we need to send keydown
                 foreach (var key in pressed)
                 {
-                    Console.WriteLine(" \t{0} DOWN {1}", MatchState.getInstance().FrameCounter, key);
+                    //Console.WriteLine(" \t{0} DOWN {1}", MatchState.getInstance().FrameCounter, key);
                     var mappedKey = map(key);
                     WindowsInput.InputSimulator.SimulateKeyDown(mappedKey);
                     //If this key isn't in the list of keys to pick up next frame, add it

@@ -38,11 +38,12 @@ namespace UltraBot
         [Flags]
         public enum Input
         {
-            BACK = 0x0,
+
             NEUTRAL = 0x1,
             UP = 0x2,
             DOWN = 0x4,
-            FORWARD = 0x8,
+            BACK = 0x8,
+            FORWARD = 0x10,
             NO_BUTTONS = 0x20,
             LP = 0x40,
             MP = 0x80,
@@ -147,10 +148,12 @@ namespace UltraBot
             int j = 0;
             for(int i = 0; i < search; i++)
             {
-                var test = InputBuffer[i];
-                if ((test & sequence[0]) > 0)
+                var test = InputBuffer[i] & (Input)0xF;
+                if ((InputBuffer[1] & Input.NEUTRAL) == Input.NEUTRAL)
+                    continue;
+                if ((test == sequence[j]))
                     j++;
-                if (j > sequence.Length)
+                if (j > sequence.Length -1)
                     return i;
 
             }
@@ -166,6 +169,13 @@ namespace UltraBot
             ReadBACData();
             ReadBCMData();
             ReadOtherData();
+            var hadou = InputBufferMashCheck(36, Input.LK| Input.LP,true);
+            if(hadou > 0)
+            {
+                Console.WriteLine("MOTION DETECTED {0}", hadou);
+            }
+            if (InputBuffer[0] > 0)
+                Console.WriteLine(InputBuffer[0]);
         }
 		public void ReadBCMData()
         {
@@ -203,7 +213,7 @@ namespace UltraBot
                 var trueIndex = (InputBufferIndex - i);
                 if(trueIndex < 0)
                     trueIndex += 255;
-                var tmp = Util.Memory.ReadInt(InputBufferOffset + 0x10 + trueIndex * 4);
+                var tmp = Util.Memory.ReadInt(InputBufferOffset + 0x10+ 0x400 + trueIndex * 4);
 
                 InputBuffer.Add((Input)tmp);
 
@@ -385,15 +395,21 @@ namespace UltraBot
 
                     if ((attach) != 0)
                     {
-                        Console.WriteLine("WARNING ATTACH " + ScriptName);
+                        //Console.WriteLine("WARNING ATTACH " + ScriptName);
                     }
                     else
                         useFallBack = false;
                     
-
                     AttackRange = Math.Max(AttackRange, range);
-                    ScriptFrameHitboxStart = Math.Min(ScriptFrameHitboxStart, Tick2Frame[Util.Memory.ReadShort((int)b + FrameOffset + i * 12 + j * 4)]);
-                    ScriptFrameHitboxEnd = Math.Max(ScriptFrameHitboxEnd, Tick2Frame[Util.Memory.ReadShort((int)b + FrameOffset + i * 12 + j * 4 + 2)]);
+                    try 
+                    { 
+                        ScriptFrameHitboxStart = Math.Min(ScriptFrameHitboxStart, Tick2Frame[Util.Memory.ReadShort((int)b + FrameOffset + i * 12 + j * 4)]);
+                        ScriptFrameHitboxEnd = Math.Max(ScriptFrameHitboxEnd, Tick2Frame[Util.Memory.ReadShort((int)b + FrameOffset + i * 12 + j * 4 + 2)]);
+                    }
+                    catch(Exception)
+                    {
+
+                    }
                     if (type == 2|| (flags & 4) != 0)
                     {
                         if (!ScriptName.Contains("BALCERONA"))
