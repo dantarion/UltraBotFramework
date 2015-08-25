@@ -70,7 +70,7 @@ namespace UltraBot
             while(index < Inputs.Count)
             {
                 //WX wait X frames
-			    while(Inputs[index].IndexOf('W') == 0)
+			    if(Inputs[index].IndexOf('W') == 0)
 			    {
                     uint timer = UInt32.Parse(Inputs[index++].Substring(1));
                     uint i = 0;
@@ -78,6 +78,7 @@ namespace UltraBot
                     {
                         yield return String.Format("Waiting {0} Frames",timer);
                     }
+                    continue;
                 }
                 //Stop on block
                 if (Inputs[index].Contains('*'))

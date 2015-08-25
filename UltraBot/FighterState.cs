@@ -145,15 +145,13 @@ namespace UltraBot
         }
         public int InputBufferSequenceCheck(int search, params Input[] sequence)
         {
-            int j = 0;
+            int j = sequence.Length - 1;
             for(int i = 0; i < search; i++)
             {
-                var test = InputBuffer[i] & (Input)0xF;
-                if ((InputBuffer[1] & Input.NEUTRAL) == Input.NEUTRAL)
-                    continue;
-                if ((test == sequence[j]))
-                    j++;
-                if (j > sequence.Length -1)
+                var test = InputBuffer[i];
+                if ((test & sequence[j]) == sequence[j])
+                    j--;
+                if (j < 0)
                     return i;
 
             }
@@ -169,13 +167,11 @@ namespace UltraBot
             ReadBACData();
             ReadBCMData();
             ReadOtherData();
-            var hadou = InputBufferMashCheck(36, Input.LK| Input.LP,true);
+            var hadou = InputBufferSequenceCheck(24, Input.FORWARD,Input.DOWN, Input.FORWARD);
             if(hadou > 0)
             {
                 Console.WriteLine("MOTION DETECTED {0}", hadou);
             }
-            if (InputBuffer[0] > 0)
-                Console.WriteLine(InputBuffer[0]);
         }
 		public void ReadBCMData()
         {
@@ -214,7 +210,6 @@ namespace UltraBot
                 if(trueIndex < 0)
                     trueIndex += 255;
                 var tmp = Util.Memory.ReadInt(InputBufferOffset + 0x10+ 0x400 + trueIndex * 4);
-
                 InputBuffer.Add((Input)tmp);
 
             }

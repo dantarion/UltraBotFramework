@@ -117,6 +117,14 @@ namespace UltraBotUI
             var le = new LogEntry();
             le.Message = "Loaded!";
             log.Insert(0, le);
+            System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+            dispatcherTimer.Tick += dispatcherTimer_Tick;
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 1);
+            dispatcherTimer.Start();
+        }
+        private void dispatcherTimer_Tick(object sender, EventArgs e)
+        {
+            ComboDisplay.Items.Refresh();
         }
         private void FolderOnChanged(object source, FileSystemEventArgs e)
         {
@@ -167,7 +175,8 @@ namespace UltraBotUI
         {
             Log.ItemsSource = log;
             ComboDisplay.ItemsSource = bot.getComboList();
-            ComboDisplay.Items.Refresh();
+            
+         
             
         }
         private void RadioButton_Checked(object sender, RoutedEventArgs e)
@@ -209,17 +218,20 @@ namespace UltraBotUI
         }
         private void backgroundWorker_ProgressChanged(object sender,  ProgressChangedEventArgs e)
         {
-            StatusLabel.Content = e.UserState;
+            StatusLabel.Content = bot.myState.XDistance;
             if (log.Count == 0 || !log[0].Message.Equals(bot.getStatus()) )
             {
                 var le = new LogEntry();
                 le.Message = bot.getStatus();
                 log.Insert(0, le);
                 Log.Items.Refresh();
+               
             }
             while (log.Count > 200)
                 log.RemoveAt(log.Count - 1);
             RefreshBotData();
+            
+
         }
         struct WorkerArgs
         {

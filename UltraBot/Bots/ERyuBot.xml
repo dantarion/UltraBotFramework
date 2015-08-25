@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BotData>
+	<Combos>
+		<Combo Type="NORMAL" Startup="0" XMin="0" XMax=".6" YMin="0" YMax="0" EXMeter="0" Ultra="false" Input="1LK.W20.*-1LP.W18.1MP.W8.2.1.4LK.W50.6.2.3HP.W60" />
+		<Combo Type="NORMAL" Startup="0" XMin="0" XMax=".6" YMin="0" YMax="0" EXMeter="0" Ultra="false" Input="1LP.W18.*-MP.W8.4.2.6MK.W52.1MP.W8.2.1.4LK.W50.6.2.3HP.W60" />
+		<Combo Type="NORMAL" Startup="0" XMin="0" XMax=".6" YMin="0" YMax="0" EXMeter="0" Ultra="false" Input="2MP.W24.*-HP.W8.4.2.6MK.W58.1MP.W8.2.1.4LK.W50.6.2.3HP.W60" />
+		<Combo Type="NORMAL" Startup="0" XMin="0" XMax=".6" YMin="0" YMax="0" EXMeter="0" Ultra="false" Input="2MP.W24.*-HP.W8.4.2.6MK.W58.1MP.W8.2.3.6HP.W10.MPMK.W10.6.W1.6.W16.1MP.W8.2.1.4LK.W50.6.2.3HP" />		
+		<Combo Type="NORMAL" Startup="0" XMin="0" XMax=".6" YMin="0" YMax="0" EXMeter="0" Ultra="true" Input="2MP.W24.*-HP.W8.4.2.6MK.W58.1MP.W8.2.3.6HP.W10.MPMK.W10.6.W1.6.W16.1MP.W8.2.1.4LK.W50.6.2.3HP.W10.MPMK.W10.6.W1.6.W16.2.6.2.6LKMKHK" />
+		<Combo Type="NORMAL" Startup="0" XMin="2.5" XMax="5" YMin="0" YMax="0" EXMeter="0" Ultra="false" Input="2.3MK.6HP" />
+	</Combos>
+</BotData>
