@@ -104,15 +104,7 @@ namespace UltraBot
             
             if (!combo.Type.HasFlag(ComboType.ANTIAIR) && (enemyState.Y != 0 || enemyState.ScriptName.Contains("2JUMP")))
                 return 0;
-            else
-            {
-                var computedX = enemyState.XDistance + (enemyState.XVelocity * 3)+(.5*enemyState.XAcceleration*Math.Pow(3,2));
-                var computedY = enemyState.Y + (enemyState.YVelocity * 3) + (.5 * enemyState.YAcceleration * Math.Pow(3, 2));
-                Console.WriteLine(computedY);
-                if (combo.YMin > enemyState.Y || combo.YMax < enemyState.Y)
-                    return 0;
 
-            }
             if (!combo.Type.HasFlag(ComboType.GROUND) && (enemyState.Y == 0 && !enemyState.ScriptName.Contains("2JUMP")))
                 return 0;
             if(myState.Meter < combo.EXMeter)
@@ -120,7 +112,7 @@ namespace UltraBot
             if(combo.EXMeter > 0)
                 score *= (float)myState.Meter / (float)combo.EXMeter;
 
-            if (combo.Type.HasFlag(ComboType.ULTRA) && myState.Revenge < 0x1C0)
+            if (combo.Type.HasFlag(ComboType.ULTRA) && myState.Revenge < 0x190/2)
                 return 0;//We don't have ultra
             else
                 score *= (float)myState.Revenge;
@@ -349,11 +341,16 @@ namespace UltraBot
         }
         private FighterState.Input Forward()
         {
+            if(myState.XDistance < 0)
                 return FighterState.Input.FORWARD;
+            return FighterState.Input.BACK;
         }
+        
         private FighterState.Input Back()
         {
-            return FighterState.Input.BACK;
+            if(myState.XDistance < 0)
+                return FighterState.Input.BACK;
+            return FighterState.Input.FORWARD;
         }
         public void pressButton(string key)
         {

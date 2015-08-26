@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BotData>
     <Combos>
-        <!--
-        <Combo Type="GROUND" Startup="0" XMin="0" XMax=".6" YMin="0" YMax="0" EXMeter="0" Input="1LK.W20.*-1LP.W18.1MP.W8.2.1.4LK.W50.6.2.3HP.W60" />
-        <Combo Type="GROUND" Startup="0" XMin="0" XMax=".6" YMin="0" YMax="0" EXMeter="0" Input="1LP.W18.*-MP.W8.4.2.6MK.W52.1MP.W8.2.1.4LK.W50.6.2.3HP.W60" />
-        <Combo Type="GROUND" Startup="0" XMin="0" XMax=".6" YMin="0" YMax="0" EXMeter="0" Input="2MP.W24.*-HP.W8.4.2.6MK.W58.1MP.W8.2.1.4LK.W50.6.2.3HP.W60" />
-        <Combo Type="GROUND" Startup="0" XMin="0" XMax=".6" YMin="0" YMax="0" EXMeter="250" Input="2MP.W24.*-HP.W8.4.2.6MK.W58.1MP.W8.2.1.4LK.W50.6.2.3MPHP.W60" />
-        <Combo Type="GROUND" Startup="0" XMin="0" XMax=".6" YMin="0" YMax="0" EXMeter="500" Input="2MP.W24.*-HP.W8.4.2.6MK.W58.1MP.W8.2.3.6HP.W10.MPMK.W10.6.W1.6.W16.1MP.W8.2.1.4LK.W50.6.2.3HP" />
+
+        <Combo Type="GROUND" Startup="0" XMin="0" XMax=".6" YMin="0" YMax="0" EXMeter="0" Input="1LK.W20.*-1LP.W18.1MP.W8.2.1.4LK.W48.6.2.3HP.W60" />
+        <Combo Type="GROUND" Startup="0" XMin="0" XMax=".6" YMin="0" YMax="0" EXMeter="0" Input="1LP.W18.*-MP.W8.4.2.6MK.W52.1MP.W8.2.1.4LK.W48.6.2.3HP.W60" />
+        <Combo Type="GROUND" Startup="0" XMin="0" XMax=".6" YMin="0" YMax="0" EXMeter="0" Input="2MP.W24.*-HP.W8.4.2.6MK.W58.1MP.W8.2.1.4LK.W48.6.2.3HP.W60" />
+        <Combo Type="GROUND" Startup="0" XMin="0" XMax=".6" YMin="0" YMax="0" EXMeter="250" Input="2MP.W24.*-HP.W8.4.2.6MK.W58.1MP.W8.2.1.4LK.W48.6.2.3MPHP.W60" />
+        <Combo Type="GROUND" Startup="0" XMin="0" XMax=".6" YMin="0" YMax="0" EXMeter="500" Input="2MP.W24.*-HP.W8.4.2.6MK.W58.1MP.W8.2.3.6HP.W10.MPMK.W10.6.W1.6.W16.1MP.W8.2.1.4LK.W48.6.2.3HP" />
         <Combo Type="GROUND,CORNER,ULTRA" Startup="0" XMin="0" XMax=".6" YMin="0" YMax="0" EXMeter="500" Input="2MP.W24.*-HP.W8.4.2.6MK.W58.1MP.2.1.4LK.W56.6.2.3MP.W10._MPMK.W10.4.W1.4.+MPMK.W16.2.3.2.6LKMKHK" />
         <Combo Type="GROUND,MIDSCREEN,ULTRA" Startup="0" XMin="0" XMax=".6" YMin="0" YMax="0" EXMeter="500" Input="2MP.W24.*-HP.W8.4.2.6MK.W58.1MP.2.1.4LK.W56.6.2.3MP.W10._MPMK.W10.6.W1.6.+MPMK.W16.2.3.2.6LKMKHK" />
-        <Combo Type="GROUND,MIDSCREEN,ULTRA" Startup="0" XMin="0" XMax=".6" YMin="0" YMax="0" EXMeter="1000" Input="2MP.W24.*-HP.W8.4.2.6MK.W58.1MP.W8.2.3.6HP.W10.MPMK.W10.6.W1.6.W16.1MP.W8.2.1.4LK.W50.6.2.3HP.W10.MPMK.W10.6.W1.6.W16.2.6.2.6LKMKHK" />
-        <Combo Type="GROUND" Startup="0" XMin="1" XMax="1.7" YMin="0" YMax="0" EXMeter="0" Input="2MK.W10.*-2.1.4.LK.W50.6.2.3HP" />
-        <Combo Type="GROUND" Startup="0" XMin="1" XMax="1.7" YMin="0" YMax="0" EXMeter="0" Input="2MK.W10.2.3.6HP" />
-        <Combo Type="GROUND" Startup="0" XMin="3.5" XMax="5" YMin="0" YMax="0" EXMeter="0" Input="2.3MK.6HP" />
-        <Combo Type="GROUND" Startup="0" XMin="3.5" XMax="5" YMin="0" YMax="0" EXMeter="0" Input="2.3.6HP" />
-        <Combo Type="ANTIAIR" Startup="0" XMin="0" XMax="1.2" YMin=".2" YMax="2" EXMeter="0" Input="3.2.3LP.W48" />
-        -->
-        
+		<Combo Type="GROUND,MIDSCREEN,ULTRA" Startup="0" XMin="0" XMax=".6" YMin="0" YMax="0" EXMeter="1000" Input="2MP.W24.*-HP.W8.4.2.6MK.W58.1MP.W8.2.3.6HP.W10.MPMK.W10.6.W1.6.W16.1MP.W8.2.1.4LK.W48.6.2.3HP.W10.MPMK.W10.6.W1.6.W16.2.6.2.6LKMKHK" />
+		<Combo Type="GROUND" Startup="0" XMin="1" XMax="1.7" YMin="0" YMax="0" EXMeter="0" Input="2MK.W10.*-2.1.4.LK.W50.6.2.3HP" />
+		<Combo Type="GROUND" Startup="0" XMin="1" XMax="1.7" YMin="0" YMax="0" EXMeter="500" Input="2MK.W10.*-4.2.6.LK.W20.MPMK.W10.6.W1.6.W18.1LP.W18.MP.W8.4.2.6MK.W52.1MP.W8.2.1.4LK.W48.6.2.3HP.W60" />
+		<Combo Type="GROUND" Startup="0" XMin="1" XMax="1.7" YMin="0" YMax="0" EXMeter="0" Input="2MK.W10.2.3.6HP" />
+		<Combo Type="GROUND" Startup="0" XMin="3.5" XMax="5" YMin="0" YMax="0" EXMeter="0" Input="2.3MK.6HP.W20" />
+        <Combo Type="GROUND" Startup="0" XMin="3.5" XMax="5" YMin="0" YMax="0" EXMeter="0" Input="2.3.6HP.W20" />
+		<!--
         <Combo Type="ANTIAIR" Startup="0" XMin="1.2" XMax="1.5" YMin="0" YMax="3" EXMeter="0" Input="3.2.6HP.W48" />
+		-->
     </Combos>
 </BotData>

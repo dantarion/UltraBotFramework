@@ -31,7 +31,7 @@ public class ERyuBot : Bot
             var timer = 0;
             while(Math.Abs(bot.myState.XDistance) > c.XMax)
             {
-                if (timer++ > 0)
+                if (timer++ > 5)
                     yield break;//Reroll
                 bot.pressButton("6");
                 yield return "Getting in range";

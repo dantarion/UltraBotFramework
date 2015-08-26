@@ -195,8 +195,8 @@ namespace UltraBot
             var i = 0;
             var InputBufferStart = (int)Util.Memory.ReadInt(0x400000 + 0x6A7DF0) + 0x48;
             var InputBufferCurrent = (int)Util.Memory.ReadInt(InputBufferStart + 0x400 * 0xC + 4);
-            
-
+            var InputBufferCurrentAlt = (int)Util.Memory.ReadInt(InputBufferStart - 0x1C) % 0x400;
+            InputBufferCurrent = InputBufferCurrentAlt;
             var test = (int)Util.Memory.ReadInt(InputBufferOffset + 0x147C + i++ * 0x10);
             while (i < 12)
             {
@@ -208,19 +208,20 @@ namespace UltraBot
             InputBuffer.Clear();
 
             var InputBufferIndex = (int)Util.Memory.ReadInt(InputBufferOffset + 0x1414);
+            Console.WriteLine("{0} {1}", InputBufferCurrent, InputBufferCurrentAlt);
             for(i = 0; i < 0x400; i++)
             {
                 var trueIndex = (InputBufferCurrent);
                 var tmp = Util.Memory.ReadInt(InputBufferStart + 0xC*trueIndex);
                 InputBuffer.Add((Input)tmp);
             }
-            if(InputBuffer[0] != 0)
-                Console.WriteLine("{0} {1} {2}", InputBufferCurrent, (int)InputBuffer[0], InputBuffer[0]);
         }
         public void PressInput(Input input)
         {
             var InputBufferStart = (int)Util.Memory.ReadInt(0x400000 + 0x6A7DF0) + 0x48;
             var InputBufferCurrent = (int)Util.Memory.ReadInt(InputBufferStart + 0x400 * 0xC + 4);
+            var InputBufferCurrentAlt = (int)Util.Memory.ReadInt(InputBufferStart - 0x1C) % 0x400;
+            InputBufferCurrent = InputBufferCurrentAlt;
             Util.Memory.Write(InputBufferStart + 0xC * InputBufferCurrent, (int)input);
         }
         private void ReadBACData()
