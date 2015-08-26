@@ -38,19 +38,18 @@ namespace UltraBot
         [Flags]
         public enum Input
         {
-
-            NEUTRAL = 0x1,
-            UP = 0x2,
-            DOWN = 0x4,
-            BACK = 0x8,
-            FORWARD = 0x10,
-            NO_BUTTONS = 0x20,
-            LP = 0x40,
-            MP = 0x80,
-            HP = 0x100,
-            LK = 0x200,
-            MK = 0x400,
+            UP = 0x1,
+            DOWN = 0x2,
+            BACK = 0x4,
+            FORWARD = 0x8,
+            LP = 0x10,
+            MP = 0x20,
+            LK = 0x40,
+            MK = 0x80,
+            HP = 0x400,
             HK = 0x800,
+            
+            
         }
         /// <summary>
         /// This is used to hold a table to translate between animation ticks and frame timings
@@ -179,9 +178,9 @@ namespace UltraBot
             if (PlayerIndex == 1)
                 off = 0xC;
             //06A7DF0
-            var InputBufferCurrent = (int)Util.Memory.ReadInt((int)Util.Memory.ReadInt(0x400000 + 0x6A7DF0) + 0x60DC+PlayerIndex*4);
             var InputBufferOffset = (int)Util.Memory.ReadInt((int)Util.Memory.ReadInt(0x400000 + 0x6A7DEC) + off);
             var BCM = (int)Util.Memory.ReadInt(InputBufferOffset + 0x8);
+
             //Not in a match
             if (BCM == 0)
                 return;
@@ -194,6 +193,10 @@ namespace UltraBot
             ReadStringOffsetTable(CancelListNames,BCM, (int)Util.Memory.ReadShort(BCM + 0x16), (int)Util.Memory.ReadInt(BCM + 0x34));
             ActiveCancelLists.Clear();
             var i = 0;
+            var InputBufferStart = (int)Util.Memory.ReadInt(0x400000 + 0x6A7DF0) + 0x48;
+            var InputBufferCurrent = (int)Util.Memory.ReadInt(InputBufferStart + 0x400 * 0xC + 4);
+            
+
             var test = (int)Util.Memory.ReadInt(InputBufferOffset + 0x147C + i++ * 0x10);
             while (i < 12)
             {
@@ -205,16 +208,20 @@ namespace UltraBot
             InputBuffer.Clear();
 
             var InputBufferIndex = (int)Util.Memory.ReadInt(InputBufferOffset + 0x1414);
-            for(i = 0; i < 0xff; i++)
+            for(i = 0; i < 0x400; i++)
             {
-                var trueIndex = (InputBufferIndex - i);
-                if(trueIndex < 0)
-                    trueIndex += 255;
-                var tmp = Util.Memory.ReadInt(InputBufferOffset + 0x10+ 0x400 + trueIndex * 4);
+                var trueIndex = (InputBufferCurrent);
+                var tmp = Util.Memory.ReadInt(InputBufferStart + 0xC*trueIndex);
                 InputBuffer.Add((Input)tmp);
             }
-            if(InputBufferCurrent != 0 || InputBuffer[0] != 0)
-            Console.WriteLine("{0} = {1}", (Input)InputBufferCurrent, InputBuffer[0]);
+            if(InputBuffer[0] != 0)
+                Console.WriteLine("{0} {1} {2}", InputBufferCurrent, (int)InputBuffer[0], InputBuffer[0]);
+        }
+        public void PressInput(Input input)
+        {
+            var InputBufferStart = (int)Util.Memory.ReadInt(0x400000 + 0x6A7DF0) + 0x48;
+            var InputBufferCurrent = (int)Util.Memory.ReadInt(InputBufferStart + 0x400 * 0xC + 4);
+            Util.Memory.Write(InputBufferStart + 0xC * InputBufferCurrent, (int)input);
         }
         private void ReadBACData()
         {

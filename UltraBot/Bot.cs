@@ -213,16 +213,18 @@ namespace UltraBot
                     if (!pressed.Contains(key) && !held.Contains(key))
                     {
                         //Console.WriteLine(" \t{0} UP {1}", MatchState.getInstance().FrameCounter, key);
-                        WindowsInput.InputSimulator.SimulateKeyUp(map(key));
+                        //WindowsInput.InputSimulator.SimulateKeyUp(map(key));
                         last_pressed.Remove(key);
                     }
                 }
                 //For each key that was pressed this frame, we need to send keydown
+                FighterState.Input input = 0;
                 foreach (var key in pressed)
                 {
                     //Console.WriteLine(" \t{0} DOWN {1}", MatchState.getInstance().FrameCounter, key);
-                    var mappedKey = map(key);
-                    WindowsInput.InputSimulator.SimulateKeyDown(mappedKey);
+                    //var mappedKey = map(key);
+                    //WindowsInput.InputSimulator.SimulateKeyDown(mappedKey);
+                    input = input | key;
                     //If this key isn't in the list of keys to pick up next frame, add it
                     if(!last_pressed.Contains(key))
                         last_pressed.Add(key);
@@ -230,13 +232,13 @@ namespace UltraBot
                 foreach (var key in held)
                 {
                     //Console.WriteLine(" \t{0} DOWN {1}", MatchState.getInstance().FrameCounter, key);
-                    var mappedKey = map(key);
-                    WindowsInput.InputSimulator.SimulateKeyDown(mappedKey);
+                    //var mappedKey = map(key);
+                    //WindowsInput.InputSimulator.SimulateKeyDown(mappedKey);
                     //If this key isn't in the list of keys to pick up next frame, add it
                     if (!last_pressed.Contains(key))
                         last_pressed.Add(key);
                 }
-
+                myState.PressInput(input);
                 
                 pressed.Clear();
             }
@@ -268,9 +270,9 @@ namespace UltraBot
         }
         #endregion
         #region Input Management
-        private List<VirtualKeyCode> pressed = new List<VirtualKeyCode>();
-        private List<VirtualKeyCode> last_pressed = new List<VirtualKeyCode>();
-        private List<VirtualKeyCode> held = new List<VirtualKeyCode>();
+        private List<FighterState.Input> pressed = new List<FighterState.Input>();
+        private List<FighterState.Input> last_pressed = new List<FighterState.Input>();
+        private List<FighterState.Input> held = new List<FighterState.Input>();
         /// <summary>
         /// These keycodes exist so that we can map them to keyboard or vJoy or whatever.
         /// </summary>
@@ -345,17 +347,13 @@ namespace UltraBot
             THROW,
             FOCUS
         }
-        private VirtualKeyCode Forward()
+        private FighterState.Input Forward()
         {
-            if (myState.X - enemyState.X > 0)
-                return VirtualKeyCode.LEFT;
-            return VirtualKeyCode.RIGHT;
+                return FighterState.Input.FORWARD;
         }
-        private VirtualKeyCode Back()
+        private FighterState.Input Back()
         {
-            if (myState.X - enemyState.X > 0)
-                return VirtualKeyCode.RIGHT;
-            return VirtualKeyCode.LEFT;
+            return FighterState.Input.BACK;
         }
         public void pressButton(string key)
         {
@@ -365,52 +363,52 @@ namespace UltraBot
             if (key.Contains('+'))
                 kmode = KeyMode.RELEASE;
             if (key.Contains("2"))
-                pressButton(VirtualKeyCode.DOWN, kmode);
+                pressButton(FighterState.Input.DOWN, kmode);
             if (key.Contains("6"))
                 pressButton(this.Forward(), kmode);
             if (key.Contains("4"))
                 pressButton(this.Back(), kmode);
             if (key.Contains("8"))
-                pressButton(VirtualKeyCode.UP, kmode);
+                pressButton(FighterState.Input.UP, kmode);
 			if (key.Contains("1"))	
 			{
                 pressButton(this.Back(), kmode);
-                pressButton(VirtualKeyCode.DOWN, kmode);
+                pressButton(FighterState.Input.DOWN, kmode);
 			}
 			if (key.Contains("3"))	
 			{
                 pressButton(this.Forward(), kmode);
-                pressButton(VirtualKeyCode.DOWN, kmode);
+                pressButton(FighterState.Input.DOWN, kmode);
 			}
 			if (key.Contains("7"))	
 			{
                 pressButton(this.Back(), kmode);
-                pressButton(VirtualKeyCode.UP, kmode);
+                pressButton(FighterState.Input.UP, kmode);
 			}
 			if (key.Contains("9"))	
 			{
                 pressButton(this.Forward(), kmode);
-                pressButton(VirtualKeyCode.UP, kmode);
+                pressButton(FighterState.Input.UP, kmode);
 			}
 			
             if (key.Contains("LP"))
-                pressButton(VirtualKeyCode.LP, kmode);
+                pressButton(FighterState.Input.LP, kmode);
             if (key.Contains("MP"))
-                pressButton(VirtualKeyCode.MP, kmode);
+                pressButton(FighterState.Input.MP, kmode);
             if (key.Contains("HP"))
-                pressButton(VirtualKeyCode.HP, kmode);
+                pressButton(FighterState.Input.HP, kmode);
             if (key.Contains("LK"))
-                pressButton(VirtualKeyCode.LK, kmode);
+                pressButton(FighterState.Input.LK, kmode);
             if (key.Contains("MK"))
-                pressButton(VirtualKeyCode.MK, kmode);
+                pressButton(FighterState.Input.MK, kmode);
             if (key.Contains("HK"))
-                pressButton(VirtualKeyCode.HK, kmode);
+                pressButton(FighterState.Input.HK, kmode);
         }
         public enum KeyMode
         {
             PRESS,HOLD,RELEASE
         }
-        public void pressButton(VirtualKeyCode key,KeyMode mode)
+        public void pressButton(FighterState.Input key, KeyMode mode)
         {
             
             if(mode == KeyMode.RELEASE)
