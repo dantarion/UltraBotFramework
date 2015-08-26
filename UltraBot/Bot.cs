@@ -14,16 +14,16 @@ namespace UltraBot
         {
             currentState = DefaultState();
         }
-
-        private List<Type> TriggerStates = new List<Type>();
+        public delegate BotAIState AITrigger(Bot bot);
+        private List<AITrigger> TriggerStates = new List<AITrigger>();
         /// <summary>
         /// Registers a state that can trigger itself at any time. The state must inherit from BotAIState and implement Trigger() static method. 
         /// See DefendState for an example.
         /// </summary>
         /// <param name="t"></param>
-        protected void RegisterState(Type t)
+        protected void RegisterState(AITrigger t)
         {
-            if (t.IsSubclassOf(typeof(BotAIState)) && !TriggerStates.Contains(t))
+            if (!TriggerStates.Contains(t))
                 TriggerStates.Add(t);
         }
         #region Combo System
@@ -132,9 +132,8 @@ namespace UltraBot
         {
             foreach (var t in TriggerStates)
             {
-                var method = t.GetMethod("Trigger");
-                var result = method.Invoke(null, new object[] { this });
-                if (result != null && currentState.GetType() != t)
+                var result = t(this);
+                if (result != null && currentState.GetType() != result.GetType())
                 {
                     changeState(result as BotAIState);
                     break;

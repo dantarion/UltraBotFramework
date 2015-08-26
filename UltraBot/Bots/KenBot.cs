@@ -9,8 +9,8 @@ public class KenBot : Bot
     }
     public KenBot()
     {
-        RegisterState(typeof(ThrowTechState));
-        RegisterState(typeof(DefendState));
+        RegisterState(ThrowTechState.Trigger);
+        RegisterState(DefendState.Trigger);
     }
     public override BotAIState DefaultState()
     {
