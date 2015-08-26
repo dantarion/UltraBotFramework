@@ -40,16 +40,14 @@ namespace UltraBot
         {
             UP = 0x1,
             DOWN = 0x2,
-            BACK = 0x4,
-            FORWARD = 0x8,
+            LEFT = 0x4,
+            RIGHT = 0x8,
             LP = 0x10,
             MP = 0x20,
             LK = 0x40,
             MK = 0x80,
             HP = 0x400,
             HK = 0x800,
-            
-            
         }
         /// <summary>
         /// This is used to hold a table to translate between animation ticks and frame timings
@@ -166,7 +164,7 @@ namespace UltraBot
             ReadBACData();
             ReadBCMData();
             ReadOtherData();
-            var hadou = InputBufferSequenceCheck(24, Input.FORWARD,Input.DOWN, Input.FORWARD);
+            var hadou = InputBufferSequenceCheck(24, Input.RIGHT,Input.DOWN, Input.RIGHT);
             if(hadou > 0)
             {
                 Console.WriteLine("MOTION DETECTED {0}", hadou);
@@ -215,15 +213,7 @@ namespace UltraBot
                 var tmp = Util.Memory.ReadInt(InputBufferStart + 0xC*trueIndex);
                 InputBuffer.Add((Input)tmp);
             }
-        }
-        public void PressInput(Input input)
-        {
-            var InputBufferStart = (int)Util.Memory.ReadInt(0x400000 + 0x6A7DF0) + 0x48;
-            var InputBufferCurrent = (int)Util.Memory.ReadInt(InputBufferStart + 0x400 * 0xC + 4);
-            var InputBufferCurrentAlt = (int)Util.Memory.ReadInt(InputBufferStart - 0x1C) % 0x400;
-            InputBufferCurrent = InputBufferCurrentAlt;
-            Util.Memory.Write(InputBufferStart + 0xC * InputBufferCurrent, (int)input);
-        }
+        }      
         private void ReadBACData()
         {
             var BAC = Util.Memory.ReadInt((int)Util.Memory.ReadInt(_BaseOffset + 0xB0) + 0x8);

@@ -54,11 +54,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bot.cs" />
+    <Compile Include="BotLoader.cs" />
     <Compile Include="BotState.cs" />
     <Compile Include="Bots\KenBot.cs" />
     <Compile Include="Bots\ERyuBot.cs" />
     <Compile Include="Combo.cs" />
     <Compile Include="FighterState.cs" />
+    <Compile Include="InputAdapter.cs" />
     <Compile Include="MatchState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StateLibrary.cs" />

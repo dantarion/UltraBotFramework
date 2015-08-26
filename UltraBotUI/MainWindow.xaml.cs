@@ -143,7 +143,7 @@ namespace UltraBotUI
                 watcher.Filter = "*.*";
                 watcher.Changed += new FileSystemEventHandler(FolderOnChanged);
                 watcher.EnableRaisingEvents = true;
-                Bot.AddSearchPath(searchDir);
+                BotLoader.AddSearchPath(searchDir);
                 foreach (var botfile in Directory.EnumerateFiles(searchDir,"*.cs"))
                 {
                     BotEntries.Add(Path.GetFileNameWithoutExtension(botfile));
@@ -158,7 +158,7 @@ namespace UltraBotUI
             StatusLabel.Content = "Loading " + (string)BotSelector.SelectedValue +"...";
             try
             {
-                bot = Bot.LoadBotFromFile((string)BotSelector.SelectedValue);
+                bot = BotLoader.LoadBotFromFile((string)BotSelector.SelectedValue);
                 BotSelector.Items.Refresh();
                 RefreshBotData();
                 bot.Init(0);
