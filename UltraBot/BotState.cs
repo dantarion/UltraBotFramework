@@ -12,7 +12,7 @@ namespace UltraBot
         private IEnumerator<string> _iterator = null;
         private bool _finished = false;
         protected string _reason = "";
-        public virtual string Process(Bot bot)
+        public string Process(Bot bot)
         {   
             if(_iterator == null)
                 _iterator = Run(bot);
