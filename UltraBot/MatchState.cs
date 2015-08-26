@@ -27,7 +27,6 @@ namespace UltraBot
         public void Update()
         {
             var tmp = Util.Memory.ReadInt((int)Util.Memory.ReadInt(0x400000 + 0x6A7DF0) + 0x28);
-
             while (tmp == FrameCounter)//We are running too fast, we need to wait for the game to continue
             {
                 Thread.Sleep(1);

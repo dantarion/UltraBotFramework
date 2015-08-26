@@ -72,7 +72,7 @@ namespace UltraBot
                     uint i = 0;
                     while (i++ < timer)
                     {
-                        yield return String.Format("Waiting {0} Frames",timer);
+                        yield return String.Join(".", Inputs.Skip(index-1));
                     }
                     continue;
                 }
@@ -89,7 +89,7 @@ namespace UltraBot
     
                 bot.pressButton(Inputs[index]);
                 
-                yield return "Pressing" + Inputs[index++].ToString();
+                yield return String.Join(".",Inputs.Skip(index++));
                 
             }
 

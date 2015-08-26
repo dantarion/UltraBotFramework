@@ -9,12 +9,9 @@ namespace UltraBot
 
     public abstract class BotAIState
     {
-        public static BotAIState Trigger(Bot bot)
-        {
-            throw new NotImplementedException("This AI State doesn't support being triggered. Implement Trigger()");
-        }
         private IEnumerator<string> _iterator = null;
         private bool _finished = false;
+        protected string _reason = "";
         public virtual string Process(Bot bot)
         {   
             if(_iterator == null)
@@ -25,7 +22,7 @@ namespace UltraBot
             else
             {
                 _finished = true;
-                return this.GetType().Name + " has finished";
+                return String.Format("{0} exit: {1}", this.GetType().Name, _reason);
             }
         }
         public bool isFinished()

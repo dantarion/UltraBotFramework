@@ -27,42 +27,9 @@ namespace UltraBot
                 TriggerStates.Add(t);
         }
         #region Combo System
-        protected float scoreCombo(Combo combo)
+        protected virtual float scoreCombo(Combo combo, int startup = Int32.MaxValue)
         {
-            float score = 1.0f;
-            //Killers
-            
-            if (!combo.Type.HasFlag(ComboType.ANTIAIR) && (enemyState.Y != 0 || enemyState.ScriptName.Contains("2JUMP")))
-                return 0;
-
-            if (!combo.Type.HasFlag(ComboType.GROUND) && (enemyState.Y == 0 && !enemyState.ScriptName.Contains("2JUMP")))
-                return 0;
-            if(myState.Meter < combo.EXMeter)
-                return 0;//We don't have the meter
-            if(combo.EXMeter > 0)
-                score *= (float)myState.Meter / (float)combo.EXMeter;
-
-            if (combo.Type.HasFlag(ComboType.ULTRA) && myState.Revenge < 0x190/2)
-                return 0;//We don't have ultra
-            else
-                score *= (float)myState.Revenge;
-            //Corner
-            float cornerDistance;
-            if (myState.XDistance > 0)
-                cornerDistance = Math.Abs(7.5f + myState.X);//Facing Left
-            else
-                cornerDistance = Math.Abs(-7.5f + myState.X);//Facing right
-            if (combo.Type.HasFlag(ComboType.CORNER) && cornerDistance > 2.5)
-                return 0;
-            if (combo.Type.HasFlag(ComboType.MIDSCREEN) && cornerDistance < 2.5)
-                return 0;
-            if (Math.Abs(myState.XDistance) <= combo.XMax && Math.Abs(myState.XDistance) >= combo.XMin)
-                score += 100;//We are already in range
-            //TODO IF WE ARE ALMOST IN RANGE
-            //TODO GROUNDED.ANTIAIR.POKE.THROWF setup
-            if (combo.Type.HasFlag(ComboType.DEBUG))
-                return float.MaxValue;
-            return score;
+            return 1;
         }
         protected void scoreCombos(int startup = Int32.MaxValue)
         {
@@ -85,7 +52,6 @@ namespace UltraBot
             myState = FighterState.getFighter(index);
             enemyState = FighterState.getFighter(index == 0 ? 1 : 0);
         }
-
         public FighterState myState;
         public FighterState enemyState;
         private string _status = "";
@@ -109,7 +75,6 @@ namespace UltraBot
             myState.YDistance = myState.Y - enemyState.Y;
             scoreCombos();
             StateCheck();
-
             _status = currentState.Process(this);
             if (currentState.isFinished())
             {

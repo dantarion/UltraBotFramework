@@ -10,11 +10,28 @@ public class KenBot : Bot
     public KenBot()
     {
         RegisterState(ThrowTechState.Trigger);
-        RegisterState(DefendState.Trigger);
+        //RegisterState(DefendState.Trigger);
     }
     public override BotAIState DefaultState()
     {
-        return new TestState();
+        return new PsychicDPState();
+    }
+    public class PsychicDPState : BotAIState
+    {
+        public override System.Collections.Generic.IEnumerator<string> Run(Bot bot)
+        {
+            var alternate = 0;
+            while(bot.enemyState.AState == FighterState.AttackState.None)
+            {
+                if(alternate++ % 2 == 0)
+                    bot.pressButton("3");
+                else
+                    bot.pressButton("2");
+                yield return "mashing DP motion";
+            }
+            bot.pressButton("3HP");
+            yield return "they pressed a button! doing DP!";
+        }
     }
     public class TestState : BotAIState
     {
