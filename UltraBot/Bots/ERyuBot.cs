@@ -17,21 +17,26 @@ public class ERyuBot : Bot
         public override System.Collections.Generic.IEnumerator<string> Run(Bot bot)
         {
             var r = new Random();
-            var chosenCombo = from combo in bot.getComboList()
+            var chosenCombo = (from combo in bot.getComboList()
                               where
                                   combo.Score > 0
-                              select combo;
+                              orderby combo.Score descending
+                              
+                              select combo).Take(5);
             if (chosenCombo.Count() == 0)
                 yield break;
-            var c = chosenCombo.First();
+            var c = chosenCombo.ElementAt(r.Next(chosenCombo.Count()));
             if (c == null)
                 yield break;
+            var timer = 0;
             while(Math.Abs(bot.myState.XDistance) > c.XMax)
             {
+                if (timer++ > 0)
+                    yield break;//Reroll
                 bot.pressButton("6");
                 yield return "Getting in range";
             }
-            if(!bot.enemyState.ActiveCancelLists.Contains("REVERSAL"))
+            if(!bot.enemyState.ActiveCancelLists.Contains("REVERSAL") && !bot.enemyState.ScriptName.Contains("UPWARD"))
             {
                 var substate = new SequenceState(c.Input);
                 while(!substate.isFinished())

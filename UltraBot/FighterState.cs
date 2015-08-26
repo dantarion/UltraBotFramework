@@ -178,7 +178,8 @@ namespace UltraBot
             int off = 0x8;
             if (PlayerIndex == 1)
                 off = 0xC;
-
+            //06A7DF0
+            var InputBufferCurrent = (int)Util.Memory.ReadInt((int)Util.Memory.ReadInt(0x400000 + 0x6A7DF0) + 0x60DC+PlayerIndex*4);
             var InputBufferOffset = (int)Util.Memory.ReadInt((int)Util.Memory.ReadInt(0x400000 + 0x6A7DEC) + off);
             var BCM = (int)Util.Memory.ReadInt(InputBufferOffset + 0x8);
             //Not in a match
@@ -211,10 +212,9 @@ namespace UltraBot
                     trueIndex += 255;
                 var tmp = Util.Memory.ReadInt(InputBufferOffset + 0x10+ 0x400 + trueIndex * 4);
                 InputBuffer.Add((Input)tmp);
-
             }
-
-
+            if(InputBufferCurrent != 0 || InputBuffer[0] != 0)
+            Console.WriteLine("{0} = {1}", (Input)InputBufferCurrent, InputBuffer[0]);
         }
         private void ReadBACData()
         {

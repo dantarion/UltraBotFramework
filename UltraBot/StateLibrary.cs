@@ -63,10 +63,6 @@ namespace UltraBot
             bool stopOnBlock = false;
             bool stopOnWhiff = false;
             //Are we at neutral?
-            while (!bot.myState.ActiveCancelLists.Contains("GROUND"))
-            {
-                yield return "Waiting...to be on ground";
-            }
             while(index < Inputs.Count)
             {
                 //WX wait X frames
@@ -88,7 +84,7 @@ namespace UltraBot
                     stopOnWhiff = true;
                 if (stopOnBlock && (bot.enemyState.ScriptName.Contains("GUARD")))
                     yield break;
-                if(stopOnWhiff && !(64 <= bot.enemyState.ScriptIndex && bot.enemyState.ScriptIndex <= 202))
+                if(stopOnWhiff && !(64 <= bot.enemyState.ScriptIndex && bot.enemyState.ScriptIndex <= 202 && !bot.enemyState.ScriptName.EndsWith("J")))
                     yield break;
     
                 bot.pressButton(Inputs[index]);
@@ -127,12 +123,12 @@ namespace UltraBot
                 {
                     if (bot.enemyState.AState != FighterState.AttackState.Throw)
                     {
-                        bot.pressButton(bot.Back());
+                        bot.pressButton("4");
                         if (bot.enemyState.AState != FighterState.AttackState.Overhead)
-                            bot.pressButton(bot.Down());
+                            bot.pressButton("1");
                     }
                     else
-                        bot.pressButton(bot.Up());
+                        bot.pressButton("8");
                 }
                 else
                 {

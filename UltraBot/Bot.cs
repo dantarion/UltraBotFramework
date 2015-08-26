@@ -86,7 +86,6 @@ namespace UltraBot
             foreach (XmlNode comboXml in xmldoc.DocumentElement.SelectNodes("//Combo"))
             {
                 var combo = new Combo();
-
                 combo.Type = (ComboType)Enum.Parse(typeof(ComboType), comboXml.Attributes["Type"].Value);
                 combo.Startup = Int32.Parse(comboXml.Attributes["Startup"].Value);
                 combo.XMin = float.Parse(comboXml.Attributes["XMin"].Value);
@@ -94,27 +93,59 @@ namespace UltraBot
                 combo.YMin = float.Parse(comboXml.Attributes["YMin"].Value);
                 combo.YMax = float.Parse(comboXml.Attributes["YMax"].Value);
                 combo.EXMeter = Int32.Parse(comboXml.Attributes["EXMeter"].Value);
-                combo.Ultra = bool.Parse(comboXml.Attributes["Ultra"].Value);
                 combo.Input = comboXml.Attributes["Input"].Value;
                 bot.comboList.Add(combo);
             }
         }
-        private void scoreCombos(int startup = Int32.MaxValue)
+        protected float scoreCombo(Combo combo)
         {
-            var validCombos = from combo in comboList 
-                              where
-                              combo.Startup < startup
-							  && combo.XMin <= Math.Abs(myState.XDistance)
-							  && combo.XMax >=  Math.Abs(myState.XDistance)
-							  && combo.YMin <= enemyState.Y
-							  && combo.YMax >= enemyState.Y
-							  && combo.EXMeter <= myState.Meter
-                              select combo;
+            float score = 1.0f;
+            //Killers
+            
+            if (!combo.Type.HasFlag(ComboType.ANTIAIR) && (enemyState.Y != 0 || enemyState.ScriptName.Contains("2JUMP")))
+                return 0;
+            else
+            {
+                var computedX = enemyState.XDistance + (enemyState.XVelocity * 3)+(.5*enemyState.XAcceleration*Math.Pow(3,2));
+                var computedY = enemyState.Y + (enemyState.YVelocity * 3) + (.5 * enemyState.YAcceleration * Math.Pow(3, 2));
+                Console.WriteLine(computedY);
+                if (combo.YMin > enemyState.Y || combo.YMax < enemyState.Y)
+                    return 0;
+
+            }
+            if (!combo.Type.HasFlag(ComboType.GROUND) && (enemyState.Y == 0 && !enemyState.ScriptName.Contains("2JUMP")))
+                return 0;
+            if(myState.Meter < combo.EXMeter)
+                return 0;//We don't have the meter
+            if(combo.EXMeter > 0)
+                score *= (float)myState.Meter / (float)combo.EXMeter;
+
+            if (combo.Type.HasFlag(ComboType.ULTRA) && myState.Revenge < 0x1C0)
+                return 0;//We don't have ultra
+            else
+                score *= (float)myState.Revenge;
+            //Corner
+            float cornerDistance;
+            if (myState.XDistance > 0)
+                cornerDistance = Math.Abs(7.5f + myState.X);//Facing Left
+            else
+                cornerDistance = Math.Abs(-7.5f + myState.X);//Facing right
+            if (combo.Type.HasFlag(ComboType.CORNER) && cornerDistance > 2.5)
+                return 0;
+            if (combo.Type.HasFlag(ComboType.MIDSCREEN) && cornerDistance < 2.5)
+                return 0;
+            if (Math.Abs(myState.XDistance) <= combo.XMax && Math.Abs(myState.XDistance) >= combo.XMin)
+                score += 100;//We are already in range
+            //TODO IF WE ARE ALMOST IN RANGE
+            //TODO GROUNDED.ANTIAIR.POKE.THROWF setup
+            if (combo.Type.HasFlag(ComboType.DEBUG))
+                return float.MaxValue;
+            return score;
+        }
+        protected void scoreCombos(int startup = Int32.MaxValue)
+        {
             foreach (var combo in comboList)
-                if (validCombos.Contains(combo))
-                    combo.Score = 1;
-                else
-                    combo.Score = 0;
+                combo.Score = scoreCombo(combo);
         }
 		private List<Combo> comboList = new List<Combo>();
         public List<Combo> getComboList()
@@ -165,9 +196,13 @@ namespace UltraBot
                     break;
                 }
             }
+
             _status = currentState.Process(this);
             if (currentState.isFinished())
+            {
                 changeState(DefaultState());
+                _status = currentState.Process(this);
+            }
             
             if (Util.GetActiveWindowTitle() == "SSFIVAE")
             {
@@ -175,7 +210,7 @@ namespace UltraBot
                 foreach (var key in last_pressed.ToList())
                 {
                     //If we are pressing it this frame (aka holding it) we need to pick it up
-                    if (!pressed.Contains(key))
+                    if (!pressed.Contains(key) && !held.Contains(key))
                     {
                         //Console.WriteLine(" \t{0} UP {1}", MatchState.getInstance().FrameCounter, key);
                         WindowsInput.InputSimulator.SimulateKeyUp(map(key));
@@ -190,6 +225,15 @@ namespace UltraBot
                     WindowsInput.InputSimulator.SimulateKeyDown(mappedKey);
                     //If this key isn't in the list of keys to pick up next frame, add it
                     if(!last_pressed.Contains(key))
+                        last_pressed.Add(key);
+                }
+                foreach (var key in held)
+                {
+                    //Console.WriteLine(" \t{0} DOWN {1}", MatchState.getInstance().FrameCounter, key);
+                    var mappedKey = map(key);
+                    WindowsInput.InputSimulator.SimulateKeyDown(mappedKey);
+                    //If this key isn't in the list of keys to pick up next frame, add it
+                    if (!last_pressed.Contains(key))
                         last_pressed.Add(key);
                 }
 
@@ -301,21 +345,13 @@ namespace UltraBot
             THROW,
             FOCUS
         }
-        public VirtualKeyCode Forward()
+        private VirtualKeyCode Forward()
         {
             if (myState.X - enemyState.X > 0)
                 return VirtualKeyCode.LEFT;
             return VirtualKeyCode.RIGHT;
         }
-        public VirtualKeyCode Up()
-        {
-            return VirtualKeyCode.UP;
-        }
-        public VirtualKeyCode Down()
-        {
-            return VirtualKeyCode.DOWN;
-        }
-        public VirtualKeyCode Back()
+        private VirtualKeyCode Back()
         {
             if (myState.X - enemyState.X > 0)
                 return VirtualKeyCode.RIGHT;
@@ -323,65 +359,79 @@ namespace UltraBot
         }
         public void pressButton(string key)
         {
+            KeyMode kmode = KeyMode.PRESS;
+            if (key.Contains('_'))
+                kmode = KeyMode.HOLD;
+            if (key.Contains('+'))
+                kmode = KeyMode.RELEASE;
             if (key.Contains("2"))
-                pressButton(VirtualKeyCode.DOWN);
+                pressButton(VirtualKeyCode.DOWN, kmode);
             if (key.Contains("6"))
-                pressButton(this.Forward());
+                pressButton(this.Forward(), kmode);
             if (key.Contains("4"))
-                pressButton(this.Back());
+                pressButton(this.Back(), kmode);
             if (key.Contains("8"))
-                pressButton(VirtualKeyCode.UP);
+                pressButton(VirtualKeyCode.UP, kmode);
 			if (key.Contains("1"))	
 			{
-				pressButton(this.Back());
-				pressButton(VirtualKeyCode.DOWN);
+                pressButton(this.Back(), kmode);
+                pressButton(VirtualKeyCode.DOWN, kmode);
 			}
 			if (key.Contains("3"))	
 			{
-				pressButton(this.Forward());
-				pressButton(VirtualKeyCode.DOWN);
+                pressButton(this.Forward(), kmode);
+                pressButton(VirtualKeyCode.DOWN, kmode);
 			}
 			if (key.Contains("7"))	
 			{
-				pressButton(this.Back());
-				pressButton(VirtualKeyCode.UP);
+                pressButton(this.Back(), kmode);
+                pressButton(VirtualKeyCode.UP, kmode);
 			}
 			if (key.Contains("9"))	
 			{
-				pressButton(this.Forward());
-                pressButton(VirtualKeyCode.UP);
+                pressButton(this.Forward(), kmode);
+                pressButton(VirtualKeyCode.UP, kmode);
 			}
 			
             if (key.Contains("LP"))
-                pressButton(VirtualKeyCode.LP);
+                pressButton(VirtualKeyCode.LP, kmode);
             if (key.Contains("MP"))
-                pressButton(VirtualKeyCode.MP);
+                pressButton(VirtualKeyCode.MP, kmode);
             if (key.Contains("HP"))
-                pressButton(VirtualKeyCode.HP);
+                pressButton(VirtualKeyCode.HP, kmode);
             if (key.Contains("LK"))
-                pressButton(VirtualKeyCode.LK);
+                pressButton(VirtualKeyCode.LK, kmode);
             if (key.Contains("MK"))
-                pressButton(VirtualKeyCode.MK);
+                pressButton(VirtualKeyCode.MK, kmode);
             if (key.Contains("HK"))
-                pressButton(VirtualKeyCode.HK);
+                pressButton(VirtualKeyCode.HK, kmode);
         }
-        public void pressButton(VirtualKeyCode key)
+        public enum KeyMode
         {
-            if (!pressed.Contains(key))
-                pressed.Add(key);
+            PRESS,HOLD,RELEASE
         }
-        public void holdButton(VirtualKeyCode key)
+        public void pressButton(VirtualKeyCode key,KeyMode mode)
         {
-            if (!held.Contains(key))
-                held.Add(key);
-            pressButton(key);
-        }
-        public void releaseButton(VirtualKeyCode key)
-        {
-            if (held.Contains(key))
-                held.Remove(key);
-            if (pressed.Contains(key))
-                pressed.Remove(key);
+            
+            if(mode == KeyMode.RELEASE)
+            {
+                if (held.Contains(key))
+                    held.Remove(key);
+                if (pressed.Contains(key))
+                    pressed.Remove(key);
+            }
+            else if(mode == KeyMode.HOLD)
+            {
+                if (!held.Contains(key))
+                    held.Add(key);
+                if (!pressed.Contains(key))
+                    pressed.Add(key);
+            }
+            else
+            {
+                if (!pressed.Contains(key))
+                    pressed.Add(key);
+            }
         }
         #endregion
 

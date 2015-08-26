@@ -218,7 +218,7 @@ namespace UltraBotUI
         }
         private void backgroundWorker_ProgressChanged(object sender,  ProgressChangedEventArgs e)
         {
-            StatusLabel.Content = bot.myState.XDistance;
+            StatusLabel.Content = String.Format("XDistance:{0} YPos:{1}",bot.myState.XDistance,bot.enemyState.Y);
             if (log.Count == 0 || !log[0].Message.Equals(bot.getStatus()) )
             {
                 var le = new LogEntry();

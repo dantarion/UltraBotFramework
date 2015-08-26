@@ -51,14 +51,9 @@
                 </ListView>
             </TabItem>
             <TabItem Header="Combo">
-                <ListView Name="ComboDisplay">
-                    <ListView.View>
-                        <GridView>
-                            <GridViewColumn Header="Inputs" Width="300" DisplayMemberBinding="{Binding Input}" />
-                            <GridViewColumn Header="Score" Width="100" DisplayMemberBinding="{Binding Score}" />
-                        </GridView>
-                    </ListView.View>
-                </ListView>
+                <DataGrid Name="ComboDisplay" MaxColumnWidth="300">
+      
+                </DataGrid>
             </TabItem>
         </TabControl>
         <Border Margin="5" Grid.Row="2" Grid.ColumnSpan="2" BorderBrush="Gainsboro" BorderThickness="2">
