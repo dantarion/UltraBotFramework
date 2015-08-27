@@ -6,12 +6,13 @@ public class ERyuBot : Bot
     public ERyuBot()
     {
         RegisterState(ThrowTechState.Trigger);
+		//RegisterState(StuffState.Trigger);
         RegisterState(WhiffPunishState.Trigger);
 		RegisterState(DefendState.Trigger);
     }
     public override BotAIState DefaultState()
     {
-        return new TestState();
+        return new IdleState();
     }
     protected override float scoreCombo(Combo combo, int startup = Int32.MaxValue)
     {
@@ -55,6 +56,38 @@ public class ERyuBot : Bot
             return float.MaxValue;
         return score;
     }
+    public class StuffState : BotAIState
+    {
+        public static BotAIState Trigger(Bot bot)
+        {
+
+            //bot.enemyState.AttackRange*2+System.Math.Abs(bot.enemyState.XVelocity*bot.enemyState.StateTimer)+.5*System.Math.Abs(bot.enemyState.XAcceleration*3)
+            if (bot.enemyState.State == FighterState.CharState.Startup && bot.enemyState.StateTimer > 4 && bot.myState.ActiveCancelLists.Contains("GROUND"))
+            {
+                Console.WriteLine(bot.enemyState.StateTimer);
+                return new StuffState();
+            }
+            return null;
+        }
+        public override System.Collections.Generic.IEnumerator<string> Run(Bot bot)
+        {
+            var chosenCombo = (from combo in bot.getComboList()
+                               where
+                                   combo.Score >= 100
+                               orderby combo.Score descending
+                               select combo);
+            if (chosenCombo.Count() == 0)
+            {
+                bot.pressButton("6");
+                yield return "No combos";
+                yield break;
+            }
+            var c = chosenCombo.First();
+            var substate = new SequenceState(c.Input);
+            while (!substate.isFinished())
+                yield return substate.Process(bot);
+        }
+    }
     public class WhiffPunishState : BotAIState
     {
         public static BotAIState Trigger(Bot bot)
@@ -63,7 +96,6 @@ public class ERyuBot : Bot
             //bot.enemyState.AttackRange*2+System.Math.Abs(bot.enemyState.XVelocity*bot.enemyState.StateTimer)+.5*System.Math.Abs(bot.enemyState.XAcceleration*3)
             if (bot.enemyState.State == FighterState.CharState.Recovery && bot.enemyState.StateTimer > 4 && bot.myState.ActiveCancelLists.Contains("GROUND") )
             {
-				Console.WriteLine(bot.enemyState.StateTimer);
                 return new WhiffPunishState();
             }
             return null;

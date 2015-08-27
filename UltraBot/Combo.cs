@@ -9,7 +9,7 @@ namespace UltraBot
     [Flags]
     public enum ComboType
     {
-        GROUND = 1,ANTIAIR =2,SAFE_JUMP=4,ANYWHERE=8,MIDSCREEN=16,CORNER=32,ULTRA=64,DEBUG=128
+        GROUND = 1,ANTIAIR =2,SAFE_JUMP=4,ANYWHERE=8,MIDSCREEN=16,CORNER=32,ULTRA=64,DEBUG=128, STUFF=256
     }
     public class Combo
     {

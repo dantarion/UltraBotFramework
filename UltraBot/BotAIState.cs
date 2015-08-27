@@ -16,8 +16,17 @@ namespace UltraBot
         {   
             if(_iterator == null)
                 _iterator = Run(bot);
-
-            if(_iterator.MoveNext())
+            bool hasElements = false;
+            try
+            {
+                hasElements = _iterator.MoveNext();
+            }
+            catch(InvalidOperationException e)
+            {
+                hasElements = false;
+                _reason = "InvalidOperationException?";
+            }
+            if(hasElements)
                 return _iterator.Current;
             else
             {
