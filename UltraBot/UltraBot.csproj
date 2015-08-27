@@ -55,7 +55,7 @@
   <ItemGroup>
     <Compile Include="Bot.cs" />
     <Compile Include="BotLoader.cs" />
-    <Compile Include="BotState.cs" />
+    <Compile Include="BotAIState.cs" />
     <Compile Include="Bots\KenBot.cs" />
     <Compile Include="Bots\ERyuBot.cs" />
     <Compile Include="Combo.cs" />

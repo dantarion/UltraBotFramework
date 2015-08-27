@@ -81,7 +81,6 @@ namespace UltraBot
                 changeState(DefaultState());
                 _status = currentState.Process(this);
             }
-
             inputAdapter.sendInputs();
         }
         #region State Management

@@ -44,7 +44,7 @@
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
-                                <Label Width="200" Content="{Binding Path=Message}" />
+                                <TextBlock Width="300" Text="{Binding Path=Message}" TextWrapping="Wrap"/>
                             </StackPanel>
                         </DataTemplate>
                     </ListView.ItemTemplate>
