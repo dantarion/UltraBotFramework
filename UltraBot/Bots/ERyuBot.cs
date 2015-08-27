@@ -65,19 +65,18 @@ public class ERyuBot : Bot
             if (c == null)
                 yield break;
             var timer = 0;
-            while(Math.Abs(bot.myState.XDistance) > c.XMax)
+            while(Math.Abs(bot.myState.XDistance) > c.XMax || bot.enemyState.ActiveCancelLists.Contains("REVERSAL") || bot.enemyState.ScriptName.Contains("UPWARD"))
             {
+                bot.pressButton("6");
                 if (timer++ > 5)
                     yield break;//Reroll
-                bot.pressButton("6");
+                
                 yield return "Getting in range";
             }
-            if(!bot.enemyState.ActiveCancelLists.Contains("REVERSAL") && !bot.enemyState.ScriptName.Contains("UPWARD"))
-            {
+
                 var substate = new SequenceState(c.Input);
                 while(!substate.isFinished())
                     yield return substate.Process(bot);
-            }
             yield break;
         }
     }

@@ -164,11 +164,6 @@ namespace UltraBot
             ReadBACData();
             ReadBCMData();
             ReadOtherData();
-            var hadou = InputBufferSequenceCheck(24, Input.RIGHT,Input.DOWN, Input.RIGHT);
-            if(hadou > 0)
-            {
-                Console.WriteLine("MOTION DETECTED {0}", hadou);
-            }
         }
 		public void ReadBCMData()
         {
@@ -206,7 +201,6 @@ namespace UltraBot
             InputBuffer.Clear();
 
             var InputBufferIndex = (int)Util.Memory.ReadInt(InputBufferOffset + 0x1414);
-            Console.WriteLine("{0} {1}", InputBufferCurrent, InputBufferCurrentAlt);
             for(i = 0; i < 0x400; i++)
             {
                 var trueIndex = (InputBufferCurrent);

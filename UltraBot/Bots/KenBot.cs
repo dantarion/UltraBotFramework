@@ -21,12 +21,13 @@ public class KenBot : Bot
         public override System.Collections.Generic.IEnumerator<string> Run(Bot bot)
         {
             var alternate = 0;
-            while(bot.enemyState.AState == FighterState.AttackState.None)
+
+            while(bot.enemyState.ActiveCancelLists.Contains("GROUND"))
             {
                 if(alternate++ % 2 == 0)
-                    bot.pressButton("3");
-                else
                     bot.pressButton("2");
+                else
+                    bot.pressButton("3");
                 yield return "mashing DP motion";
             }
             bot.pressButton("3HP");

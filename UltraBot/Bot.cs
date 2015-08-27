@@ -135,7 +135,7 @@ namespace UltraBot
                 else
                     inputAdapter.pressButton(FighterState.Input.LEFT, kmode);
             if (key.Contains("4"))
-                if (myState.XDistance < 0)
+                if (myState.XDistance > 0)
                     inputAdapter.pressButton(FighterState.Input.RIGHT, kmode);
                 else
                     inputAdapter.pressButton(FighterState.Input.LEFT, kmode);

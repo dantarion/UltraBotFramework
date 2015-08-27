@@ -2,7 +2,9 @@
 <BotData>
     <Combos>
 
+    
         <Combo Type="GROUND" Startup="0" XMin="0" XMax=".6" YMin="0" YMax="0" EXMeter="0" Input="1LK.W20.*-1LP.W18.1MP.W8.2.1.4LK.W48.6.2.3HP.W60" />
+        
         <Combo Type="GROUND" Startup="0" XMin="0" XMax=".6" YMin="0" YMax="0" EXMeter="0" Input="1LP.W18.*-MP.W8.4.2.6MK.W52.1MP.W8.2.1.4LK.W48.6.2.3HP.W60" />
         <Combo Type="GROUND" Startup="0" XMin="0" XMax=".6" YMin="0" YMax="0" EXMeter="0" Input="2MP.W24.*-HP.W8.4.2.6MK.W58.1MP.W8.2.1.4LK.W48.6.2.3HP.W60" />
         <Combo Type="GROUND" Startup="0" XMin="0" XMax=".6" YMin="0" YMax="0" EXMeter="250" Input="2MP.W24.*-HP.W8.4.2.6MK.W58.1MP.W8.2.1.4LK.W48.6.2.3MPHP.W60" />
