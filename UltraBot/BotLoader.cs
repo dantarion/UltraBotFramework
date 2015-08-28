@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
@@ -58,14 +59,34 @@ namespace UltraBot
             foreach (XmlNode comboXml in xmldoc.DocumentElement.SelectNodes("//Combo"))
             {
                 var combo = new Combo();
-                combo.Type = (ComboType)Enum.Parse(typeof(ComboType), comboXml.Attributes["Type"].Value);
-                combo.Startup = Int32.Parse(comboXml.Attributes["Startup"].Value);
-                combo.XMin = float.Parse(comboXml.Attributes["XMin"].Value);
-                combo.XMax = float.Parse(comboXml.Attributes["XMax"].Value);
-                combo.YMin = float.Parse(comboXml.Attributes["YMin"].Value);
-                combo.YMax = float.Parse(comboXml.Attributes["YMax"].Value);
-                combo.EXMeter = Int32.Parse(comboXml.Attributes["EXMeter"].Value);
-                combo.Input = comboXml.Attributes["Input"].Value;
+                ComboType tmp = 0;
+                string stInput = "";
+                if (comboXml.ParentNode.LocalName == "Starter")
+                {
+                    foreach (XmlAttribute attr in comboXml.ParentNode.Attributes)
+                    {
+                        PropertyInfo propertyInfo = combo.GetType().GetProperty(attr.Name);
+                        if (propertyInfo.PropertyType.IsEnum)
+                            propertyInfo.SetValue(combo, Enum.Parse(typeof(ComboType), attr.Value));
+                        else
+                            propertyInfo.SetValue(combo, Convert.ChangeType(attr.Value, propertyInfo.PropertyType), null);
+                    }
+                    tmp = combo.Type;
+                    stInput = combo.Input;
+
+                }
+
+                foreach(XmlAttribute attr in comboXml.Attributes)
+                {
+                    PropertyInfo propertyInfo = combo.GetType().GetProperty(attr.Name);
+                    if(propertyInfo.PropertyType.IsEnum)
+                        propertyInfo.SetValue(combo, Enum.Parse(typeof(ComboType), attr.Value));
+                    else
+                        propertyInfo.SetValue(combo, Convert.ChangeType(attr.Value, propertyInfo.PropertyType), null);
+                }
+                combo.Type = combo.Type | tmp;
+                if(stInput != "")
+                    combo.Input = stInput + "."+combo.Input;
                 bot.getComboList().Add(combo);
             }
         }

@@ -292,6 +292,12 @@ namespace UltraBotUI
             DX9Overlay.DestroyAllVisual();
         }
 
+        private void ComboDisplay_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
+        {
+            if (e.PropertyName == "Type")
+                e.Cancel = true;
+        }
+
 
     }
 }

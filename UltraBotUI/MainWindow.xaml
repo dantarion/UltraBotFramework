@@ -51,8 +51,7 @@
                 </ListView>
             </TabItem>
             <TabItem Header="Combo">
-                <DataGrid Name="ComboDisplay" MaxColumnWidth="300">
-      
+                <DataGrid Name="ComboDisplay" IsReadOnly="True" AutoGeneratingColumn="ComboDisplay_AutoGeneratingColumn">
                 </DataGrid>
             </TabItem>
         </TabControl>
