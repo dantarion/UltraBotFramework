@@ -1,6 +1,7 @@
 ﻿using System;
 using UltraBot;
 using System.Linq;
+using UltraBot.StateLibrary;
 public class ERyuBot : Bot
 {
     public ERyuBot()
@@ -12,7 +13,7 @@ public class ERyuBot : Bot
     }
     public override BotAIState DefaultState()
     {
-        return new IdleState();
+        return new TestState();
     }
     protected override float scoreCombo(Combo combo, int startup = Int32.MaxValue)
     {

@@ -16,7 +16,7 @@ namespace UltraBot
             PRESS, HOLD, RELEASE
         }
         public abstract void sendInputs();
-        
+
 
         public void pressButton(FighterState.Input key, KeyMode mode)
         {
@@ -46,33 +46,30 @@ namespace UltraBot
     {
         public override void sendInputs()
         {
-            if (Util.GetActiveWindowTitle() == "SSFIVAE")
+            foreach (var key in last_pressed.ToList())
             {
-                foreach (var key in last_pressed.ToList())
+                if (!pressed.Contains(key) && !held.Contains(key))
                 {
-                    if (!pressed.Contains(key) && !held.Contains(key))
-                    {
-                        last_pressed.Remove(key);
-                    }
+                    last_pressed.Remove(key);
                 }
-                FighterState.Input input = 0;
-                foreach (var key in pressed)
-                {
-                    input = input | key;
-                    if (!last_pressed.Contains(key))
-                        last_pressed.Add(key);
-                }
-                foreach (var key in held)
-                {
-                    input = input | key;
-                    if (!last_pressed.Contains(key))
-                        last_pressed.Add(key);
-                }
-                var InputBufferStart = (int)Util.Memory.ReadInt(0x400000 + 0x6A7DF0) + 0x48;
-                var InputBufferCurrent = (int)Util.Memory.ReadInt(InputBufferStart - 0x1C) % 0x400;
-                Util.Memory.Write(InputBufferStart + 0xC * InputBufferCurrent, (int)input);
-                pressed.Clear();
             }
+            FighterState.Input input = 0;
+            foreach (var key in pressed)
+            {
+                input = input | key;
+                if (!last_pressed.Contains(key))
+                    last_pressed.Add(key);
+            }
+            foreach (var key in held)
+            {
+                input = input | key;
+                if (!last_pressed.Contains(key))
+                    last_pressed.Add(key);
+            }
+            var InputBufferStart = (int)Util.Memory.ReadInt(0x400000 + 0x6A7DF0) + 0x48;
+            var InputBufferCurrent = (int)Util.Memory.ReadInt(InputBufferStart - 0x1C) % 0x400;
+            Util.Memory.Write(InputBufferStart + 0xC * InputBufferCurrent, (int)input);
+            pressed.Clear();
         }
     }
     class KeyboardInputAdapter : InputAdapter

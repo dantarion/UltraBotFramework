@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using WindowsInput;
 using CSScriptLibrary;
+using UltraBot.StateLibrary;
 namespace UltraBot
 {
     public class Bot : MarshalByRefObject
@@ -74,7 +75,15 @@ namespace UltraBot
             myState.XDistance = myState.X - enemyState.X;
             myState.YDistance = myState.Y - enemyState.Y;
             scoreCombos();
-            StateCheck();
+            var debugCombos = getComboList().Where(x => x.Type.HasFlag(ComboType.DEBUG)).ToList();
+
+            if (debugCombos.Count() != 0 && currentState.GetType() != typeof(TestComboState))
+                     changeState(new TestComboState(debugCombos[0]));
+            else
+                StateCheck();
+            
+            
+                
             _status = currentState.Process(this);
             if (currentState.isFinished())
             {
