@@ -1,10 +1,10 @@
 ﻿<Window x:Class="UltraBotUI.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="600" Width="525" Loaded="Window_Loaded" Closing="Window_Closing">
+        Title="UltraBot UI" Height="600" Width="650" Loaded="Window_Loaded" Closing="Window_Closing">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="150" />
+            <RowDefinition Height="110" />
             <RowDefinition Height="*"/>
             <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
@@ -27,7 +27,7 @@
         <Border Grid.Column="1" Background="Black" BorderBrush="Gainsboro" BorderThickness="1">
             <StackPanel Margin="5">
                 <Label Foreground="White">Mode Selector</Label>
-                <ListBox Name="ModeSelector" Height="100">
+                <ListBox Name="ModeSelector" Height="60">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
@@ -44,6 +44,8 @@
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
+                                <TextBlock Width="100" Text="{Binding Path=BotScriptInfo}" TextWrapping="Wrap" Background="LightBlue"/>
+                                <TextBlock Width="100" Text="{Binding Path=EnemyScriptInfo}" TextWrapping="Wrap" Background="Salmon"/>
                                 <TextBlock Width="300" Text="{Binding Path=Message}" TextWrapping="Wrap"/>
                             </StackPanel>
                         </DataTemplate>
@@ -51,7 +53,38 @@
                 </ListView>
             </TabItem>
             <TabItem Header="Combo">
-                <DataGrid Name="ComboDisplay" IsReadOnly="True" AutoGeneratingColumn="ComboDisplay_AutoGeneratingColumn">
+                <DataGrid Name="ComboDisplay" AutoGenerateColumns="False" AlternatingRowBackground="#FCFCFC" CanUserResizeRows="False" EnableRowVirtualization="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Score" Width="40" Binding="{Binding Score}" />
+                        <DataGridTemplateColumn Header="Data">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel  Margin="0" Orientation="Horizontal">
+                                        <StackPanel Margin="0"  Width="60">
+                                            <Label Padding="0" FontSize="10" ContentStringFormat="XMin: {0}" Content="{Binding XMin}" />
+                                            <Label Padding="0" FontSize="10" ContentStringFormat="XMax: {0}" Content="{Binding XMax}" />
+                                        </StackPanel>
+                                        <StackPanel Margin="0"  Width="60">
+                                            <Label Padding="0" FontSize="10" ContentStringFormat="YMin: {0}" Content="{Binding YMin}" />
+                                            <Label Padding="0" FontSize="10" ContentStringFormat="YMax: {0}" Content="{Binding YMax}" />
+                                        </StackPanel>
+                                        <StackPanel Margin="0"  Width="120">
+                                            <TextBlock Padding="0" FontSize="10" Text="{Binding TypeString}" TextWrapping="Wrap"/>
+                                            <Label Padding="0" FontSize="10" ContentStringFormat="EX: {0}" Content="{Binding EXMeter}" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn Header="Inputs" Width="300">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Input}" FontSize="10" TextWrapping="Wrap" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
                 </DataGrid>
             </TabItem>
         </TabControl>

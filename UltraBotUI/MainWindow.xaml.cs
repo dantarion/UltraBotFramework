@@ -223,6 +223,8 @@ namespace UltraBotUI
             {
                 var le = new LogEntry();
                 le.Message = bot.getStatus();
+                le.BotScriptInfo = String.Format("{0}:{1} - {2}", bot.myState.ScriptName, bot.myState.ScriptFrame, bot.myState.State);
+                le.EnemyScriptInfo = String.Format("{0}:{1} - {2}", bot.enemyState.ScriptName, bot.enemyState.ScriptFrame, bot.enemyState.State);
                 log.Insert(0, le);
                 Log.Items.Refresh();
                
@@ -297,7 +299,5 @@ namespace UltraBotUI
             if (e.PropertyName == "Type")
                 e.Cancel = true;
         }
-
-
     }
 }
