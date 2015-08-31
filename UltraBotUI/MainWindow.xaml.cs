@@ -115,6 +115,8 @@ namespace UltraBotUI
             backgroundWorker.ProgressChanged += backgroundWorker_ProgressChanged;
             LoadBots();
             var le = new LogEntry();
+            le.BotScriptInfo = "init";
+            le.EnemyScriptInfo = "init";
             le.Message = "Loaded!";
             log.Insert(0, le);
             System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();

@@ -40,17 +40,13 @@
         </Border>
         <TabControl  Margin="5" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2">
             <TabItem Header="Log">
-                <ListView Name="Log">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Width="100" Text="{Binding Path=BotScriptInfo}" TextWrapping="Wrap" Background="LightBlue"/>
-                                <TextBlock Width="100" Text="{Binding Path=EnemyScriptInfo}" TextWrapping="Wrap" Background="Salmon"/>
-                                <TextBlock Width="300" Text="{Binding Path=Message}" TextWrapping="Wrap"/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
+                <DataGrid Name="Log" AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Width="100" Binding="{Binding Path=BotScriptInfo}"/>
+                        <DataGridTextColumn Width="100" Binding="{Binding Path=EnemyScriptInfo}"/>
+                        <DataGridTextColumn Width="300" Binding="{Binding Path=Message}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
             </TabItem>
             <TabItem Header="Combo">
                 <DataGrid Name="ComboDisplay" AutoGenerateColumns="False" AlternatingRowBackground="#FCFCFC" CanUserResizeRows="False" EnableRowVirtualization="False">

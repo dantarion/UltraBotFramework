@@ -2,56 +2,54 @@
 <BotData>
     <Combos>
         <!-- cr.lp cr.hp -->
-        <Starter Type="GROUND" XMax=".9" Input="1LP.W18.*-1HP.W8">
+        <Starter Type="GROUND" XMax=".9" Input="1LP.W18.*-1HP.W9">
             <!-- m.axekick cr.mp h.srk -->
-            <Combo Input="4.2.6MK.W58.1MP.W8.6.2.3HP" />
+            <Combo Input="4.2.6MK.W59.1MP.W8.2.1.4LK.W48.6.2.3HP" />
+            <!-- m.axekick cr.mp l.axekick FADC cr.lp cr.hp m.axekick cr.mp l.tatsu h.srk -->
+            <Combo EXMeter="500" Input="4.2.6MK.W58.1MP.W8.4.2.6LK.W20.MPMK.W10.6.W1.6.W19.1LP.W18.1HP.W8.4.2.6MK.W52.1MP.W8.2.1.4LK.W48.6.2.3HP" />
+            <!-- m.axekick cr.lp st.MP l.axekick FADC cr.lp cr.hp m.axekick cr.lp st.mp l.axekick FADC cr.lp cr.hp m.axekick cr.mp l.tatsu h.srk -->
+            <Combo EXMeter="1000" Input="4.2.6MK.W58.1LP.W18.MP.W8.4.2.6LK.W20.MPMK.W10.6.W1.6.W19.1LP.W18.HP.W14.4.2.6MK.W52.1LP.W18.MP.W8.4.2.6LK.W20.MPMK.W10.6.W1.6.W19.1LP.W18.HP.W14.4.2.6MK.W52.1MP.W8.2.1.4LK.W48.6.2.3HP.W60" />
             <!-- mp.DP FADC Ultra -->
-            <Combo Type="ULTRA,CORNER" EXMeter="500" Input="6.2.3MP.W10._MPMK.W10.4.W1.4.+MPMK.W16.2.3.2.6LKMKHK" />
+            <Combo Type="ULTRA,CORNER" EXMeter="500" Input="6.2.3MP.W10.MPMK.W10.4.W1.4.W24.2.6.2.6LKMKHK" />
             <Combo Type="ULTRA,MIDSCREEN" EXMeter="500" Input="6.2.3MP.W10._MPMK.W10.6.W1.6.+MPMK.W16.2.3.2.6LKMKHK" />
         </Starter>
         <!-- cr.lk cr.lp, cr.mp xx -->
         <Starter Type="GROUND" XMax=".67" Input="1LK.W20.1LP.W18.*-1MP.W8">
-            <!-- h.srk -->
-            <Combo Input="6.2.3HP" />
             <!-- h.tatsu -->
             <Combo Type="STAND" Input="2.1.4HK" />
             <!-- l.tatsu h.srk -->
             <Combo Type="STAND" Input="2.1.4LK.W48.6.2.3HP" />
-            <!-- l.axekick FADC cr.lp cr.hp m.axekick cr.mp l.tatsu h.srk -->
-            <Combo EXMeter="500" Input="4.2.6LK.W20.MPMK.W10.6.W1.6.W18.1LP.W18.1HP.W8.4.2.6MK.W52.1MP.W8.2.1.4LK.W48.6.2.3HP" />
             <!-- m.srk fadc ultra2 -->
-            <Combo Type="CORNER,ULTRA" EXMeter="500" Input="6.2.3MP.W10._MPMK.W10.4.W1.4.+MPMK.W16.2.3.2.6LKMKHK" />
+            <Combo Type="CORNER,STAND,ULTRA" EXMeter="500" Input="2.1.4LK.W48.6.2.3MP.W10._MPMK.W10.4.W1.4.+MPMK.W16.2.3.2.6LKMKHK" />
             <!-- m.srk fadc ultra2 -->
-            <Combo Type="MIDSCREEN,ULTRA" EXMeter="500" Input="6.2.3MP.W10.MPMK.W10.6.W1.6.W16.2.3.2.6LKMKHK" />
+            <Combo Type="MIDSCREEN,STAND,ULTRA" EXMeter="500" Input="2.1.4LK.W48.6.2.3MP.W10.MPMK.W10.6.W1.6.W16.2.3.2.6LKMKHK" />
         </Starter>
         <!-- cr.MP cl.HP -->
         <Starter Type="GROUND" Startup="0" XMin="0" XMax=".67" Input="1MP.W24.*-HP.W8">
             <!-- m.axekick cr.mp l.tatsu h.srk -->
             <Combo EXMeter="0" Input="4.2.6MK.W58.1MP.W8.2.1.4LK.W48.6.2.3HP" />
             <!-- m.axekick cr.mp l.tatsu ex.srk -->
-            <Combo EXMeter="250" Input="4.2.6MK.W58.1MP.W8.2.1.4LK.W48.6.2.3MPHP" />
+            <Combo  EXMeter="250" Input="4.2.6MK.W58.1MP.W8.2.1.4LK.W48.6.2.3MPHP" />
             <!-- m.axekick cr.mp l.axekick FADC cr.lp cr.hp m.axekick cr.mp l.tatsu h.srk -->
-            <Combo EXMeter="500" Input="4.2.6MK.W58.1MP.W8.4.2.6LK.W20.MPMK.W10.6.W1.6.W18.1LP.W18.1HP.W8.4.2.6MK.W52.1MP.W8.2.1.4LK.W48.6.2.3HP" />
-            <!-- m.axekick cr.mp l.axekick FADC cr.lp cr.hp m.axekick cr.mp l.axekick FADC cr.lp cr.hp m.axekick cr.mp l.tatsu h.srk -->
-            <Combo EXMeter="1000" Input="4.2.6MK.W58.1MP.W8.4.2.6LK.W20.MPMK.W10.6.W1.6.W18.1LP.W18.1HP.W8.4.2.6MK.W52.1MP.4.2.6LK.W20.MPMK.W10.6.W1.6.W18.1LP.W18.1HP.W8.4.2.6MK.W52.1MP.W8.2.1.4LK.W48.6.2.3HP" />
+            <Combo EXMeter="500" Input="4.2.6MK.W58.1MP.W8.4.2.6LK.W20.MPMK.W10.6.W1.6.W19.1LP.W18.1HP.W8.4.2.6MK.W52.1MP.W8.2.1.4LK.W48.6.2.3HP" />
             <!-- m.axekick cr.lp st.MP l.axekick FADC cr.lp cr.hp m.axekick cr.lp st.mp l.axekick FADC cr.lp cr.hp m.axekick cr.mp l.tatsu h.srk -->
-            <Combo EXMeter="1000" Input="4.2.6MK.W58.1LP.W18.MP.W8.4.2.6LK.W20.MPMK.W10.6.W1.6.W18.1LP.W18.HP.W14.4.2.6MK.W52.1LP.W18.MP.W8.4.2.6LK.W20.MPMK.W10.6.W1.6.W18.1LP.W18.HP.W14.4.2.6MK.W52.1MP.W8.2.1.4LK.W48.6.2.3HP.W60" />
+            <Combo EXMeter="1000" Input="4.2.6MK.W58.1LP.W18.MP.W8.4.2.6LK.W20.MPMK.W10.6.W1.6.W19.1LP.W18.HP.W14.4.2.6MK.W52.1LP.W18.MP.W8.4.2.6LK.W20.MPMK.W10.6.W1.6.W19.1LP.W18.HP.W14.4.2.6MK.W52.1MP.W8.2.1.4LK.W48.6.2.3HP.W60" />
             <!-- m.srk fadc ultra2 -->
-            <Combo Type="CORNER,ULTRA" EXMeter="500" Input="6.2.3MP.W10._MPMK.W10.4.W1.4.+MPMK.W16.2.3.2.6LKMKHK" />
+            <Combo Type="CORNER,ULTRA" EXMeter="500" Input="6.2.3MP.W10.MPMK.W10.4.W1.4.W24.2.6.2.6LKMKHK" />
             <!-- m.srk fadc ultra2 -->
-            <Combo Type="MIDSCREEN,ULTRA" EXMeter="500" Input="6.2.3MP.W10._MPMK.W10.W10.6.W1.6.+MPMK.W16.2.3.2.6LKMKHK" />
+            <Combo Type="MIDSCREEN,ULTRA" EXMeter="500" Input="6.2.3MP.W10._MPMK.W10.6.W1.6.+MPMK.W16.2.3.2.6LKMKHK" />
         </Starter>
         <!-- cr.MK -->
         <Starter Type="GROUND" XMin=".67" XMax="1.7" Input="1MK.W10">
-            <Combo Input="4.2.6LK" />
             <Combo Type="STAND" Input="*-2.1.4.LK.W50.6.2.3HP" />
-            <Combo Type="STAND" Input="*-6.2.3HP" />
-            <Combo EXMeter="500" Input="*-4.2.6LK.W20.MPMK.W10.6.W1.6.W18.1LP.W18.MP.W8.4.2.6MK.W52.1MP.W8.2.1.4LK.W48.6.2.3HP.W60" />
+            <Combo EXMeter="500" Input="*-4.2.6LK.W20.MPMK.W10.6.W1.6.W19.1LP.W18.MP.W8.4.2.6MK.W52.1MP.W8.2.1.4LK.W48.6.2.3HP.W60" />
+            <Combo EXMeter="1000" Input="*-4.2.6LK.W20.MPMK.W10.6.W1.6.W19.1LP.W18.HP.W14.4.2.6MK.W52.1LP.W18.MP.W8.4.2.6LK.W20.MPMK.W10.6.W1.6.W19.1LP.W18.HP.W14.4.2.6MK.W52.1MP.W8.2.1.4LK.W48.6.2.3HP.W60" />
         </Starter>
         <Combo Type="GROUND" Startup="0" XMin="1.7" XMax="2.2" YMin="0" YMax="0" EXMeter="0" Input="2HK" />
         <Combo Type="GROUND" Startup="0" XMin="1.7" XMax="2.2" YMin="0" YMax="0" EXMeter="0" Input="1MK.W10.2.3.6HP" />
         <Combo Type="GROUND" Startup="0" XMin="3.5" XMax="6" YMin="0" YMax="0" EXMeter="0" Input="2.3MK.6HP.W20" />
         <Combo Type="GROUND" Startup="0" XMin="3.5" XMax="5" YMin="0" YMax="0" EXMeter="0" Input="2.3.6HP.W20" />
         <Combo Type="ANTIAIR" Startup="0" XMin="1.2" XMax="1.5" YMin="0" YMax="3" EXMeter="0" Input="3.2.6HP.W48" />
+        <Combo Type="STUFF" Startup="0" XMin="0" XMax="2" YMin="0" YMax="0" EXMeter="0" Input="3.2.6HP.W48" />
     </Combos>
 </BotData>

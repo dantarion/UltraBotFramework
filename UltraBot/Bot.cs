@@ -36,6 +36,7 @@ namespace UltraBot
         {
             foreach (var combo in comboList)
                 combo.Score = scoreCombo(combo);
+            //comboList = comboList.OrderBy(x => x.Score).ToList();
         }
 		private List<Combo> comboList = new List<Combo>();
         public List<Combo> getComboList()
@@ -58,7 +59,7 @@ namespace UltraBot
         private string _status = "";
         public string getStatus()
         {
-            return _status;
+            return String.Format("{0}->{1}",currentState.GetType().Name,_status);
         }
         public virtual BotAIState DefaultState()
         {
@@ -93,8 +94,8 @@ namespace UltraBot
             inputAdapter.sendInputs();
         }
         #region State Management
-        private BotAIState previousState;
-        private BotAIState currentState;
+        protected BotAIState previousState;
+        protected BotAIState currentState;
         /// <summary>
         /// This function runs before any state.
         /// By overriding this function, you can have checks that force the bot into an arbitrary state based on triggers.
@@ -106,9 +107,10 @@ namespace UltraBot
             foreach (var t in TriggerStates)
             {
                 var result = t(this);
-                if (result != null && currentState.GetType() != result.GetType())
+                if (result != null)
                 {
-                    changeState(result as BotAIState);
+                    if(currentState.GetType() != result.GetType())
+                        changeState(result as BotAIState);
                     break;
                 }
             }
