@@ -2,29 +2,29 @@
 <BotData>
 	<Combos>
 		<!-- STEP KICK -->
-		<Combo Type="NORMAL" Startup="0" XMin="0" XMax="2" YMin="0" YMax="0" EXMeter="0" Ultra="true" Input="6MK" />
+		<Combo Type="GROUND" Startup="0" XMin="0" XMax="2" YMin="0" YMax="0" EXMeter="0" Input="6MK" />
 		<!-- cl.HK xx HK/EX Tatsu -->
-		<Combo Type="NORMAL" Startup="0" XMin="0" XMax="0" YMin="0" YMax="0" EXMeter="0" Ultra="true" Input="HK.W13.2.1.4MKHK" />
+		<Combo Type="GROUND" Startup="0" XMin="0" XMax="0" YMin="0" YMax="0" EXMeter="0" Input="HK.W13.2.1.4MKHK" />
 		<!-- cl.MP cl.HP xx Fierce SRK -->
-		<Combo Type="NORMAL" Startup="0" XMin="0" XMax="0" YMin="0" YMax="0" EXMeter="0" Ultra="true" Input="6MP.W10.6HP.W10.6.2.3HP" />
+		<Combo Type="GROUND" Startup="0" XMin="0" XMax="0" YMin="0" YMax="0" EXMeter="0" Input="6MP.W10.6HP.W10.6.2.3HP" />
 		<!-- cl.MP cl.HP xx Fierce SRK FADC Ultra-->
-		<Combo Type="NORMAL" Startup="0" XMin="0" XMax="0" YMin="0" YMax="0" EXMeter="0" Ultra="true" Input="6MP.W10.6HP.W10.6.2.3HP.W30.MKMP.W10.6.W2.6.W15.2.6.2.6.LPMPHP" />
+		<Combo Type="GROUND" Startup="0" XMin="0" XMax="0" YMin="0" YMax="0" EXMeter="0" Input="6MP.W10.6HP.W10.6.2.3HP.W30.MKMP.W10.6.W2.6.W15.2.6.2.6.LPMPHP" />
 		<!-- c.LP cl.HP xx Fierce SRK -->
-		<Combo Type="NORMAL" Startup="0" XMin="0" XMax="0" YMin="0" YMax="0" EXMeter="0" Ultra="true" Input="1LP.W18.2HP.2MPHP.W10.6.2.3HP" />
+		<Combo Type="GROUND" Startup="0" XMin="0" XMax="0" YMin="0" YMax="0" EXMeter="0" Input="1LP.W18.2HP.2MPHP.W10.6.2.3HP" />
 		<!-- c.LP cl.HP xx Fierce SRK FADC Ultra-->
-		<Combo Type="NORMAL" Startup="0" XMin="0" XMax="0" YMin="0" YMax="0" EXMeter="0" Ultra="true" Input="1LP.W18.2HP.2MPHP.W10.6.2.3HP.W30.MKMP.W10.6.W2.6.W15.2.6.2.6.LPMPHP" />
+		<Combo Type="GROUND" Startup="0" XMin="0" XMax="0" YMin="0" YMax="0" EXMeter="0" Input="1LP.W18.2HP.2MPHP.W10.6.2.3HP.W30.MKMP.W10.6.W2.6.W15.2.6.2.6.LPMPHP" />
 		<!-- c.LP cl.HP xx RH Tatsu -->
-		<Combo Type="NORMAL" Startup="0" XMin="0" XMax="0" YMin="0" YMax="0" EXMeter="0" Ultra="true" Input="1LP.W18.2HP.2MPHP.W10.2.1.4HK" />
+		<Combo Type="GROUND" Startup="0" XMin="0" XMax="0" YMin="0" YMax="0" EXMeter="0" Input="1LP.W18.2HP.2MPHP.W10.2.1.4HK" />
 		<!-- c.LP cl.HP xx EX Tatsu -->
-		<Combo Type="NORMAL" Startup="0" XMin="0" XMax="0" YMin="0" YMax="0" EXMeter="0" Ultra="true" Input="1LP.W18.2HP.2MPHP.W10.2.1.4MKHK" />
+		<Combo Type="GROUND" Startup="0" XMin="0" XMax="0" YMin="0" YMax="0" EXMeter="0" Input="1LP.W18.2HP.2MPHP.W10.2.1.4MKHK" />
 		<!-- c.LK Karathrow -->
-		<Combo Type="NORMAL" Startup="0" XMin="0" XMax="0" YMin="0" YMax="0" EXMeter="0" Ultra="true" Input="2LK.W22.6MK.W1.LPLK" />
+		<Combo Type="GROUND" Startup="0" XMin="0" XMax="0" YMin="0" YMax="0" EXMeter="0" Input="2LK.W22.6MK.W1.LPLK" />
 		<!-- c.LK xx MK Tatsu -->
-		<Combo Type="NORMAL" Startup="0" XMin="0" XMax="0" YMin="0" YMax="0" EXMeter="0" Ultra="true" Input="2LK.W14.2.1.4MK" />
-		<Combo Type="NORMAL" Startup="0" XMin="0" XMax="0" YMin="0" YMax="0" EXMeter="0" Ultra="true" Input="2LK.W14.2.1.4MKHK" />
-		<Combo Type="NORMAL" Startup="0" XMin="0" XMax="0" YMin="0" YMax="0" EXMeter="0" Ultra="true" Input="1MK.W10.2.3.6LP" />
-		<Combo Type="NORMAL" Startup="0" XMin="0" XMax="0" YMin="0" YMax="0" EXMeter="0" Ultra="true" Input="6_HK.W20" />		
-		<Combo Type="NORMAL" Startup="0" XMin="0" XMax="0" YMin="0" YMax="0" EXMeter="0" Ultra="true" Input="9.W28.HK.W30" />
-		<Combo Type="NORMAL" Startup="0" XMin="0" XMax="0" YMin="0" YMax="0" EXMeter="0" Ultra="true" Input="6.2.6" />
+		<Combo Type="GROUND" Startup="0" XMin="0" XMax="0" YMin="0" YMax="0" EXMeter="0" Input="2LK.W14.2.1.4MK" />
+		<Combo Type="GROUND" Startup="0" XMin="0" XMax="0" YMin="0" YMax="0" EXMeter="0" Input="2LK.W14.2.1.4MKHK" />
+		<Combo Type="GROUND" Startup="0" XMin="0" XMax="0" YMin="0" YMax="0" EXMeter="0" Input="1MK.W10.2.3.6LP" />
+		<Combo Type="GROUND" Startup="0" XMin="0" XMax="0" YMin="0" YMax="0" EXMeter="0" Input="6_HK.W20" />		
+		<Combo Type="GROUND" Startup="0" XMin="0" XMax="0" YMin="0" YMax="0" EXMeter="0" Input="9.W28.HK.W30" />
+		<Combo Type="GROUND" Startup="0" XMin="0" XMax="0" YMin="0" YMax="0" EXMeter="0" Input="6.2.6" />
 	</Combos>
 </BotData>

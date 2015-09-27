@@ -34,9 +34,23 @@ namespace UltraBot
             Overhead,
             None
         }
-
+        
+        [Flags]
+        public enum Input
+        {
+            UP = 0x1,
+            DOWN = 0x2,
+            LEFT = 0x4,
+            RIGHT = 0x8,
+            LP = 0x10,
+            MP = 0x20,
+            LK = 0x40,
+            MK = 0x80,
+            HP = 0x400,
+            HK = 0x800,
+        }
         /// <summary>
-        /// This is used to hold a tabe
+        /// This is used to hold a table to translate between animation ticks and frame timings
         /// </summary>
         private Dictionary<float, float> Tick2Frame = new Dictionary<float, float>();
 
@@ -46,7 +60,7 @@ namespace UltraBot
         public AttackState AState;
         public float StateTimer;
         public int PlayerIndex;
-		
+
         public float X;
         public float Y;
         public float XVelocity;
@@ -56,6 +70,7 @@ namespace UltraBot
         public float XDistance;
         public float YDistance;
         public uint RawState;
+        
         public int Health;//TODO
         public int Meter;
         public int Revenge;
@@ -81,8 +96,7 @@ namespace UltraBot
         public float ScriptFrameIASA;
         public float ScriptFrameTotal;
 
-        private static FighterState P1;
-        private static FighterState P2;
+        
         //BCM Data
         public List<String> ChargeNames = new List<string>();
         public List<String> InputNames = new List<string>();
@@ -91,6 +105,8 @@ namespace UltraBot
         public List<String> ActiveCancelLists = new List<String>();
         public List<Input> InputBuffer = new List<Input>();
 
+        private static FighterState P1;
+        private static FighterState P2;
         public static FighterState getFighter(int index)
         {
             if (P1 == null)
@@ -99,27 +115,44 @@ namespace UltraBot
                 P2 = new FighterState(1);
             return index == 0 ? P1 : P2;
         }
-
         private FighterState(int index)
         {
             this.PlayerIndex = index;
         }
-
-        [Flags]
-        public enum Input
+        //This checks for a sequence of inputs,
+        //Like looking for 6.2.3P to look for buffered shoryu
+        public int InputBufferMashCheck(int search, Input input, bool all)
         {
-            BACK = 0x0,
-            NEUTRAL = 0x1,
-            UP = 0x2,
-            DOWN = 0x4,
-            FORWARD = 0x8,
-            NO_BUTTONS = 0x20,
-            LP = 0x40,
-            MP = 0x80,
-            HP = 0x100,
-            LK = 0x200,
-            MK = 0x400,
-            HK = 0x800,
+            int mash = 0;
+            for (int i = 0; i < search; i++)
+            {
+                var test = InputBuffer[i];
+                if (all)
+                {
+                    if ((test & input) == input) //All of these must be pressed
+                        mash++;
+                }
+                else
+                {
+                    if ((test & input) > 0) //Some of these
+                        mash++;
+                }
+            }
+            return mash;
+        }
+        public int InputBufferSequenceCheck(int search, params Input[] sequence)
+        {
+            int j = sequence.Length - 1;
+            for(int i = 0; i < search; i++)
+            {
+                var test = InputBuffer[i];
+                if ((test & sequence[j]) == sequence[j])
+                    j--;
+                if (j < 0)
+                    return i;
+
+            }
+            return -1;
         }
         public void UpdatePlayerState()
         {
@@ -137,9 +170,10 @@ namespace UltraBot
             int off = 0x8;
             if (PlayerIndex == 1)
                 off = 0xC;
-
+            //06A7DF0
             var InputBufferOffset = (int)Util.Memory.ReadInt((int)Util.Memory.ReadInt(0x400000 + 0x6A7DEC) + off);
             var BCM = (int)Util.Memory.ReadInt(InputBufferOffset + 0x8);
+
             //Not in a match
             if (BCM == 0)
                 return;
@@ -152,6 +186,10 @@ namespace UltraBot
             ReadStringOffsetTable(CancelListNames,BCM, (int)Util.Memory.ReadShort(BCM + 0x16), (int)Util.Memory.ReadInt(BCM + 0x34));
             ActiveCancelLists.Clear();
             var i = 0;
+            var InputBufferStart = (int)Util.Memory.ReadInt(0x400000 + 0x6A7DF0) + 0x48;
+            var InputBufferCurrent = (int)Util.Memory.ReadInt(InputBufferStart + 0x400 * 0xC + 4);
+            var InputBufferCurrentAlt = (int)Util.Memory.ReadInt(InputBufferStart - 0x1C) % 0x400;
+            InputBufferCurrent = InputBufferCurrentAlt;
             var test = (int)Util.Memory.ReadInt(InputBufferOffset + 0x147C + i++ * 0x10);
             while (i < 12)
             {
@@ -163,19 +201,13 @@ namespace UltraBot
             InputBuffer.Clear();
 
             var InputBufferIndex = (int)Util.Memory.ReadInt(InputBufferOffset + 0x1414);
-            for(i = 0; i < 0xff; i++)
+            for(i = 0; i < 0x400; i++)
             {
-                var trueIndex = (InputBufferIndex - i);
-                if(trueIndex < 0)
-                    trueIndex += 255;
-                var tmp = Util.Memory.ReadInt(InputBufferOffset + 0x10 + trueIndex * 4);
-
+                var trueIndex = (InputBufferCurrent);
+                var tmp = Util.Memory.ReadInt(InputBufferStart + 0xC*trueIndex);
                 InputBuffer.Add((Input)tmp);
-
             }
-
-
-        }
+        }      
         private void ReadBACData()
         {
             var BAC = Util.Memory.ReadInt((int)Util.Memory.ReadInt(_BaseOffset + 0xB0) + 0x8);
@@ -185,11 +217,17 @@ namespace UltraBot
                 return;
 
             var BAC_data = (int)Util.Memory.ReadInt(_BaseOffset + 0xB0);
+            var XChange = X;
 
-            X = Util.Memory.ReadFloat(_BaseOffset + 0x70);
+            X = Util.Memory.ReadFloat(_BaseOffset + 0x16D0);
             Y = Util.Memory.ReadFloat(_BaseOffset + 0x74);
-            
+            XChange = XChange-X;
             XVelocity = Util.Memory.ReadFloat(_BaseOffset + 0xe0);
+            if (XVelocity == 0 && XChange != 0)
+            {
+                XVelocity = XChange;
+                //Console.WriteLine("Using {0} for XVel due to XChange", XChange);
+            }
             YVelocity = Util.Memory.ReadFloat(_BaseOffset + 0xe4);
             XAcceleration = Util.Memory.ReadFloat(_BaseOffset + 0x100);
             YAcceleration = Util.Memory.ReadFloat(_BaseOffset + 0x104);
@@ -266,16 +304,18 @@ namespace UltraBot
             var ProjectileOffset = (int)Util.Memory.ReadInt((int)Util.Memory.ReadInt(0x400000 + 0x006A7DE8) + off);
             var tmp1 = (int)Util.Memory.ReadInt((int)ProjectileOffset+0x4);
             var ProjectileCount = (int)Util.Memory.ReadInt((int)ProjectileOffset + 0x8C);
-            if (ProjectileCount == 0)
-                return;
-            var ProjectileLeft = Util.Memory.ReadFloat((int)tmp1 + 0x70);
-            var ProjectileRight = Util.Memory.ReadFloat((int)tmp1 + 0x70+0x10);
-            var ProjectileSpeed = Util.Memory.ReadFloat((int)tmp1 + 0x70+0x70);
-            var right = Math.Abs(ProjectileRight - X);
-            var left = Math.Abs(ProjectileLeft - X);
-            var max = Math.Max(right, left);
-            AttackRange = Math.Max(max,AttackRange);
-            State = CharState.Active;
+            if (ProjectileCount != 0)
+            {
+                var ProjectileLeft = Util.Memory.ReadFloat((int)tmp1 + 0x70);
+                var ProjectileRight = Util.Memory.ReadFloat((int)tmp1 + 0x70 + 0x10);
+                var ProjectileSpeed = Util.Memory.ReadFloat((int)tmp1 + 0x70 + 0x70);
+                var right = Math.Abs(ProjectileRight - X);
+                var left = Math.Abs(ProjectileLeft - X);
+                var max = Math.Max(right, left);
+               
+                AttackRange = Math.Max(max+ProjectileSpeed*10, AttackRange);
+                State = CharState.Active;
+            }
             for(int i = 0; i <= 5; i++)
             {
 
@@ -286,11 +326,6 @@ namespace UltraBot
                 {
                     if(i == 0)
                     {
-                                                
-                       
-                        
-                        
-                        Console.WriteLine("Hitbox?"+max+" "+i);
                       
                     }
                    //ReadBox here.
@@ -347,15 +382,21 @@ namespace UltraBot
 
                     if ((attach) != 0)
                     {
-                        Console.WriteLine("WARNING ATTACH " + ScriptName);
+                        //Console.WriteLine("WARNING ATTACH " + ScriptName);
                     }
                     else
                         useFallBack = false;
                     
-
                     AttackRange = Math.Max(AttackRange, range);
-                    ScriptFrameHitboxStart = Math.Min(ScriptFrameHitboxStart, Tick2Frame[Util.Memory.ReadShort((int)b + FrameOffset + i * 12 + j * 4)]);
-                    ScriptFrameHitboxEnd = Math.Max(ScriptFrameHitboxEnd, Tick2Frame[Util.Memory.ReadShort((int)b + FrameOffset + i * 12 + j * 4 + 2)]);
+                    try 
+                    { 
+                        ScriptFrameHitboxStart = Math.Min(ScriptFrameHitboxStart, Tick2Frame[Util.Memory.ReadShort((int)b + FrameOffset + i * 12 + j * 4)]);
+                        ScriptFrameHitboxEnd = Math.Max(ScriptFrameHitboxEnd, Tick2Frame[Util.Memory.ReadShort((int)b + FrameOffset + i * 12 + j * 4 + 2)]);
+                    }
+                    catch(Exception)
+                    {
+
+                    }
                     if (type == 2|| (flags & 4) != 0)
                     {
                         if (!ScriptName.Contains("BALCERONA"))

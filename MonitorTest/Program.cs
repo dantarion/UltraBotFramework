@@ -21,8 +21,8 @@ namespace MonitorTest
                 //IntPtr handle = 
         static void Main(string[] args)
         {
-            Bot.AddSearchPath("../../../UltraBot/Bots/");
-            var KenBot = Bot.LoadBotFromFile("KenBot");
+            BotLoader.AddSearchPath("../../../UltraBot/Bots/");
+            var KenBot = BotLoader.LoadBotFromFile("KenBot");
             KenBot.Init(0);
             Util.Init();
             DX9Overlay.SetParam("process", "SSFIV.exe");
