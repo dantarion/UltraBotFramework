@@ -337,7 +337,16 @@ namespace UltraBotUI
 
             int id = idGen.Next();
             if (hotKey.Enabled)
+            {
+                try
+                    {
                 RegisterHotKey(id, hotKey);
+                    }
+                catch(Exception e)
+                {
+
+                }
+            }
             hotKey.PropertyChanged += hotKey_PropertyChanged;
             hotKeys[id] = hotKey;
         }

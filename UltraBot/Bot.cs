@@ -53,6 +53,7 @@ namespace UltraBot
         {
             myState = FighterState.getFighter(index);
             enemyState = FighterState.getFighter(index == 0 ? 1 : 0);
+            inputAdapter = new MemoryInputAdapter(index);
         }
         public FighterState myState;
         public FighterState enemyState;
@@ -127,7 +128,7 @@ namespace UltraBot
         }
         #endregion
         #region Input Management
-        private InputAdapter inputAdapter = new MemoryInputAdapter();
+        private InputAdapter inputAdapter = null;
         public void pressButton(string key, InputAdapter.KeyMode kmode = InputAdapter.KeyMode.PRESS)
         {
 

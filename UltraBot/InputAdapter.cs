@@ -8,6 +8,11 @@ namespace UltraBot
 {
     abstract public class InputAdapter
     {
+        protected InputAdapter(int player)
+        {
+            indexer = player;
+        }
+        protected int indexer = 0;
         protected List<FighterState.Input> pressed = new List<FighterState.Input>();
         protected List<FighterState.Input> last_pressed = new List<FighterState.Input>();
         protected List<FighterState.Input> held = new List<FighterState.Input>();
@@ -44,6 +49,10 @@ namespace UltraBot
     }
     class MemoryInputAdapter : InputAdapter
     {
+        public MemoryInputAdapter(int player) : base(player)
+        {
+
+        }
         public override void sendInputs()
         {
             foreach (var key in last_pressed.ToList())
@@ -66,14 +75,20 @@ namespace UltraBot
                 if (!last_pressed.Contains(key))
                     last_pressed.Add(key);
             }
+            var off = indexer == 0 ? 0 : 0x3018-0xC;
             var InputBufferStart = (int)Util.Memory.ReadInt(0x400000 + 0x6A7DF0) + 0x48;
             var InputBufferCurrent = (int)Util.Memory.ReadInt(InputBufferStart - 0x1C) % 0x400;
-            Util.Memory.Write(InputBufferStart + 0xC * InputBufferCurrent, (int)input);
+            Util.Memory.Write(InputBufferStart + 0xC * InputBufferCurrent+off, (int)input);
             pressed.Clear();
         }
     }
     class KeyboardInputAdapter : InputAdapter
     {
+        public KeyboardInputAdapter(int player)
+            : base(player)
+        {
+
+        }
         /// <summary>
         /// These keycodes exist so that we can map them to keyboard or vJoy or whatever.
         /// </summary>

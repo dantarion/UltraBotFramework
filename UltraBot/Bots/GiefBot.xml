@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BotData>
     <Combos>
+        <Combo Type="GROUND" Startup="0" EXMeter="1000" XMin="0" XMax="1.60" YMin="0" Input="4.2.6.8.4.2.6LP.W30" />
+        <Combo Type="GROUND" Startup="0" XMin="0" XMax="1.50" YMin="0" YMax="0" EXMeter="0" Input="4.2.6.8HP.W30" />
+        <Combo Type="GROUND" Startup="0" XMin="0" XMax="1.55" YMin="0" YMax="0" EXMeter="0" Input="4.2.6.8MP.W30" />
         <Combo Type="GROUND" Startup="0" XMin="0" XMax="1.85" YMin="0" YMax="0" EXMeter="0" Input="4.2.6.8LP.W30" />
         <Combo Type="GROUND,ULTRA" Startup="0" XMin="0" XMax="1.65" YMin="0" Input="4.2.6.8.4.2.6LPMPHP.W30" />
     </Combos>
