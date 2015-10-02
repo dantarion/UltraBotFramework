@@ -28,8 +28,8 @@ namespace UltraBot
             if (asmHelper != null)
                 asmHelper.Dispose();
 
-            //asmHelper = new AsmHelper(CSScript.Load(BotName + ".cs", Guid.NewGuid().ToString(), false));
-            asmHelper = new AsmHelper(CSScript.Load(BotName + ".cs", null, false));
+            asmHelper = new AsmHelper(CSScript.Load(BotName + ".cs", Guid.NewGuid().ToString(), false));
+            //asmHelper = new AsmHelper(CSScript.Load(BotName + ".cs", null, false));
             var tmp2 = asmHelper.CreateObject(BotName);
             bot = tmp2 as Bot;
 

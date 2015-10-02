@@ -19,7 +19,7 @@
                 <Label>Select a Bot</Label>
                 <ComboBox Name="BotSelector" SelectionChanged="BotSelector_SelectionChanged"/>
                 <StackPanel Margin="5" Orientation="Horizontal">
-                    <RadioButton Margin="30,0" GroupName="Player" Content="Player 1" IsChecked="True" Checked="RadioButton_Checked" />
+                    <RadioButton Name="P1CheckBox" Margin="30,0" GroupName="Player" Content="Player 1" IsChecked="True" Checked="RadioButton_Checked" />
                     <RadioButton Margin="30,0" GroupName="Player" Content="Player 2" Checked="RadioButton_Checked" />
                 </StackPanel>
             </StackPanel>

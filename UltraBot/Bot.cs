@@ -87,12 +87,13 @@ namespace UltraBot
             
                 
             _status = currentState.Process(this);
-            if (currentState.isFinished())
+            if (currentState.isFinished())//We don't have any buttons to press, we need to process another frame first.
             {
                 changeState(DefaultState());
-                _status = currentState.Process(this);
+                _status = currentState.Process(this); 
             }
             inputAdapter.sendInputs();
+            
         }
         #region State Management
         protected BotAIState previousState;

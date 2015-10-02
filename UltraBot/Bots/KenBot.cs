@@ -11,11 +11,11 @@ public class KenBot : Bot
     public KenBot()
     {
         RegisterState(ThrowTechState.Trigger);
-        //RegisterState(DefendState.Trigger);
+        RegisterState(DefendState.Trigger);
     }
     public override BotAIState DefaultState()
     {
-        return new PsychicDPState();
+        return new DanceState(2.0f,20,5,10);
     }
     public class PsychicDPState : BotAIState
     {
@@ -35,6 +35,7 @@ public class KenBot : Bot
             yield return "they pressed a button! doing DP!";
         }
     }
+    
     public class TestState : BotAIState
     {
         public override System.Collections.Generic.IEnumerator<string> Run(Bot bot)

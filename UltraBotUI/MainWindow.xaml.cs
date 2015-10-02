@@ -158,16 +158,17 @@ namespace UltraBotUI
         private void BotSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             StatusLabel.Content = "Loading " + (string)BotSelector.SelectedValue +"...";
-            try
+            //try
             {
                 bot = BotLoader.LoadBotFromFile((string)BotSelector.SelectedValue);
+                bot.Init(P1CheckBox.IsChecked.Value ? 0 : 1);
                 BotSelector.Items.Refresh();
                 RefreshBotData();
-                bot.Init(0);
             }
-            catch(Exception err)
+            //catch(Exception err)
             {
-                StatusLabel.Content = err.ToString();
+                //StatusLabel.Content = err.ToString();
+                //throw err;
             }
             
 
@@ -185,7 +186,7 @@ namespace UltraBotUI
         {
             if(bot != null)
             {
-                if ((sender as RadioButton).Content.Equals("Player 1"))
+                if (P1CheckBox.IsChecked.Value)
                     bot.Init(0);
                 else
                     bot.Init(1);
@@ -225,8 +226,8 @@ namespace UltraBotUI
             {
                 var le = new LogEntry();
                 le.Message = bot.getStatus();
-                le.BotScriptInfo = String.Format("{0}:{1} - {2}", bot.myState.ScriptName, bot.myState.ScriptFrame, bot.myState.State);
-                le.EnemyScriptInfo = String.Format("{0}:{1} - {2}", bot.enemyState.ScriptName, bot.enemyState.ScriptFrame, bot.enemyState.State);
+                le.BotScriptInfo = String.Format("{0}:{1} - {2}{3}", bot.myState.ScriptName, bot.myState.ScriptFrame, bot.myState.State, bot.myState.StateTimer);
+                le.EnemyScriptInfo = String.Format("{0}:{1} - {2}{3}", bot.enemyState.ScriptName, bot.enemyState.ScriptFrame, bot.enemyState.State, bot.enemyState.StateTimer);
                 log.Insert(0, le);
                 Log.Items.Refresh();
                
@@ -273,7 +274,7 @@ namespace UltraBotUI
                 DX9Overlay.DestroyAllVisual();
                 roundTimer = new TextLabel("Consolas", 10, TypeFace.NONE, new System.Drawing.Point(4, 700), Color.White, "", true, true);
                 player1 = new TextLabel("Consolas", 10, TypeFace.NONE, new System.Drawing.Point(5, 0), Color.White, "", true, true);
-                player2 = new TextLabel("Consolas", 10, TypeFace.NONE, new System.Drawing.Point(480, 0), Color.White, "", true, true);
+                player2 = new TextLabel("Consolas", 10, TypeFace.NONE, new System.Drawing.Point(460, 0), Color.White, "", true, true);
                 restartWorker();
             }
             else
@@ -286,8 +287,8 @@ namespace UltraBotUI
         private static void UpdateOverlay(TextLabel label, FighterState f)
         {
             
-            label.Text = String.Format("X={0,-7} Y={1,-7} XVel={12,-7} YVel={13,-7}\n{2,-15} F:{3,-3}\nACT:{4,-3} ENDACT:{5,-3} IASA:{6,-3} TOT:{7,-3}\n{8,-10} {9,-10} {10,-10} {11:X}\n{14}",
-                f.X, f.Y, f.ScriptName, f.ScriptFrame, f.ScriptFrameHitboxStart, f.ScriptFrameHitboxEnd, f.ScriptFrameIASA, f.ScriptFrameTotal, f.State, f.AState, f.StateTimer, f.RawState, f.XVelocity, f.YVelocity, String.Join(", ", f.ActiveCancelLists));
+            label.Text = String.Format("X={0,-11} Y={1,-11} XVel={12,-11} YVel={13,-11}\n{2,-15} F:{3,-3} ACT:{4,-3} ENDACT:{5,-3} IASA:{6,-3} TOT:{7,-3}\n{8,-10} {9,-10} {10,-10} {11}\n{14}",
+                f.X, f.Y, f.ScriptName, f.ScriptFrame, f.ScriptFrameHitboxStart, f.ScriptFrameHitboxEnd, f.ScriptFrameIASA, f.ScriptFrameTotal, f.State, f.AState, f.StateTimer, f.Flags, f.XVelocity, f.YVelocity, String.Join(", ", f.ActiveCancelLists));
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)

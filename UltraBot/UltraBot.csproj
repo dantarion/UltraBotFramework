@@ -58,7 +58,7 @@
     <Compile Include="BotAIState.cs" />
     <Compile Include="Bots\GiefBot.cs" />
     <Compile Include="Bots\KenBot.cs" />
-    <Compile Include="Bots\ERyuBot.cs" />
+    <None Include="Bots\ERyuBot.cs" />
     <Compile Include="Combo.cs" />
     <Compile Include="FighterState.cs" />
     <Compile Include="InputAdapter.cs" />

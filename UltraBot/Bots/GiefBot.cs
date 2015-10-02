@@ -43,7 +43,8 @@ public class GiefBot : Bot
             score *= 1000;//We are already in range
         //TODO IF WE ARE ALMOST IN RANGE
         //TODO GROUNDED.ANTIAIR.POKE.THROWF setup
-		
+        if (combo.Type.HasFlag(ComboType.GROUND) && enemyState.Flags.HasFlag(UltraBot.FighterState.StatusFlags.AIRBORNE))
+            return 0;
         if (combo.Type.HasFlag(ComboType.DEBUG) && score > 1000)
             return float.MaxValue;
         return score;

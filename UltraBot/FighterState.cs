@@ -22,6 +22,13 @@ namespace UltraBot
             Active,
             Recovery
         }
+        [Flags]
+        public enum StatusFlags
+        {
+            CROUCHING = 0x2,
+            AIRBORNE = 0x4,
+            COUNTERHIT = 0x10
+        }
         /// <summary>
         /// TODO: Make the code differentiate between grabs and unblockables.
         /// Doesn't matter for Kenbot as unblockables are too slow to hit him normally
@@ -69,7 +76,7 @@ namespace UltraBot
         public float YAcceleration;
         public float XDistance;
         public float YDistance;
-        public uint RawState;
+        public StatusFlags Flags;
         
         public int Health;//TODO
         public int Meter;
@@ -236,11 +243,10 @@ namespace UltraBot
             Revenge = (int)Util.Memory.ReadShort(_BaseOffset + 0x6C4E);
 
 
-            RawState = Util.Memory.ReadInt(_BaseOffset + 0xBC);
+            Flags = (StatusFlags)Util.Memory.ReadInt(_BaseOffset + 0xBC);
             LastScriptIndex = ScriptIndex;
-            ScriptIndex = Util.Memory.ReadInt(BAC_data + 0x18);
-            ScriptTick = (float)Util.Memory.ReadInt(BAC_data + 0x1C) / 0x10000;
 
+            ScriptIndex = Util.Memory.ReadInt(BAC_data + 0x18);
             var ScriptNameOffset = BAC + Util.Memory.ReadInt((int)((BAC + Util.Memory.ReadInt((int)BAC + 0x1C)) + 4 * ScriptIndex));
             var tmp = ReadNullTerminatedString(ScriptNameOffset);
             LastScriptName = ScriptName;
@@ -248,11 +254,19 @@ namespace UltraBot
             if (ScriptName == "")
                 return;
 
-            ScriptTickHitboxStart = (float)Util.Memory.ReadInt(BAC_data + 0x28) / 0x10000;
-            ScriptTickHitboxEnd = (float)Util.Memory.ReadInt(BAC_data + 0x2C) / 0x10000;
-            ScriptTickIASA = (float)Util.Memory.ReadInt(BAC_data + 0x30) / 0x10000;
-            ScriptTickTotal = (float)Util.Memory.ReadInt(BAC_data + 0x24) / 0x10000;
-            ScriptSpeed = (float)Util.Memory.ReadInt(BAC_data + 0x18 + 0xC0) / 0x10000;
+            
+
+            
+
+            ScriptTickTotal = Util.Memory.ReadInt(BAC_data + 0x24) / 0x10000;
+            ScriptTickHitboxStart = Util.Memory.ReadInt(BAC_data + 0x28) / 0x10000;
+            ScriptTickHitboxEnd = Util.Memory.ReadInt(BAC_data + 0x2C) / 0x10000;
+            ScriptTickIASA = Util.Memory.ReadInt(BAC_data + 0x30) / 0x10000;
+            ScriptTick = Util.Memory.ReadInt(BAC_data + 0x3C) / 0x10000;
+
+            ScriptSpeed = Util.Memory.ReadInt(BAC_data + 0x18 + 0xC0) / 0x10000;
+            
+            
             if (ScriptTickIASA == 0)
                 ScriptTickIASA = ScriptTickTotal;
 
@@ -447,11 +461,13 @@ namespace UltraBot
             Tick2Frame.Clear();
             float speed = 1;
             float curTime = 0;
+            if (ScriptName == "2LK")
+                Console.Write("trap");
             for (int i = 0; i <= ScriptTickTotal + 5; i++)
             {
                 for (int j = 0; j < commandStarts.Count; j++)
                 {
-                    if (i > commandStarts[j])
+                    if (i == commandStarts[j])
                         if (speeds[j] != 0)
                             speed = (float)1.0 / speeds[j];
                         else
@@ -460,12 +476,13 @@ namespace UltraBot
                 Tick2Frame[i] = curTime;
                 curTime += speed;
             }
-           
-            ScriptFrame = (float)Math.Ceiling(Tick2Frame[(float)Math.Ceiling(ScriptTick % ScriptTickTotal)]);
+
+            ScriptFrame = (float)Math.Ceiling(Tick2Frame[ScriptTick % ScriptTickTotal]);
             ScriptFrameHitboxStart = (float)Math.Ceiling(Tick2Frame[ScriptTickHitboxStart % ScriptTickTotal]);
             ScriptFrameHitboxEnd = (float)Math.Ceiling(Tick2Frame[ScriptTickHitboxEnd % ScriptTickTotal]);
             ScriptFrameIASA = (float)Math.Ceiling(Tick2Frame[ScriptTickIASA % ScriptTickTotal]);
             ScriptFrameTotal = (float)Math.Ceiling(Tick2Frame[ScriptTickTotal]);
+             
         }
 		private static string ReadNullTerminatedString(uint offset)
         {

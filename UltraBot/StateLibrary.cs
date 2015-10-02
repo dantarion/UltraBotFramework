@@ -11,6 +11,48 @@ namespace UltraBot
         public class IdleState : BotAIState
         {
         }
+        public class DanceState : BotAIState
+        {
+
+            private Random random = new Random();
+            private float _targetDistance;
+            private int _maxForward;
+            private int _maxCrouch;
+            private int _maxBackward;
+            public DanceState(float targetDistance, int maxForward, int maxCrouch, int maxBackward)
+            {
+                _targetDistance = targetDistance;
+                _maxForward = maxForward;
+                _maxCrouch = maxCrouch;
+                _maxBackward = maxBackward;
+            }
+            public override System.Collections.Generic.IEnumerator<string> Run(Bot bot)
+            {
+                string danceButton = "";
+                int danceDuration = 0;
+                var rnd = random.NextDouble();
+                if (rnd > .9)
+                {
+                    danceButton = "2";
+                    danceDuration = 1 + random.Next(_maxCrouch);
+                }
+                else if (rnd > .65 && Math.Abs(bot.myState.XDistance) < _targetDistance)
+                {
+                    danceButton = "4";
+                    danceDuration = 1 + random.Next(_maxBackward);
+                }
+                else
+                {
+                    danceButton = "6";
+                    danceDuration = 1 + random.Next(_maxForward);
+                }
+                while (danceDuration-- > 0)
+                {
+                    bot.pressButton(danceButton);
+                    yield return "Dancing";
+                }
+            }
+        }
         public class ReturnToNeutralState : BotAIState
         {
             public override IEnumerator<string> Run(Bot bot)
@@ -89,17 +131,6 @@ namespace UltraBot
                 //Are we at neutral?
                 while (index < Inputs.Count)
                 {
-                    //WX wait X frames
-                    if (Inputs[index].IndexOf('W') == 0)
-                    {
-                        uint timer = UInt32.Parse(Inputs[index++].Substring(1));
-                        uint i = 0;
-                        while (i++ < timer)
-                        {
-                            yield return String.Join(".", Inputs.Skip(index - 1));
-                        }
-                        continue;
-                    }
                     //Stop on block
                     if (Inputs[index].Contains('*'))
                         stopOnBlock = true;
@@ -108,8 +139,28 @@ namespace UltraBot
                         stopOnWhiff = true;
                     if (stopOnBlock && (bot.enemyState.ScriptName.Contains("GUARD")))
                         yield break;
-                    if (stopOnWhiff && !(64 <= bot.enemyState.ScriptIndex && bot.enemyState.ScriptIndex <= 202 && !bot.enemyState.ScriptName.EndsWith("J")))
-                        yield break;
+                    if (stopOnWhiff)
+                    {
+                        var stop = true;
+                        if(26 <= bot.enemyState.ScriptIndex && bot.enemyState.ScriptIndex <= 202 && !bot.enemyState.ScriptName.EndsWith("J"))
+                            stop = false;
+                        if(bot.enemyState.ScriptName.Contains("DAMAGE"))
+                            stop = false;   
+                        if(stop)
+                            yield  break;
+                    }
+                    //WX wait X frames
+                    if (Inputs[index].IndexOf('W') > -1)
+                    {
+                        uint timer = UInt32.Parse(Inputs[index].Substring(1 + Inputs[index++].IndexOf('W')));
+                        uint i = 0;
+                        while (i++ < timer)
+                        {
+                            yield return String.Join(".", Inputs.Skip(index - 1));
+                        }
+                        continue;
+                    }
+
 
                     bot.pressButton(Inputs[index]);
 

@@ -7,7 +7,7 @@ public class ERyuBot : Bot
     public ERyuBot()
     {
         RegisterState(ThrowTechState.Trigger);
-		RegisterState(StuffState.Trigger);
+		//RegisterState(StuffState.Trigger);
         RegisterState(WhiffPunishState.Trigger);
         RegisterState(TriggerDefenseCustom);
     }
@@ -15,7 +15,7 @@ public class ERyuBot : Bot
     {
         
         //bot.enemyState.AttackRange*2+System.Math.Abs(bot.enemyState.XVelocity*bot.enemyState.StateTimer)+.5*System.Math.Abs(bot.enemyState.XAcceleration*3)
-        if ((bot.enemyState.State == FighterState.CharState.Startup && bot.enemyState.StateTimer < 1) || bot.enemyState.State == FighterState.CharState.Active)
+        if ((bot.enemyState.State == FighterState.CharState.Startup && bot.enemyState.StateTimer < 3) || bot.enemyState.State == FighterState.CharState.Active)
         {
             //Console.WriteLine("VELOCITY={0} ACCEL={1} XPOS={2}", bot.enemyState.XVelocity, bot.enemyState.XAcceleration, bot.enemyState.X);
             if (Math.Abs(bot.myState.XDistance) - .15 < bot.enemyState.AttackRange)
@@ -26,7 +26,7 @@ public class ERyuBot : Bot
     }
     public override BotAIState DefaultState()
     {
-        return new TestState();
+        return new IdleState();
     }
     protected override float scoreCombo(Combo combo, int startup = Int32.MaxValue)
     {
@@ -147,7 +147,7 @@ public class ERyuBot : Bot
                     yield break;
 				}
                 
-                yield return "Getting in range"+timer;
+                yield return "Getting in range";
             }
 
 			var substate = new SequenceState(c.Input);
