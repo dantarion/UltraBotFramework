@@ -11,11 +11,37 @@ public class KenBot : Bot
     public KenBot()
     {
         RegisterState(ThrowTechState.Trigger);
+        RegisterState(ReversalDP);
+        RegisterState(CounterDP);
         RegisterState(DefendState.Trigger);
     }
+    public BotAIState ReversalDP(Bot bot)
+    {
+
+        //bot.enemyState.AttackRange*2+System.Math.Abs(bot.enemyState.XVelocity*bot.enemyState.StateTimer)+.5*System.Math.Abs(bot.enemyState.XAcceleration*3)
+        if (//bot.enemyState.State == FighterState.CharState.Startup
+            bot.myState.ActiveCancelLists.Contains("REVERSAL")
+            && bot.myState.InputBufferSequenceCheck(10,FighterState.Input.RIGHT,FighterState.Input.DOWN) != -1)
+        {
+            return new SequenceState("6HP");
+        }
+        return null;
+    }
+    public BotAIState CounterDP(Bot bot)
+    {
+
+        //bot.enemyState.AttackRange*2+System.Math.Abs(bot.enemyState.XVelocity*bot.enemyState.StateTimer)+.5*System.Math.Abs(bot.enemyState.XAcceleration*3)
+        if (bot.enemyState.State == FighterState.CharState.Startup)
+        {
+            return new SequenceState("6.2.6HP");
+        }
+        return null;
+    }
+    
     public override BotAIState DefaultState()
     {
-        return new DanceState(2.0f,20,5,10);
+       // return new DanceState(2.0f,20,5,10);
+        return new IdleState();
     }
     public class PsychicDPState : BotAIState
     {

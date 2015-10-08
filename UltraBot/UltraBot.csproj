@@ -43,6 +43,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\MemoryEditor.dll</HintPath>
     </Reference>
+    <Reference Include="RainbowLib">
+      <HintPath>.\RainbowLib.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -58,7 +61,7 @@
     <Compile Include="BotAIState.cs" />
     <Compile Include="Bots\GiefBot.cs" />
     <Compile Include="Bots\KenBot.cs" />
-    <None Include="Bots\ERyuBot.cs" />
+    <Compile Include="Bots\ERyuBot.cs" />
     <Compile Include="Combo.cs" />
     <Compile Include="FighterState.cs" />
     <Compile Include="InputAdapter.cs" />

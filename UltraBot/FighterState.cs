@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using RainbowLib;
+using RainbowLib.BAC;
+using RainbowLib.BCM;
+using System.IO;
 namespace UltraBot
 {
     public class FighterState
@@ -41,7 +44,7 @@ namespace UltraBot
             Overhead,
             None
         }
-        
+
         [Flags]
         public enum Input
         {
@@ -56,6 +59,11 @@ namespace UltraBot
             HP = 0x400,
             HK = 0x800,
         }
+        //RainbowLibPtrs
+        public BCMFile bcm;
+        public BACFile bac;
+        private int bac_off = 0;
+        private int bcm_off = 0;
         /// <summary>
         /// This is used to hold a table to translate between animation ticks and frame timings
         /// </summary>
@@ -77,13 +85,13 @@ namespace UltraBot
         public float XDistance;
         public float YDistance;
         public StatusFlags Flags;
-        
+
         public int Health;//TODO
         public int Meter;
         public int Revenge;
         //BAC Data
-        public uint LastScriptIndex = UInt32.MaxValue;
-        public uint ScriptIndex = UInt32.MaxValue;
+        public int LastScriptIndex = 0;
+        public int ScriptIndex = 0;
         public string LastScriptName = "";
         public string ScriptName = "";
         public float ScriptSpeed;
@@ -103,12 +111,8 @@ namespace UltraBot
         public float ScriptFrameIASA;
         public float ScriptFrameTotal;
 
-        
+
         //BCM Data
-        public List<String> ChargeNames = new List<string>();
-        public List<String> InputNames = new List<string>();
-        public List<String> MoveNames = new List<string>();
-        public List<String> CancelListNames = new List<string>();
         public List<String> ActiveCancelLists = new List<String>();
         public List<Input> InputBuffer = new List<Input>();
 
@@ -150,7 +154,7 @@ namespace UltraBot
         public int InputBufferSequenceCheck(int search, params Input[] sequence)
         {
             int j = sequence.Length - 1;
-            for(int i = 0; i < search; i++)
+            for (int i = 0; i < search; i++)
             {
                 var test = InputBuffer[i];
                 if ((test & sequence[j]) == sequence[j])
@@ -168,57 +172,76 @@ namespace UltraBot
                 off = 0xC;
 
             _BaseOffset = (int)Util.Memory.ReadInt((int)Util.Memory.ReadInt(0x400000 + 0x6A7DCC) + off);
-            ReadBACData();
             ReadBCMData();
+            ReadBACData();
+
             ReadOtherData();
         }
-		public void ReadBCMData()
+        public void ReadBCMData()
         {
             int off = 0x8;
             if (PlayerIndex == 1)
                 off = 0xC;
             //06A7DF0
             var InputBufferOffset = (int)Util.Memory.ReadInt((int)Util.Memory.ReadInt(0x400000 + 0x6A7DEC) + off);
-            var BCM = (int)Util.Memory.ReadInt(InputBufferOffset + 0x8);
-
+            int BCM = (int)Util.Memory.ReadInt(InputBufferOffset + 0x8);
+            if (BCM != bcm_off && BCM != 0)
+            {
+                //Gotta load BCM
+                var tmpfile = File.Create(System.IO.Path.GetTempPath() + "/tmp.bcm", 0x4000);
+                var tmparr = Util.Memory.ReadAOB(BCM, 0x4000);
+                tmpfile.Write(tmparr, 0, tmparr.Length);
+                tmpfile.Close();
+                bcm = BCMFile.FromFilename(System.IO.Path.GetTempPath() + "/tmp.bcm");
+                bcm_off = BCM;
+            }
             //Not in a match
             if (BCM == 0)
                 return;
             var chargeStatus = (int)Util.Memory.ReadInt(InputBufferOffset + 0x1594);
-
-            //Read Names: TODO Only do this on new BCM
-            ReadStringOffsetTable(ChargeNames,BCM, (int)Util.Memory.ReadShort(BCM + 0x10), (int)Util.Memory.ReadInt(BCM + 0x1C));
-            ReadStringOffsetTable(InputNames,BCM, (int)Util.Memory.ReadShort(BCM + 0x12), (int)Util.Memory.ReadInt(BCM + 0x24));
-            ReadStringOffsetTable(MoveNames,BCM, (int)Util.Memory.ReadShort(BCM + 0x14), (int)Util.Memory.ReadInt(BCM + 0x2C));
-            ReadStringOffsetTable(CancelListNames,BCM, (int)Util.Memory.ReadShort(BCM + 0x16), (int)Util.Memory.ReadInt(BCM + 0x34));
             ActiveCancelLists.Clear();
-            var i = 0;
+
             var InputBufferStart = (int)Util.Memory.ReadInt(0x400000 + 0x6A7DF0) + 0x48;
             var InputBufferCurrent = (int)Util.Memory.ReadInt(InputBufferStart + 0x400 * 0xC + 4);
             var InputBufferCurrentAlt = (int)Util.Memory.ReadInt(InputBufferStart - 0x1C) % 0x400;
             InputBufferCurrent = InputBufferCurrentAlt;
-            var test = (int)Util.Memory.ReadInt(InputBufferOffset + 0x147C + i++ * 0x10);
-            while (i < 12)
+            var i = 0;
+            while (i < 0x10)
             {
-                if(test != -1)
-                    ActiveCancelLists.Add(CancelListNames[test]);
-                test = (int)Util.Memory.ReadInt(InputBufferOffset + 0x147C + i++ * 0x10);
+                var test = (int)Util.Memory.ReadInt(InputBufferOffset + 0x147C + i++ * 0x10);
+                if (test != -1)
+                    if (bcm.CancelLists.Count > test)
+                        ActiveCancelLists.Add(bcm.CancelLists[test].Name);
+                    else
+                        ActiveCancelLists.Add(test.ToString());
+
+
             }
-                
+
             InputBuffer.Clear();
 
             var InputBufferIndex = (int)Util.Memory.ReadInt(InputBufferOffset + 0x1414);
-            for(i = 0; i < 0x400; i++)
+            for (i = 0; i < 0x400; i++)
             {
                 var trueIndex = (InputBufferCurrent);
-                var tmp = Util.Memory.ReadInt(InputBufferStart + 0xC*trueIndex);
+                var tmp = Util.Memory.ReadInt(InputBufferStart + 0xC * trueIndex);
                 InputBuffer.Add((Input)tmp);
             }
-        }      
+        }
         private void ReadBACData()
         {
-            var BAC = Util.Memory.ReadInt((int)Util.Memory.ReadInt(_BaseOffset + 0xB0) + 0x8);
+            var BAC = (int)Util.Memory.ReadInt((int)Util.Memory.ReadInt(_BaseOffset + 0xB0) + 0x8);
 
+            if (BAC != bac_off && BAC != 0)
+            {
+                //Gotta load BCM
+                var tmpfile = File.Create(System.IO.Path.GetTempPath() + "/tmp.bac", 0x4000);
+                var tmparr = Util.Memory.ReadAOB(BAC, 0x50000);
+                tmpfile.Write(tmparr, 0, tmparr.Length);
+                tmpfile.Close();
+                bac = BACFile.FromFilename(System.IO.Path.GetTempPath() + "/tmp.bac", bcm);
+                bac_off = BAC;
+            }
             //Not in a match
             if (BAC == 0)
                 return;
@@ -228,7 +251,7 @@ namespace UltraBot
 
             X = Util.Memory.ReadFloat(_BaseOffset + 0x16D0);
             Y = Util.Memory.ReadFloat(_BaseOffset + 0x74);
-            XChange = XChange-X;
+            XChange = XChange - X;
             XVelocity = Util.Memory.ReadFloat(_BaseOffset + 0xe0);
             if (XVelocity == 0 && XChange != 0)
             {
@@ -246,18 +269,12 @@ namespace UltraBot
             Flags = (StatusFlags)Util.Memory.ReadInt(_BaseOffset + 0xBC);
             LastScriptIndex = ScriptIndex;
 
-            ScriptIndex = Util.Memory.ReadInt(BAC_data + 0x18);
-            var ScriptNameOffset = BAC + Util.Memory.ReadInt((int)((BAC + Util.Memory.ReadInt((int)BAC + 0x1C)) + 4 * ScriptIndex));
-            var tmp = ReadNullTerminatedString(ScriptNameOffset);
+            ScriptIndex = (int)Util.Memory.ReadInt(BAC_data + 0x18);
             LastScriptName = ScriptName;
-            ScriptName = tmp;
+
+            ScriptName = bac.Scripts.Where(x => x.Index == ScriptIndex).FirstOrDefault().Name;
             if (ScriptName == "")
                 return;
-
-            
-
-            
-
             ScriptTickTotal = Util.Memory.ReadInt(BAC_data + 0x24) / 0x10000;
             ScriptTickHitboxStart = Util.Memory.ReadInt(BAC_data + 0x28) / 0x10000;
             ScriptTickHitboxEnd = Util.Memory.ReadInt(BAC_data + 0x2C) / 0x10000;
@@ -265,8 +282,8 @@ namespace UltraBot
             ScriptTick = Util.Memory.ReadInt(BAC_data + 0x3C) / 0x10000;
 
             ScriptSpeed = Util.Memory.ReadInt(BAC_data + 0x18 + 0xC0) / 0x10000;
-            
-            
+
+
             if (ScriptTickIASA == 0)
                 ScriptTickIASA = ScriptTickTotal;
 
@@ -308,7 +325,7 @@ namespace UltraBot
                 AState = AttackState.None;
             }
         }
-		private void ReadOtherData()
+        private void ReadOtherData()
         {
 
             int off = 0x8;
@@ -316,7 +333,7 @@ namespace UltraBot
                 off = 0xC;
 
             var ProjectileOffset = (int)Util.Memory.ReadInt((int)Util.Memory.ReadInt(0x400000 + 0x006A7DE8) + off);
-            var tmp1 = (int)Util.Memory.ReadInt((int)ProjectileOffset+0x4);
+            var tmp1 = (int)Util.Memory.ReadInt((int)ProjectileOffset + 0x4);
             var ProjectileCount = (int)Util.Memory.ReadInt((int)ProjectileOffset + 0x8C);
             if (ProjectileCount != 0)
             {
@@ -326,23 +343,23 @@ namespace UltraBot
                 var right = Math.Abs(ProjectileRight - X);
                 var left = Math.Abs(ProjectileLeft - X);
                 var max = Math.Max(right, left);
-               
-                AttackRange = Math.Max(max+ProjectileSpeed*10, AttackRange);
+
+                AttackRange = Math.Max(max + ProjectileSpeed * 10, AttackRange);
                 State = CharState.Active;
             }
-            for(int i = 0; i <= 5; i++)
+            for (int i = 0; i <= 5; i++)
             {
 
                 var hitboxPtr = (int)Util.Memory.ReadInt(_BaseOffset + 0x130 + i * 4);
                 var count = (int)Util.Memory.ReadInt(hitboxPtr + 0x2C);
                 var start = (int)Util.Memory.ReadInt(hitboxPtr + 0x20);
-                for (int j = 0;j < count; j++)
+                for (int j = 0; j < count; j++)
                 {
-                    if(i == 0)
+                    if (i == 0)
                     {
-                      
+
                     }
-                   //ReadBox here.
+                    //ReadBox here.
                 }
             }
 
@@ -354,87 +371,80 @@ namespace UltraBot
             public float width;
             public float height;
         }
-        private void ComputeAttackData(uint BAC)
+        private void ComputeAttackData(int BAC)
         {
+            RainbowLib.BAC.Script currentScript = bac.Scripts.Where(x => x.Index == ScriptIndex).FirstOrDefault();
             var ScriptOffset = BAC + Util.Memory.ReadInt((int)((BAC + Util.Memory.ReadInt((int)BAC + 0x14)) + 4 * ScriptIndex));
             var ScriptCommandListCount = Util.Memory.ReadShort((int)ScriptOffset + 0x12);
             var b = (int)ScriptOffset + 0x18;
             var commandStarts = new List<ushort>();
             var speeds = new List<float>();
             AttackRange = 0;
-            for (int i = 0; i < ScriptCommandListCount; i++)
+
+            var FallBackRange = 0.0f;
+            var useFallBack = true;
+            foreach (HitboxCommand hitboxCommand in currentScript.CommandLists[(int)CommandListType.HITBOX])
             {
-                var scriptType = Util.Memory.ReadShort((int)b + i * 12);
-                if (scriptType != 7)
-                    continue;
-                var commandCount = Util.Memory.ReadShort((int)b + i * 12 + 2);
-                var FrameOffset = Util.Memory.ReadShort((int)b + i * 12 + 4);
-                var DataOffset = Util.Memory.ReadShort((int)b + i * 12 + 8);
 
-                var FallBackRange = 0.0f;
-                var useFallBack = true;
-                for (int j = 0; j < commandCount; j++)
+                var type = hitboxCommand.Type;
+
+                var hitlevel = hitboxCommand.HitLevel;
+                var flags = hitboxCommand.HitFlags;
+
+                var xoff = hitboxCommand.X;
+                var yoff = hitboxCommand.Y;
+
+                var sizex = hitboxCommand.Width;
+                var sizey = hitboxCommand.Height;
+                var range = xoff + sizex * 2;
+                if (type == 0)
                 {
-                    
-                    var type = Util.Memory.ReadByte((int)b + DataOffset + i * 12 + j * 44+(24+2));
-                    
-                    var hitlevel = Util.Memory.ReadByte((int)b + DataOffset + i * 12 + j * 44 + (24 + 3));
-                    var flags = Util.Memory.ReadByte((int)b + DataOffset + i * 12 + j * 44 + (24 + 4));
-                    
-                    var xoff = Util.Memory.ReadFloat((int)b + DataOffset + i * 12 + j * 44 + (0));
-                    var yoff = Util.Memory.ReadFloat((int)b + DataOffset + i * 12 + j * 44 + (4));
+                    FallBackRange = range;
+                    continue;
+                }
+                var attach = hitboxCommand.AttachPoint;
 
-                    var sizex = Util.Memory.ReadFloat((int)b + DataOffset + i * 12 + j * 44 + (4 * 3));
-                    var sizey = Util.Memory.ReadFloat((int)b + DataOffset + i * 12 + j * 44 + (4 * 4));
-                    var range = xoff + sizex*2;
-                    if (type == 0)
+                if ((attach) != 0)
+                {
+                    //Console.WriteLine("WARNING ATTACH " + ScriptName);
+                }
+                else
+                    useFallBack = false;
+
+                AttackRange = Math.Max(AttackRange, range);
+                try
+                {
+                    ScriptFrameHitboxStart = Math.Min(ScriptFrameHitboxStart, Tick2Frame[hitboxCommand.StartFrame]);
+                    ScriptFrameHitboxEnd = Math.Max(ScriptFrameHitboxEnd, Tick2Frame[hitboxCommand.EndFrame]);
+                }
+                catch (Exception)
+                {
+
+                }
+                if (type.HasFlag(HitboxCommand.HitboxType.GRAB) || flags.HasFlag(HitboxCommand.FlagsType.UNBLOCKABLE))
+                {
+                    if (!ScriptName.Contains("BALCERONA"))
                     {
-                        FallBackRange = range; 
+                        AState = AttackState.Throw;
                         continue;
                     }
-                    var attach = Util.Memory.ReadByte((int)b + DataOffset + i * 12 + j * 44 + (24 + 6));
-
-                    if ((attach) != 0)
-                    {
-                        //Console.WriteLine("WARNING ATTACH " + ScriptName);
-                    }
-                    else
-                        useFallBack = false;
-                    
-                    AttackRange = Math.Max(AttackRange, range);
-                    try 
-                    { 
-                        ScriptFrameHitboxStart = Math.Min(ScriptFrameHitboxStart, Tick2Frame[Util.Memory.ReadShort((int)b + FrameOffset + i * 12 + j * 4)]);
-                        ScriptFrameHitboxEnd = Math.Max(ScriptFrameHitboxEnd, Tick2Frame[Util.Memory.ReadShort((int)b + FrameOffset + i * 12 + j * 4 + 2)]);
-                    }
-                    catch(Exception)
-                    {
-
-                    }
-                    if (type == 2|| (flags & 4) != 0)
-                    {
-                        if (!ScriptName.Contains("BALCERONA"))
-                        {
-                            AState = AttackState.Throw;
-                            continue;
-                        }
-                    }
-
-                    
-                    if (hitlevel == 0)
-                        AState = AttackState.Mid;
-                    if (hitlevel == 1)
-                        AState = AttackState.Overhead;
-                    if (hitlevel == 2)
-                        AState = AttackState.Low;
-                    if (hitlevel == 3)
-                        AState = AttackState.Throw;
                 }
-                if (useFallBack == true)
-                    AttackRange = FallBackRange;
+
+
+                if (hitlevel == HitboxCommand.HitLevelType.MID)
+                    AState = AttackState.Mid;
+                if (hitlevel == HitboxCommand.HitLevelType.OVERHEAD)
+                    AState = AttackState.Overhead;
+                if (hitlevel == HitboxCommand.HitLevelType.LOW)
+                    AState = AttackState.Low;
+                if (hitlevel == HitboxCommand.HitLevelType.UNBLOCKABLE)
+                    AState = AttackState.Throw;
             }
+            if (useFallBack == true)
+                AttackRange = FallBackRange;
+
         }
-        private void ComputeTickstoFrames(uint BAC)
+        private void ComputeTickstoFrames(int BAC)
         {
             var ScriptOffset = BAC + Util.Memory.ReadInt((int)((BAC + Util.Memory.ReadInt((int)BAC + 0x14)) + 4 * ScriptIndex));
             var ScriptCommandListCount = Util.Memory.ReadShort((int)ScriptOffset + 0x12);
@@ -482,19 +492,19 @@ namespace UltraBot
             ScriptFrameHitboxEnd = (float)Math.Ceiling(Tick2Frame[ScriptTickHitboxEnd % ScriptTickTotal]);
             ScriptFrameIASA = (float)Math.Ceiling(Tick2Frame[ScriptTickIASA % ScriptTickTotal]);
             ScriptFrameTotal = (float)Math.Ceiling(Tick2Frame[ScriptTickTotal]);
-             
+
         }
-		private static string ReadNullTerminatedString(uint offset)
+        private static string ReadNullTerminatedString(uint offset)
         {
             var tmp = Util.Memory.ReadString((int)offset, 128);
             tmp = tmp.Substring(0, tmp.IndexOf('\x00'));
             return tmp;
         }
-		private void ReadStringOffsetTable(List<string> list, int baseOffset, int count, int stringRelativeOffset)
+        private void ReadStringOffsetTable(List<string> list, int baseOffset, int count, int stringRelativeOffset)
         {
             list.Clear();
             var stringOffset = stringRelativeOffset + baseOffset;
-            for (int i = 0; i < count; i++ )
+            for (int i = 0; i < count; i++)
             {
                 var off = Util.Memory.ReadInt(stringOffset + i * 4);
                 list.Add(ReadNullTerminatedString((uint)baseOffset + off));
@@ -505,5 +515,5 @@ namespace UltraBot
             return String.Format("X:{0:0.00,4} Y:{1:0.00,4} S:{2,-15} F:{3,4} +:{4,4} -:{5,4} IASA:-:{6,4}", X, Y, ScriptName, ScriptFrame, ScriptFrameHitboxStart, ScriptFrameHitboxEnd, ScriptFrameIASA);
         }
     }
-    
+
 }

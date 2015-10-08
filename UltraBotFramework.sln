@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UltraBot", "UltraBot\UltraB
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UltraBotUI", "UltraBotUI\UltraBotUI.csproj", "{2977B15A-8D3B-457F-B18C-F09D842B2601}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UltraBotHost", "UltraBotHost\UltraBotHost.csproj", "{15F56A95-CB27-4693-A5A4-B805C35317B6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UltraBotHook", "UltraBotHook\UltraBotHook.csproj", "{C721680B-4239-48E9-92D1-D73F3F81C946}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{2977B15A-8D3B-457F-B18C-F09D842B2601}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2977B15A-8D3B-457F-B18C-F09D842B2601}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2977B15A-8D3B-457F-B18C-F09D842B2601}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15F56A95-CB27-4693-A5A4-B805C35317B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15F56A95-CB27-4693-A5A4-B805C35317B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15F56A95-CB27-4693-A5A4-B805C35317B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15F56A95-CB27-4693-A5A4-B805C35317B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C721680B-4239-48E9-92D1-D73F3F81C946}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C721680B-4239-48E9-92D1-D73F3F81C946}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C721680B-4239-48E9-92D1-D73F3F81C946}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C721680B-4239-48E9-92D1-D73F3F81C946}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

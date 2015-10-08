@@ -142,7 +142,7 @@ namespace UltraBot
                     if (stopOnWhiff)
                     {
                         var stop = true;
-                        if(26 <= bot.enemyState.ScriptIndex && bot.enemyState.ScriptIndex <= 202 && !bot.enemyState.ScriptName.EndsWith("J"))
+                        if(64 <= bot.enemyState.ScriptIndex && bot.enemyState.ScriptIndex <= 202 && !bot.enemyState.ScriptName.EndsWith("J"))
                             stop = false;
                         if(bot.enemyState.ScriptName.Contains("DAMAGE"))
                             stop = false;   
@@ -181,7 +181,7 @@ namespace UltraBot
             {
 
                 //bot.enemyState.AttackRange*2+System.Math.Abs(bot.enemyState.XVelocity*bot.enemyState.StateTimer)+.5*System.Math.Abs(bot.enemyState.XAcceleration*3)
-                if ((bot.enemyState.State == FighterState.CharState.Startup && bot.enemyState.StateTimer < 4) || bot.enemyState.State == FighterState.CharState.Active)
+                if ((bot.enemyState.State == FighterState.CharState.Startup && bot.enemyState.StateTimer <= 2) || bot.enemyState.State == FighterState.CharState.Active)
                 {
                     //Console.WriteLine("VELOCITY={0} ACCEL={1} XPOS={2}", bot.enemyState.XVelocity, bot.enemyState.XAcceleration, bot.enemyState.X);
                     if (Math.Abs(bot.myState.XDistance) - .15 < bot.enemyState.AttackRange)

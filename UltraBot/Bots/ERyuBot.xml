@@ -2,11 +2,11 @@
 <BotData>
     <Combos>
         <!-- cr.lp cr.hp -->
-        <Starter Type="GROUND" XMax=".9" Input="1LP.W18.*-1HP.W9">
+        <Starter Type="GROUND" XMax=".8" Input="1LP.W18.*-HP.W9">
             <!-- m.axekick cr.mp h.srk -->
             <Combo Input="4.2.6MK.W59.1MP.W8.2.1.4LK.W48.6.2.3HP" />
             <!-- m.axekick cr.mp l.axekick FADC cr.lp cr.hp m.axekick cr.mp l.tatsu h.srk -->
-            <Combo EXMeter="500" Input="4.2.6MK.W58.1MP.W8.4.2.6LK.W20.MPMK.W10.6.W1.6.W19.1LP.W18.1HP.W8.4.2.6MK.W52.1MP.W8.2.1.4LK.W48.6.2.3HP" />
+            <Combo EXMeter="500" Input="4.2.6MK.W58.1LP.W18.MP.W8.4.2.6LK.W20.MPMK.W10.6.W1.6.W19.1LP.W18.HP.W14.4.2.6MK.W52.1MP.W8.2.1.4LK.W48.6.2.3HP.W60" />
             <!-- m.axekick cr.lp st.MP l.axekick FADC cr.lp cr.hp m.axekick cr.lp st.mp l.axekick FADC cr.lp cr.hp m.axekick cr.mp l.tatsu h.srk -->
             <Combo EXMeter="1000" Input="4.2.6MK.W58.1LP.W18.MP.W8.4.2.6LK.W20.MPMK.W10.6.W1.6.W19.1LP.W18.HP.W14.4.2.6MK.W52.1LP.W18.MP.W8.4.2.6LK.W20.MPMK.W10.6.W1.6.W19.1LP.W18.HP.W14.4.2.6MK.W52.1MP.W8.2.1.4LK.W48.6.2.3HP.W60" />
             <!-- mp.DP FADC Ultra -->

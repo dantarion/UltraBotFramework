@@ -28,10 +28,12 @@ namespace UltraBot
             if (asmHelper != null)
                 asmHelper.Dispose();
 
-            asmHelper = new AsmHelper(CSScript.Load(BotName + ".cs", Guid.NewGuid().ToString(), false));
+            //asmHelper = new AsmHelper(CSScript.Load(BotName + ".cs", Guid.NewGuid().ToString(), false));
             //asmHelper = new AsmHelper(CSScript.Load(BotName + ".cs", null, false));
-            var tmp2 = asmHelper.CreateObject(BotName);
-            bot = tmp2 as Bot;
+           // var tmp2 = asmHelper.CreateObject(BotName);
+            //bot = tmp2 as Bot;
+            bot = System.Reflection.Assembly.GetExecutingAssembly().CreateInstance(BotName) as Bot;
+            
 
             foreach (var dir in CSScript.GlobalSettings.SearchDirs.Split(';'))//We look for an xml file containing a list of button combos. See KenBot.xml for an example
             {
