@@ -18,6 +18,7 @@ using UltraBot;
 using System.ComponentModel;
 using DX9OverlayAPIWrapper;
 using System.Threading;
+using System.Runtime.ExceptionServices;
 namespace UltraBotUI
 {
     public class LogEntry
@@ -121,8 +122,8 @@ namespace UltraBotUI
             log.Insert(0, le);
             System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
             dispatcherTimer.Tick += dispatcherTimer_Tick;
-            dispatcherTimer.Interval = new TimeSpan(0, 0, 1);
-            dispatcherTimer.Start();
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 5);
+           // dispatcherTimer.Start();
         }
         private void dispatcherTimer_Tick(object sender, EventArgs e)
         {
@@ -198,6 +199,7 @@ namespace UltraBotUI
             WorkerArgs args = (WorkerArgs)e.Argument;
             while (!backgroundWorker.CancellationPending)
             {
+
                 ms.Update();
                 f1.UpdatePlayerState();
                 f2.UpdatePlayerState();
@@ -217,6 +219,8 @@ namespace UltraBotUI
         private void backgroundWorker_RunWorkerCompleted
             ( object sender, RunWorkerCompletedEventArgs e )
         {
+            if (e.Error != null)
+                throw new Exception("Bot Exception",e.Error);
             restartWorker();
         }
         private void backgroundWorker_ProgressChanged(object sender,  ProgressChangedEventArgs e)

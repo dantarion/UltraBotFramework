@@ -29,7 +29,7 @@ namespace UltraBot
             var tmp = Util.Memory.ReadInt((int)Util.Memory.ReadInt(0x400000 + 0x6A7DF0) + 0x28);
             while (tmp == FrameCounter)//We are running too fast, we need to wait for the game to continue
             {
-                Thread.Sleep(1);
+                Thread.Sleep(0);
                 tmp = Util.Memory.ReadInt((int)Util.Memory.ReadInt(0x400000 + 0x6A7DF0) + 0x28);
             }
             if (tmp != FrameCounter + 1)//We dropped a frame, maybe AI processing is taking too long, or game itself is skipping frames.

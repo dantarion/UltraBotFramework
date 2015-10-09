@@ -138,16 +138,22 @@ namespace UltraBot
                     if (Inputs[index].Contains('-'))
                         stopOnWhiff = true;
                     if (stopOnBlock && (bot.enemyState.ScriptName.Contains("GUARD")))
+                    {
+                        _reason = "got blocked!";
                         yield break;
+                    }
                     if (stopOnWhiff)
                     {
                         var stop = true;
                         if(64 <= bot.enemyState.ScriptIndex && bot.enemyState.ScriptIndex <= 202 && !bot.enemyState.ScriptName.EndsWith("J"))
                             stop = false;
                         if(bot.enemyState.ScriptName.Contains("DAMAGE"))
-                            stop = false;   
-                        if(stop)
-                            yield  break;
+                            stop = false;
+                        if (stop)
+                        {
+                            _reason = "whiffed";
+                            yield break;
+                        }
                     }
                     //WX wait X frames
                     if (Inputs[index].IndexOf('W') > -1)
@@ -156,15 +162,15 @@ namespace UltraBot
                         uint i = 0;
                         while (i++ < timer)
                         {
-                            yield return String.Join(".", Inputs.Skip(index - 1));
+                            yield return String.Join(".", Inputs);
                         }
                         continue;
                     }
 
 
                     bot.pressButton(Inputs[index]);
-
-                    yield return String.Join(".", Inputs.Skip(index++));
+                    index++;
+                    yield return String.Join(".", Inputs);
 
                 }
 

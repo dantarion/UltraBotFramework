@@ -188,8 +188,8 @@ namespace UltraBot
             if (BCM != bcm_off && BCM != 0)
             {
                 //Gotta load BCM
-                var tmpfile = File.Create(System.IO.Path.GetTempPath() + "/tmp.bcm", 0x4000);
-                var tmparr = Util.Memory.ReadAOB(BCM, 0x4000);
+                var tmpfile = File.Create(System.IO.Path.GetTempPath() + "/tmp.bcm", 0x9000);
+                var tmparr = Util.Memory.ReadAOB(BCM, 0x9000);
                 tmpfile.Write(tmparr, 0, tmparr.Length);
                 tmpfile.Close();
                 bcm = BCMFile.FromFilename(System.IO.Path.GetTempPath() + "/tmp.bcm");
@@ -218,15 +218,17 @@ namespace UltraBot
 
             }
 
-            InputBuffer.Clear();
+            //InputBuffer.Clear();
+            if(InputBuffer.Count == 0x400)
+            {
+                InputBuffer.RemoveAt(0x400-1);
+            }
+            var inputsToRead = 0x400-InputBuffer.Count();
 
             var InputBufferIndex = (int)Util.Memory.ReadInt(InputBufferOffset + 0x1414);
-            for (i = 0; i < 0x400; i++)
-            {
-                var trueIndex = (InputBufferCurrent);
-                var tmp = Util.Memory.ReadInt(InputBufferStart + 0xC * trueIndex);
-                InputBuffer.Add((Input)tmp);
-            }
+            var tmp = Util.Memory.ReadInt(InputBufferStart + 0xC * InputBufferCurrent);
+            InputBuffer.Insert(0,(FighterState.Input)tmp);
+            
         }
         private void ReadBACData()
         {
@@ -236,7 +238,7 @@ namespace UltraBot
             {
                 //Gotta load BCM
                 var tmpfile = File.Create(System.IO.Path.GetTempPath() + "/tmp.bac", 0x4000);
-                var tmparr = Util.Memory.ReadAOB(BAC, 0x50000);
+                var tmparr = Util.Memory.ReadAOB(BAC, 0xA0000);
                 tmpfile.Write(tmparr, 0, tmparr.Length);
                 tmpfile.Close();
                 bac = BACFile.FromFilename(System.IO.Path.GetTempPath() + "/tmp.bac", bcm);
@@ -271,8 +273,11 @@ namespace UltraBot
 
             ScriptIndex = (int)Util.Memory.ReadInt(BAC_data + 0x18);
             LastScriptName = ScriptName;
-
-            ScriptName = bac.Scripts.Where(x => x.Index == ScriptIndex).FirstOrDefault().Name;
+            var script = bac.Scripts.Where(x => x.Index == ScriptIndex).FirstOrDefault();
+            if (script == null)
+                ScriptName = ScriptIndex.ToString();
+            else
+                ScriptName = script.Name;
             if (ScriptName == "")
                 return;
             ScriptTickTotal = Util.Memory.ReadInt(BAC_data + 0x24) / 0x10000;
@@ -374,6 +379,8 @@ namespace UltraBot
         private void ComputeAttackData(int BAC)
         {
             RainbowLib.BAC.Script currentScript = bac.Scripts.Where(x => x.Index == ScriptIndex).FirstOrDefault();
+            if (currentScript == null)
+                return;
             var ScriptOffset = BAC + Util.Memory.ReadInt((int)((BAC + Util.Memory.ReadInt((int)BAC + 0x14)) + 4 * ScriptIndex));
             var ScriptCommandListCount = Util.Memory.ReadShort((int)ScriptOffset + 0x12);
             var b = (int)ScriptOffset + 0x18;
@@ -446,6 +453,8 @@ namespace UltraBot
         }
         private void ComputeTickstoFrames(int BAC)
         {
+            if (LastScriptIndex == ScriptIndex)
+                return;
             var ScriptOffset = BAC + Util.Memory.ReadInt((int)((BAC + Util.Memory.ReadInt((int)BAC + 0x14)) + 4 * ScriptIndex));
             var ScriptCommandListCount = Util.Memory.ReadShort((int)ScriptOffset + 0x12);
             var b = (int)ScriptOffset + 0x18;
